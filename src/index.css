@@ -1,0 +1,2443 @@
+/* ==============================================================================
+   CINEMATIC BIRTHDAY SURPRISE — STYLESHEET
+   Accurate Rooftop Wall Countdown, Open-Sky Fireworks, Right-Edge Floating Heart
+   ============================================================================== */
+
+:root {
+  --color-bg-dark: #07090e;
+  --color-midnight: #0c101d;
+  --color-deep-indigo: #1e1b4b;
+  --color-gold-400: #fbbf24;
+  --color-gold-500: #f59e0b;
+  --color-gold-yellow: #FFC52E;
+  --color-gold-cream: #FFF2CC;
+  --color-cream: #fef3c7;
+  --color-rose-300: #fda4af;
+  --color-rose-500: #f43f5e;
+  --color-rose-600: #e11d48;
+  --color-text-main: #f8fafc;
+  --color-text-muted: #cbd5e1;
+
+  --font-serif-display: 'Cinzel', 'Playfair Display', Georgia, serif;
+  --font-serif-card: 'Cormorant Garamond', Georgia, serif;
+  --font-sans: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-script: 'Pinyon Script', cursive;
+}
+
+/* Reset & Base */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  min-height: 100%;
+  background-color: var(--color-bg-dark);
+  color: var(--color-text-main);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+  outline: none;
+}
+
+button:focus-visible {
+  outline: 2px solid var(--color-gold-400);
+  outline-offset: 3px;
+}
+
+/* Fade In Utility */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* ==============================================================================
+   COVER PAGE: ROOFTOP BACKGROUND & COMPOSITION
+   Preserves cover.png composition byte-for-byte
+   ============================================================================== */
+.cover-page-root {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background-color: var(--color-bg-dark);
+}
+
+.cover-background-container {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.cover-background-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center bottom;
+  display: block;
+}
+
+/* On mobile, shift object-position slightly so the seated girl remains visible on left */
+@media (max-width: 768px) {
+  .cover-background-image {
+    object-position: 28% bottom;
+  }
+}
+
+/* ==============================================================================
+   COUNTDOWN TIMER — EXACT WALL PLACEMENT & ELEVATION
+   - Anchored to the rendered background image's coordinate system
+   - Vertically centered on the visible rooftop wall (moved UP significantly)
+   - Horizontally centered between the seated girl and the lantern table
+   - 25-35% larger numerals in warm golden yellow (#FFC52E)
+   - Delicate, vertically centered botanical ornaments close to outer units
+   - Zero cards, zero background rectangles, zero glass panels, zero sky headings
+   ============================================================================== */
+.wall-countdown-positioner {
+  position: absolute;
+  z-index: 15;
+  /* Centered in the open wall area (65.2%) and vertically centered on the wall (83.2%) */
+  left: 65.2%;
+  top: 83.2%;
+  transform: translate(-50%, -50%);
+  width: auto;
+  pointer-events: none;
+  animation: timerFadeIn 0.8s ease forwards;
+}
+
+@keyframes timerFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* On mobile, centered in visible wall portion between girl and right edge */
+.wall-countdown-positioner.is-mobile {
+  left: 38.4%;
+  top: 83.2%;
+  transform: translate(-50%, -50%);
+}
+
+.wall-countdown-track {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(0.7rem, 1.0vw, 1.15rem);
+  padding: 0;
+  margin: 0;
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Delicate Botanical Laurel Sprig Ornaments — Symmetrical curved golden linework */
+.botanical-ornament {
+  width: clamp(20px, 1.8vw, 26px);
+  height: clamp(40px, 3.6vw, 52px);
+  color: var(--color-gold-yellow);
+  filter: drop-shadow(0 0 8px rgba(255, 197, 46, 0.65));
+  opacity: 0.95;
+  flex-shrink: 0;
+  margin: 0 clamp(0.1rem, 0.25vw, 0.4rem);
+}
+
+.botanical-ornament.flipped {
+  transform: scaleX(-1);
+}
+
+/* Individual Unit (Numeral + Label) */
+.wall-unit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: clamp(56px, 4.5vw, 68px);
+}
+
+/* Large warm golden-yellow numerals (#FFC52E) — Elegant serif display */
+.wall-numeral {
+  font-family: var(--font-serif-display);
+  font-size: clamp(2.5rem, 3.6vw, 3.6rem);
+  font-weight: 700;
+  color: var(--color-gold-yellow);
+  line-height: 1;
+  letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
+  display: inline-block;
+  text-align: center;
+  /* Soft, realistic golden glow and subtle text shadow */
+  text-shadow:
+    0 0 12px rgba(255, 197, 46, 0.8),
+    0 0 24px rgba(245, 158, 11, 0.5),
+    0 2px 6px rgba(0, 0, 0, 0.95);
+}
+
+/* Small uppercase labels directly below in warm cream (#FFF2CC) */
+.wall-label {
+  font-family: var(--font-sans);
+  font-size: clamp(0.64rem, 0.72vw, 0.76rem);
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--color-gold-cream);
+  font-weight: 600;
+  margin-top: 0.35rem;
+  display: block;
+  text-align: center;
+  text-shadow:
+    0 1px 4px rgba(0, 0, 0, 0.9),
+    0 0 6px rgba(255, 197, 46, 0.4);
+}
+
+/* Thin subtle golden vertical divider */
+.wall-divider {
+  width: 1.5px;
+  height: clamp(32px, 2.8vw, 40px);
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(255, 197, 46, 0.85) 25%,
+    rgba(255, 197, 46, 0.85) 75%,
+    transparent 100%
+  );
+  box-shadow: 0 0 5px rgba(255, 197, 46, 0.45);
+  flex-shrink: 0;
+  margin-top: -6px; /* Aligns with numeral visual midline */
+}
+
+/* Mobile specific responsive sizing */
+@media (max-width: 640px) {
+  .wall-countdown-track {
+    gap: 0.28rem;
+  }
+  .wall-unit {
+    min-width: 32px;
+  }
+  .wall-numeral {
+    font-size: 1.35rem;
+  }
+  .wall-label {
+    font-size: 0.44rem;
+    letter-spacing: 0.1em;
+    margin-top: 0.18rem;
+  }
+  .wall-divider {
+    height: 18px;
+    margin-top: -3px;
+  }
+  .botanical-ornament {
+    width: 12px;
+    height: 24px;
+    margin: 0;
+  }
+}
+
+/* ==============================================================================
+   FIREWORKS CANVAS
+   Transparent HTML5 Canvas layer, bursts in central & right open sky
+   ============================================================================== */
+.fireworks-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 20;
+  pointer-events: none;
+}
+
+/* ==============================================================================
+   CELEBRATION FIREWORKS CANVAS — "HAPPY BIRTHDAY" IN THE SKY
+   ============================================================================== */
+.birthday-celebration-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 45;
+  pointer-events: none;
+}
+
+/* ==============================================================================
+   HEART BUTTON — FLOATS NEAR RIGHT EDGE OF SKY
+   - Small circular button with glowing pink halo & white heart
+   - Elegant slow lantern float near right edge of viewport
+   - Stays above fireworks layer
+   - Zero cards, zero background panels, zero oversized labels
+   ============================================================================== */
+.heart-sky-anchor {
+  position: fixed;
+  top: 32%;
+  right: 7vw;
+  z-index: 60;
+  pointer-events: auto;
+  animation: slowLanternFloat 5.5s infinite ease-in-out;
+}
+
+@media (max-width: 640px) {
+  .heart-sky-anchor {
+    top: 28%;
+    right: 6vw;
+  }
+}
+
+/* Elegant lantern float: gentle vertical floating with subtle horizontal sway */
+@keyframes slowLanternFloat {
+  0%, 100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(-6px, -14px, 0);
+  }
+}
+
+.wall-heart-button {
+  position: relative;
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: none !important;
+  background: transparent !important;
+  outline: none !important;
+  box-shadow: none !important;
+  -webkit-tap-highlight-color: transparent !important;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: pointer;
+  animation: heartPopIn 0.65s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  transition: transform 0.25s ease, filter 0.25s ease;
+  touch-action: manipulation;
+}
+
+.wall-heart-button:focus,
+.wall-heart-button:active,
+.wall-heart-button:focus-visible {
+  outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+/* Subtle circular focus indicator strictly matching the button's round shape */
+.wall-heart-button:focus-visible .heart-circle-core {
+  box-shadow:
+    0 6px 18px rgba(225, 29, 72, 0.6),
+    0 0 25px rgba(244, 63, 94, 0.55),
+    0 0 0 3px rgba(251, 191, 36, 0.85),
+    inset 0 2px 4px rgba(255, 255, 255, 0.4);
+}
+
+@keyframes heartPopIn {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  70% {
+    transform: scale(1.18);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.wall-heart-button:hover {
+  transform: scale(1.12);
+  filter: drop-shadow(0 0 20px rgba(244, 63, 94, 0.95));
+}
+
+.wall-heart-button:active {
+  transform: scale(0.95);
+}
+
+/* First-click celebratory burst pulse */
+.wall-heart-button.heart-first-tap {
+  animation: heartFirstTap 0.65s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes heartFirstTap {
+  0% { transform: scale(1); filter: brightness(1); }
+  45% {
+    transform: scale(1.36);
+    filter: brightness(1.9) drop-shadow(0 0 28px rgba(251, 191, 36, 0.95)) drop-shadow(0 0 38px rgba(244, 63, 94, 0.9));
+  }
+  100% {
+    transform: scale(1.05);
+    filter: brightness(1.15) drop-shadow(0 0 18px rgba(244, 63, 94, 0.85));
+  }
+}
+
+/* While formation is taking place: warm celebratory radiance */
+.wall-heart-button.heart-celebrating {
+  animation: heartCelebrating 2.2s infinite ease-in-out;
+  cursor: default;
+}
+
+@keyframes heartCelebrating {
+  0%, 100% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 16px rgba(244, 63, 94, 0.75)) drop-shadow(0 0 22px rgba(251, 191, 36, 0.55));
+  }
+  50% {
+    transform: scale(1.08);
+    filter: drop-shadow(0 0 25px rgba(244, 63, 94, 0.95)) drop-shadow(0 0 32px rgba(251, 191, 36, 0.85));
+  }
+}
+
+/* Holding state: rhythmic inviting heartbeat glow ready for second click */
+.wall-heart-button.heart-holding-ready {
+  animation: heartHoldingReady 1.6s infinite cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+
+@keyframes heartHoldingReady {
+  0%, 100% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 16px rgba(244, 63, 94, 0.75)) drop-shadow(0 0 24px rgba(251, 191, 36, 0.6));
+  }
+  16% {
+    transform: scale(1.22);
+    filter: drop-shadow(0 0 32px rgba(244, 63, 94, 1)) drop-shadow(0 0 42px rgba(251, 191, 36, 0.95));
+  }
+  30% {
+    transform: scale(1.06);
+  }
+  44% {
+    transform: scale(1.16);
+    filter: drop-shadow(0 0 28px rgba(244, 63, 94, 0.95)) drop-shadow(0 0 36px rgba(251, 191, 36, 0.85));
+  }
+}
+
+.wall-heart-button.heart-bursting {
+  pointer-events: none;
+  animation: heartBurstClick 0.65s cubic-bezier(0.2, 0.9, 0.3, 1) forwards !important;
+}
+
+@keyframes heartBurstClick {
+  0% {
+    transform: scale(1);
+    filter: brightness(1) drop-shadow(0 0 15px rgba(244, 63, 94, 0.7));
+  }
+  40% {
+    transform: scale(1.4);
+    filter: brightness(2) drop-shadow(0 0 35px rgba(251, 191, 36, 0.95)) drop-shadow(0 0 50px rgba(244, 63, 94, 0.9));
+    opacity: 1;
+  }
+  75% {
+    transform: scale(1.75);
+    opacity: 0.6;
+    filter: brightness(2.2);
+  }
+  100% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+
+/* Glowing Pink / Rose-Gold Outer Halo */
+.heart-outer-halo {
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(244, 63, 94, 0.55) 0%, transparent 70%);
+  animation: haloPulse 2.4s infinite ease-in-out;
+  pointer-events: none;
+}
+
+@keyframes haloPulse {
+  0%, 100% { transform: scale(0.92); opacity: 0.45; }
+  50% { transform: scale(1.3); opacity: 0.85; }
+}
+
+/* Tiny orbiting sparkles */
+.tiny-sparkle {
+  position: absolute;
+  color: var(--color-gold-light);
+  font-size: 0.8rem;
+  pointer-events: none;
+  animation: sparkleTwinkle 2s infinite ease-in-out;
+}
+
+.tiny-sparkle.sp1 { top: -6px; right: -4px; animation-delay: 0.4s; }
+.tiny-sparkle.sp2 { bottom: -4px; left: -2px; animation-delay: 1.2s; }
+
+@keyframes sparkleTwinkle {
+  0%, 100% { opacity: 0.2; transform: scale(0.7); }
+  50% { opacity: 1; transform: scale(1.2); filter: drop-shadow(0 0 6px #fbbf24); }
+}
+
+/* Circular Button Core */
+.heart-circle-core {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #fb7185 0%, #f43f5e 45%, #e11d48 100%);
+  border: 2px solid rgba(254, 243, 199, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow:
+    0 6px 18px rgba(225, 29, 72, 0.6),
+    0 0 25px rgba(244, 63, 94, 0.55),
+    inset 0 2px 4px rgba(255, 255, 255, 0.4);
+}
+
+.white-heart-icon {
+  width: 24px;
+  height: 24px;
+  color: #ffffff;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.35));
+  animation: heartbeatPulse 1.6s infinite ease-in-out;
+}
+
+@keyframes heartbeatPulse {
+  0%, 100% { transform: scale(1); }
+  15% { transform: scale(1.15); }
+  30% { transform: scale(1); }
+  45% { transform: scale(1.08); }
+}
+
+/* ==============================================================================
+   MAIN BIRTHDAY SECTION (STAGE 3) — MINIMAL & CINEMATIC REDESIGN
+   ============================================================================== */
+.main-page-root {
+  position: relative;
+  min-height: 100vh;
+  width: 100vw;
+  overflow-x: hidden;
+  overflow-y: auto;
+  background-color: var(--color-bg-dark);
+  animation: mainPageFadeIn 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes mainPageFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.main-background-container {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.main-background-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center bottom;
+  display: block;
+}
+
+/* Main Content Two-Column Grid */
+.main-content-layout {
+  position: relative;
+  left: 32px; /* Shifts layout ~32px to the right on desktop */
+  z-index: 10;
+  width: 100%;
+  max-width: 1080px; /* ~7% smaller overall container width */
+  margin: 0 auto;
+  padding: clamp(1.85rem, 3.6vw, 3.25rem) clamp(1.25rem, 3vw, 2.25rem);
+  display: grid;
+  grid-template-columns: minmax(0, 66%) minmax(0, 28%);
+  gap: clamp(1.25rem, 2.5vw, 2.35rem);
+  align-items: start;
+}
+
+/* ==============================================================================
+   FULLSCREEN MODE: VERTICAL POSITIONING FOR MAIN BIRTHDAY PAGE
+   - Moves the complete main content group 45–55px downward (~5.5–6vh) in fullscreen mode only
+   - Preserves all horizontal positions, sizes, alignments, spacing, and proportions
+   - Strictly active ONLY during fullscreen; automatically restores normal layout on exit
+   - Prevents scrollbar appearance in fullscreen mode
+   ============================================================================== */
+:fullscreen .main-page-root,
+:-webkit-full-screen .main-page-root,
+:-moz-full-screen .main-page-root,
+:-ms-fullscreen .main-page-root,
+.main-page-root.is-fullscreen {
+  height: 100vh;
+  height: 100dvh;
+  min-height: 100vh;
+  min-height: 100dvh;
+  max-height: 100vh;
+  max-height: 100dvh;
+  overflow: hidden !important;
+  overflow-y: hidden !important;
+}
+
+:fullscreen .main-content-layout,
+:-webkit-full-screen .main-content-layout,
+:-moz-full-screen .main-content-layout,
+:-ms-fullscreen .main-content-layout,
+.main-page-root.is-fullscreen .main-content-layout {
+  padding-top: calc(clamp(1.85rem, 3.6vw, 3.25rem) + clamp(48px, 5.5vh, 54px));
+}
+
+@media all and (display-mode: fullscreen) {
+  .main-page-root {
+    height: 100vh;
+    height: 100dvh;
+    min-height: 100vh;
+    min-height: 100dvh;
+    max-height: 100vh;
+    max-height: 100dvh;
+    overflow: hidden !important;
+    overflow-y: hidden !important;
+  }
+
+  .main-content-layout {
+    padding-top: calc(clamp(1.85rem, 3.6vw, 3.25rem) + clamp(48px, 5.5vh, 54px));
+  }
+}
+
+/* ================= LEFT COLUMN ================= */
+.main-left-column {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Minimal Title at Top Left */
+.minimal-page-title {
+  font-family: var(--font-serif-display), serif;
+  font-size: clamp(1.72rem, 2.7vw, 2.45rem);
+  font-weight: 700;
+  color: #fffdfa;
+  letter-spacing: 0.025em;
+  line-height: 1.22;
+  margin-bottom: 1.1rem;
+  white-space: nowrap;
+  text-shadow:
+    0 2px 10px rgba(0, 0, 0, 0.65),
+    0 0 20px rgba(212, 175, 55, 0.25);
+}
+
+/* Dark Frosted Glass Message Card with Layered Luminous Golden Edge */
+.minimal-message-card {
+  position: relative;
+  background: rgba(65, 38, 65, 0.58);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 228, 168, 0.75);
+  border-radius: 1.2rem;
+  padding: clamp(1.35rem, 2.2vw, 2rem);
+  box-shadow:
+    /* Deep card elevation shadow */
+    0 22px 50px rgba(0, 0, 0, 0.58),
+    /* Bright concentrated golden highlight directly along the edge */
+    0 0 3px rgba(255, 235, 180, 0.68),
+    /* Soft golden glow spreading outward from the border */
+    0 0 12px rgba(255, 192, 95, 0.42),
+    /* Luminous warm ambient aura */
+    0 0 28px rgba(245, 172, 75, 0.28),
+    /* Gentle warm light bloom around corners and edges */
+    0 0 55px rgba(230, 150, 55, 0.15),
+    /* Subtle inner edge illumination */
+    inset 0 1px 1.5px rgba(255, 245, 220, 0.70),
+    inset 0 0 14px rgba(255, 195, 95, 0.16),
+    inset 0 0 28px rgba(232, 160, 60, 0.08);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Subtle corner & edge light bloom pseudo-element for natural variations in intensity */
+.minimal-message-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      circle at 18% 0%,
+      rgba(255, 238, 195, 0.18) 0%,
+      transparent 55%
+    ),
+    radial-gradient(
+      circle at 85% 100%,
+      rgba(255, 205, 115, 0.12) 0%,
+      transparent 50%
+    );
+  box-shadow:
+    inset 0 1.5px 2px rgba(255, 245, 220, 0.65),
+    inset 1.5px 0 2px rgba(255, 230, 175, 0.40),
+    inset -1px -1px 2px rgba(230, 175, 90, 0.30);
+  z-index: 0;
+}
+
+@supports not (backdrop-filter: blur(18px)) {
+  .minimal-message-card {
+    background: rgba(48, 28, 48, 0.88);
+  }
+}
+
+/* Vertically Scrollable Content Area with Visually Hidden Scrollbar */
+.minimal-message-scroll-viewport {
+  position: relative;
+  z-index: 1;
+  max-height: clamp(260px, 44vh, 385px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  touch-action: pan-y;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  outline: none;
+  display: flex;
+  flex-direction: column;
+  gap: 1.05rem;
+  padding-right: 0.85rem;
+
+  /* Visually hidden scrollbar cross-browser */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+.minimal-message-scroll-viewport::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+  width: 0;
+  height: 0;
+}
+
+.minimal-message-scroll-viewport:focus-visible {
+  outline: 1.5px solid rgba(232, 188, 117, 0.6);
+  outline-offset: 3px;
+  border-radius: 0.5rem;
+}
+
+/* ==============================================================================
+   TINY FLOATING SCROLL INDICATOR
+   - No track, no line, no background bar
+   - Only a slim rounded glowing thumb moving vertically with scroll progress
+   - Subtle champagne gold / warm ivory glow
+   ============================================================================== */
+.message-scroll-indicator-track {
+  position: absolute;
+  top: clamp(1.35rem, 2.2vw, 2rem);
+  bottom: clamp(1.35rem, 2.2vw, 2rem);
+  right: clamp(7px, 1vw, 10px);
+  width: 3.5px;
+  pointer-events: none;
+  z-index: 10;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.message-scroll-indicator-thumb {
+  width: 3.5px;
+  height: 24px;
+  border-radius: 9999px;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 245, 225, 0.92) 0%,
+    rgba(235, 192, 120, 0.88) 100%
+  );
+  box-shadow:
+    0 0 5px rgba(255, 225, 145, 0.70),
+    0 0 10px rgba(245, 185, 90, 0.40);
+  opacity: 0.75;
+  transition: transform 0.05s ease-out;
+  will-change: transform;
+}
+
+/* Salutation */
+.minimal-salutation {
+  font-family: var(--font-serif-card), serif;
+  font-size: clamp(1.35rem, 1.75vw, 1.62rem);
+  font-weight: 600;
+  color: #FFF4E0;
+  letter-spacing: 0.015em;
+  line-height: 1.3;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.55);
+}
+
+/* Body Paragraphs */
+.minimal-paragraph {
+  font-family: var(--font-serif-card), serif;
+  font-size: clamp(0.98rem, 1.1vw, 1.1rem);
+  line-height: 1.76;
+  color: #F8EFE2;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
+}
+
+/* Sign-off & Sender */
+.minimal-signoff {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-top: 0.75rem;
+}
+
+.minimal-closing {
+  font-family: var(--font-serif-card), serif;
+  font-size: 1.05rem;
+  font-style: italic;
+  color: #E6D2B4;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
+}
+
+.minimal-sender {
+  font-family: var(--font-serif-card), serif;
+  font-size: 1.18rem;
+  font-weight: 600;
+  color: #FFF4E0;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.55);
+}
+
+/* ================= RIGHT COLUMN ================= */
+.main-right-column {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+}
+
+/* Portrait Secret Image Card */
+.minimal-image-card {
+  position: relative;
+  width: 88%;
+  margin: 16% auto 12% auto; /* 12% bottom margin preserves exact vertical position of the button while revealing sunset in the gap */
+  background: rgba(255, 252, 246, 0.94);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(224, 195, 140, 0.42);
+  border-radius: 1.15rem;
+  padding: 0.55rem;
+  box-shadow:
+    0 18px 40px rgba(0, 0, 0, 0.35),
+    0 0 25px rgba(212, 175, 55, 0.1),
+    inset 0 1px 2px rgba(255, 255, 255, 0.7);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.minimal-image-card:hover {
+  transform: translateY(-3px);
+  box-shadow:
+    0 22px 46px rgba(0, 0, 0, 0.4),
+    0 0 30px rgba(212, 175, 55, 0.18);
+}
+
+.minimal-image-frame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 5 / 6; /* Reduced height by 10% (from 3/4 to 5/6) to reveal setting sun */
+  border-radius: 0.9rem;
+  overflow: hidden;
+  background: #181422;
+}
+
+.minimal-portrait-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  transition: transform 0.5s ease;
+}
+
+.minimal-image-card:hover .minimal-portrait-image {
+  transform: scale(1.025);
+}
+
+/* Link Box Immediately Below Image Card */
+.minimal-link-container {
+  width: 100%;
+}
+
+.minimal-link-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 0.88rem 1.25rem;
+  background: rgba(255, 252, 246, 0.94);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(224, 195, 140, 0.45);
+  border-radius: 0.95rem;
+  box-shadow:
+    0 12px 30px rgba(0, 0, 0, 0.3),
+    0 0 20px rgba(212, 175, 55, 0.08),
+    inset 0 1px 2px rgba(255, 255, 255, 0.7);
+  text-decoration: none;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.28s ease;
+}
+
+.minimal-link-box:hover {
+  background: #ffffff;
+  border-color: rgba(212, 175, 55, 0.85);
+  transform: translateY(-2px);
+  box-shadow:
+    0 16px 36px rgba(0, 0, 0, 0.35),
+    0 0 25px rgba(212, 175, 55, 0.2);
+}
+
+.minimal-link-box:active {
+  transform: translateY(0);
+}
+
+.minimal-link-box:focus-visible {
+  outline: 2px solid var(--color-gold-400);
+  outline-offset: 3px;
+}
+
+.minimal-link-box.is-placeholder {
+  cursor: default;
+}
+
+.minimal-link-text {
+  font-family: var(--font-serif-display), serif;
+  font-size: clamp(0.84rem, 1vw, 0.94rem);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: #241c18;
+  text-transform: uppercase;
+  transition: color 0.25s ease;
+}
+
+.minimal-link-box:hover .minimal-link-text {
+  color: #a07828;
+}
+
+/* ================= MOBILE RESPONSIVENESS ================= */
+@media (max-width: 860px) {
+  .main-content-layout {
+    left: 0;
+    grid-template-columns: 1fr;
+    gap: 1.75rem;
+  }
+
+  .minimal-page-title {
+    white-space: normal;
+    text-align: left;
+  }
+
+  .main-right-column {
+    max-width: 330px;
+    margin: 0 auto;
+  }
+
+  :fullscreen .main-content-layout,
+  :-webkit-full-screen .main-content-layout,
+  :-moz-full-screen .main-content-layout,
+  :-ms-fullscreen .main-content-layout,
+  .main-page-root.is-fullscreen .main-content-layout {
+    padding-top: calc(1.85rem + clamp(45px, 5.5vh, 52px));
+  }
+
+  @media all and (display-mode: fullscreen) {
+    .main-content-layout {
+      padding-top: calc(1.85rem + clamp(45px, 5.5vh, 52px));
+    }
+  }
+}
+
+
+/* ==============================================================================
+   DEV TEST HELPER (Discreet testing floating toolbar)
+   ============================================================================== */
+.dev-test-panel {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 120;
+}
+
+.dev-panel-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  color: var(--color-cream);
+  padding: 0.4rem 0.85rem;
+  border-radius: 9999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+  transition: all 0.2s ease;
+}
+
+.dev-panel-toggle-btn:hover {
+  background: rgba(30, 27, 75, 0.95);
+  border-color: var(--color-gold-400);
+}
+
+.dev-panel-content {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  width: 270px;
+  background: #0f1322;
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  border-radius: 1rem;
+  padding: 1rem;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7);
+}
+
+.dev-panel-header {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  margin-bottom: 0.5rem;
+}
+
+.dev-current-stage strong {
+  color: var(--color-gold-light);
+  text-transform: uppercase;
+}
+
+.dev-panel-note {
+  font-size: 0.74rem;
+  color: #94a3b8;
+  margin-bottom: 0.75rem;
+  line-height: 1.4;
+}
+
+.dev-buttons-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.dev-action-btn {
+  display: inline-flex;
+  align-items: center;
+  width: 100%;
+  padding: 0.45rem 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.78rem;
+  font-weight: 500;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #f1f5f9;
+  transition: all 0.2s ease;
+}
+
+.dev-action-btn:hover {
+  background: rgba(245, 158, 11, 0.15);
+  border-color: var(--color-gold-400);
+  color: #fff;
+}
+
+.dev-action-btn.test-cover-timer-btn {
+  border-color: rgba(56, 189, 248, 0.4);
+  color: #bae6fd;
+}
+
+.dev-action-btn.test-cover-timer-btn:hover {
+  background: rgba(14, 165, 233, 0.2);
+  border-color: #38bdf8;
+}
+
+.dev-action-btn.test-firecracker-timer-btn {
+  border-color: rgba(245, 158, 11, 0.4);
+  color: #fef08a;
+}
+
+.dev-action-btn.test-firecracker-timer-btn:hover {
+  background: rgba(245, 158, 11, 0.22);
+  border-color: #f59e0b;
+}
+
+.dev-action-btn.reset-btn {
+  border-color: rgba(239, 68, 68, 0.3);
+  color: #fca5a5;
+}
+
+.dev-action-btn.reset-btn:hover {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: #ef4444;
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ==============================================================================
+   SAD MEMORIES — ROMANTIC SCRAPBOOK PHOTO ALBUM GALLERY
+   ============================================================================== */
+
+.sad-gallery-root {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+  user-select: none;
+  font-family: 'Playfair Display', 'Cormorant Garamond', Georgia, serif;
+}
+
+/* Full-Page Moonlit Terrace Background (sad.png) */
+.sad-gallery-background-wrapper {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.sad-gallery-background-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center bottom;
+  transform: scale(1.02);
+}
+
+.sad-gallery-subtle-overlay {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 35%, rgba(15, 12, 28, 0.15) 0%, rgba(8, 6, 18, 0.4) 100%);
+  pointer-events: none;
+}
+
+/* Top Navigation Bar with Back Button */
+.sad-gallery-top-bar {
+  position: absolute;
+  top: 1.25rem;
+  left: 1.5rem;
+  z-index: 50;
+}
+
+.sad-gallery-back-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 1.1rem;
+  border-radius: 9999px;
+  background: rgba(18, 14, 26, 0.7);
+  border: 1px solid rgba(230, 195, 120, 0.5);
+  color: #f7e6c4;
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 0.82rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4), 0 0 10px rgba(220, 175, 95, 0.2);
+}
+
+.sad-gallery-back-button:hover {
+  background: rgba(30, 24, 45, 0.85);
+  border-color: #ffd777;
+  color: #fff;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5), 0 0 15px rgba(255, 215, 120, 0.4);
+}
+
+.sad-gallery-back-button:active {
+  transform: translateY(0);
+}
+
+/* ==============================================================================
+   SAD MEMORIES MAIN STAGE & ALBUM FRAME TRANSITION
+   ============================================================================== */
+
+.sad-gallery-main-stage {
+  position: relative;
+  z-index: 10;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(1rem, 3.5vw, 3rem);
+  padding: 1.5rem 2rem;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  perspective: 1600px;
+}
+
+/* Circular Golden Navigation Arrows */
+.gallery-nav-arrow {
+  flex-shrink: 0;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: rgba(18, 14, 26, 0.65);
+  border: 1.5px solid rgba(230, 195, 120, 0.75);
+  color: #f7e4b5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5), 0 0 16px rgba(220, 175, 95, 0.3);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+  outline: none;
+}
+
+.gallery-nav-arrow:hover:not(:disabled) {
+  transform: scale(1.08);
+  border-color: #ffd777;
+  color: #ffffff;
+  background: rgba(28, 22, 40, 0.85);
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.6), 0 0 24px rgba(255, 215, 120, 0.55);
+}
+
+.gallery-nav-arrow:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.gallery-nav-arrow:disabled,
+.gallery-nav-arrow.is-disabled {
+  opacity: 0.22;
+  cursor: not-allowed;
+  pointer-events: none;
+  box-shadow: none;
+  border-color: rgba(200, 180, 140, 0.25);
+}
+
+/* Scaled Frame Stage: Scales uniformly as a single unit */
+.sad-frame-stage {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  transition: opacity 300ms ease, transform 320ms cubic-bezier(0.4, 0, 0.2, 1);
+  transform-style: preserve-3d;
+}
+
+/* Opening Album Cover Page: sad-cover inside decorative sad-frame (1269 x 1240) */
+.sad-frame-stage.is-cover-view {
+  width: min(74vw, 524px);
+  aspect-ratio: 1269 / 1240;
+  max-height: min(69vh, 512px);
+  filter: brightness(0.92) drop-shadow(0 18px 40px rgba(0, 0, 0, 0.65)) drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4));
+}
+
+/* Initial Step 1 frame view fallback: sad-frame.png (1269 x 1240) */
+.sad-frame-stage.is-frame-view {
+  width: min(74vw, 524px);
+  aspect-ratio: 1269 / 1240;
+  max-height: min(69vh, 512px);
+  filter: brightness(0.92) drop-shadow(0 18px 40px rgba(0, 0, 0, 0.65)) drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4));
+}
+
+/* Step 2 Photo Display: Compact, Symmetrical Glassmorphism Frame */
+.sad-frame-stage.is-img-view {
+  /* Compact, elegant and balanced outer glass container */
+  width: min(70vw, 500px);
+  max-height: min(72vh, 440px);
+  aspect-ratio: auto;
+  
+  /* Evenly distributed, uniform glass border on all 4 sides */
+  padding: clamp(16px, 2.4vw, 22px);
+  box-sizing: border-box;
+  
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: clamp(10px, 1.4vh, 14px);
+  
+  /* Dark navy/black glass tint with very high transparency so background scenery remains clearly visible */
+  background: rgba(12, 18, 30, 0.22);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  
+  /* Thin, elegant light border */
+  border: 1px solid rgba(255, 255, 255, 0.32);
+  
+  /* Softly rounded corners */
+  border-radius: clamp(16px, 2.4vw, 22px);
+  
+  /* Subtle, refined outer glow and ambient depth */
+  box-shadow: 
+    0 0 16px rgba(255, 255, 255, 0.12),
+    0 10px 28px rgba(0, 0, 0, 0.42),
+    inset 0 1px 1px rgba(255, 255, 255, 0.22);
+  
+  filter: none;
+}
+
+/* Smooth 3D Album-Opening & Page-Turn Transition */
+.sad-frame-stage.phase-idle {
+  opacity: 1;
+  transform: perspective(1600px) rotateY(0deg) scale(1);
+}
+
+/* Page turn forward (cover -> img): turns page open to the left */
+.sad-frame-stage.turn-forward.phase-out {
+  opacity: 0;
+  transform: perspective(1600px) rotateY(-70deg) scale(0.95);
+  transform-origin: left center;
+}
+
+.sad-frame-stage.turn-forward.phase-in {
+  opacity: 1;
+  transform: perspective(1600px) rotateY(0deg) scale(1);
+  transform-origin: left center;
+}
+
+/* Page turn backward (img -> cover): folds back and closes album */
+.sad-frame-stage.turn-backward.phase-out {
+  opacity: 0;
+  transform: perspective(1600px) rotateY(50deg) scale(0.95);
+  transform-origin: left center;
+}
+
+.sad-frame-stage.turn-backward.phase-in {
+  opacity: 1;
+  transform: perspective(1600px) rotateY(0deg) scale(1);
+  transform-origin: left center;
+}
+
+/* 1. Photograph Container: Placed BEHIND the frame artwork (z-index: 1) */
+.sad-photo-container {
+  position: absolute;
+  left: 20.4%;
+  top: 14.8%;
+  width: 61.8%;
+  height: 55.6%;
+  overflow: hidden;
+  z-index: 1;
+  background: #110e19;
+  border-radius: 2px;
+}
+
+/* Photograph Image: Fills the opening naturally without distortion */
+.sad-photo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+  display: block;
+  transition: opacity 140ms ease;
+}
+
+.sad-photo-img.is-fading {
+  opacity: 0;
+}
+
+/* Fallback placeholder when a photo slot is empty */
+.sad-photo-placeholder {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transition: opacity 140ms ease;
+}
+
+.sad-photo-placeholder.is-fading {
+  opacity: 0;
+}
+
+.placeholder-gradient-sky {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, #090a18 0%, #151933 45%, #2c2242 75%, #462c44 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.placeholder-crescent-moon {
+  position: absolute;
+  top: 15%;
+  right: 18%;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  box-shadow: -5px 3px 0 0 #fff7d6, 0 0 12px rgba(255, 240, 180, 0.4);
+}
+
+.placeholder-text-container {
+  position: relative;
+  z-index: 3;
+  padding: 0 1rem;
+}
+
+.placeholder-hint-badge {
+  display: inline-block;
+  padding: 0.18rem 0.55rem;
+  border-radius: 9999px;
+  background: rgba(247, 228, 181, 0.15);
+  border: 1px solid rgba(247, 228, 181, 0.35);
+  color: #f7e4b5;
+  font-family: system-ui, sans-serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+  margin-bottom: 0.35rem;
+}
+
+.placeholder-poetic-quote {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-style: italic;
+  font-size: clamp(0.75rem, 1.3vw, 0.95rem);
+  color: #eeddc2;
+  margin: 0;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.7);
+}
+
+/* 2. Frame Artwork: Placed IN FRONT of the photograph (z-index: 2) */
+.sad-frame-art-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  z-index: 2;
+  pointer-events: none;
+  display: block;
+}
+
+/* 3. Message Area: Centered horizontally and vertically within the torn-paper strip (z-index: 3) */
+.sad-caption-container {
+  position: absolute;
+  left: 23%;
+  right: 23%;
+  top: 73.2%;
+  bottom: 14.8%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3;
+  padding: 0 0.75rem;
+  pointer-events: none;
+  box-sizing: border-box;
+}
+
+/* Cover Image Container: Positioned inside opening BEHIND the decorative frame (z-index: 1) */
+.sad-cover-container {
+  position: absolute;
+  left: 18%;
+  top: 15%;
+  width: 66.5%;
+  height: 58%;
+  overflow: hidden;
+  z-index: 1;
+  border-radius: 3px;
+  background: #110e19;
+}
+
+.sad-cover-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  pointer-events: none;
+}
+
+/* ==============================================================================
+   STEP 2: GLASSMORPHISM PHOTO DISPLAY & FROSTED MESSAGE BOX
+   ============================================================================== */
+
+/* 1. Photo Display Wrapper: Proportionate, Centered, Rounded, Subtle Light Border */
+.sad-glass-photo-wrapper {
+  position: relative;
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+  aspect-ratio: 16 / 10;
+  border-radius: clamp(10px, 1.4vw, 13px);
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.42);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.32);
+  background: #0d111a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sad-glass-photo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+  display: block;
+  transition: opacity 140ms ease;
+}
+
+.sad-glass-photo-img.is-fading {
+  opacity: 0;
+}
+
+/* Photo Counter Badge: Top-Right Corner of Photo */
+.sad-photo-counter {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  background: rgba(14, 18, 28, 0.72);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.38);
+  color: #f7e4b5;
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: clamp(0.6rem, 0.95vw, 0.72rem);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  padding: 0.16rem 0.55rem;
+  border-radius: 9999px;
+  z-index: 5;
+  pointer-events: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+/* 2. Message Box: Light White/Grey Translucent Glass Directly Below Photo */
+.sad-glass-message-box {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: clamp(44px, 6.2vh, 52px);
+  padding: 0.45rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  /* Light white/grey translucent glass background (not solid opaque white) */
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.82) 0%, rgba(240, 244, 250, 0.74) 100%);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  
+  /* Softly rounded shape with delicate light border */
+  border-radius: clamp(8px, 1.2vw, 11px);
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  box-shadow: 
+    0 4px 14px rgba(0, 0, 0, 0.18),
+    inset 0 1px 1px rgba(255, 255, 255, 0.85);
+}
+
+.sad-glass-message-text {
+  font-family: 'Playfair Display', 'Cormorant Garamond', Georgia, serif;
+  font-style: italic;
+  font-size: clamp(0.72rem, 1.1vw, 0.85rem);
+  color: #1a202c;
+  text-align: center;
+  line-height: 1.32;
+  font-weight: 500;
+  letter-spacing: 0.015em;
+  margin: 0;
+  max-width: 100%;
+  text-wrap: balance;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: opacity 140ms ease;
+}
+
+.sad-glass-message-text.is-fading {
+  opacity: 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .sad-gallery-main-stage {
+    gap: 0.75rem;
+    padding: 1rem 0.5rem;
+  }
+
+  .gallery-nav-arrow {
+    width: 42px;
+    height: 42px;
+  }
+
+  .gallery-nav-arrow svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  .sad-frame-stage.is-cover-view {
+    width: min(85vw, 420px);
+    max-height: 64vh;
+  }
+
+  .sad-frame-stage.is-frame-view {
+    width: min(84vw, 440px);
+    max-height: 64vh;
+  }
+
+  .sad-frame-stage.is-img-view {
+    width: min(84vw, 340px);
+    max-height: min(68vh, 410px);
+    padding: 14px;
+    gap: 10px;
+    border-radius: 16px;
+  }
+
+  .sad-glass-photo-wrapper {
+    border-radius: 9px;
+  }
+
+  .sad-glass-message-box {
+    min-height: 40px;
+    padding: 0.35rem 0.75rem;
+    border-radius: 8px;
+  }
+
+  .sad-glass-message-text {
+    font-size: clamp(0.66rem, 2.5vw, 0.76rem);
+    line-height: 1.26;
+  }
+
+  .sad-photo-counter {
+    top: 8px;
+    right: 8px;
+    font-size: 0.58rem;
+    padding: 0.12rem 0.42rem;
+  }
+
+  .sad-gallery-top-bar {
+    top: 0.75rem;
+    left: 0.75rem;
+  }
+
+  .sad-gallery-back-button {
+    padding: 0.45rem 0.85rem;
+    font-size: 0.75rem;
+  }
+}
+
+/* ==============================================================================
+   CINEMATIC SAD GALLERY ATMOSPHERIC ANIMATIONS
+   1. Rain Animation (Multi-depth canvas)
+   2. Floating Dust Particles (Grey, charcoal, muted red, purple, glowing)
+   3. Moving Fog (Cinematic grey-purple overlapping billows)
+   4. Roaming Ghosts (Translucent white spirits with soft glow)
+   ============================================================================== */
+
+.sad-atmosphere-container {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  user-select: none;
+  z-index: 4;
+}
+
+.sad-atmos-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+/* ------------------------------------------------------------------------------
+   1. RAIN ANIMATION LAYER
+   ------------------------------------------------------------------------------ */
+.sad-layer-rain {
+  z-index: 6;
+}
+
+.sad-rain-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none;
+}
+
+/* ------------------------------------------------------------------------------
+   2. FLOATING DUST PARTICLES LAYER
+   ------------------------------------------------------------------------------ */
+.sad-layer-dust {
+  z-index: 7;
+}
+
+.sad-dust-particle {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  will-change: transform, opacity;
+  animation-iteration-count: infinite;
+  animation-timing-function: ease-in-out;
+}
+
+.sad-dust-particle.is-glowing {
+  filter: drop-shadow(0 0 4px currentColor);
+}
+
+@keyframes dust-drift-1 {
+  0% { transform: translate3d(0, 0, 0); opacity: 0.45; }
+  50% { transform: translate3d(-18px, -35px, 0); opacity: 0.95; }
+  100% { transform: translate3d(14px, -70px, 0); opacity: 0.35; }
+}
+
+@keyframes dust-drift-2 {
+  0% { transform: translate3d(0, 0, 0); opacity: 0.4; }
+  50% { transform: translate3d(24px, -42px, 0); opacity: 0.9; }
+  100% { transform: translate3d(-12px, -84px, 0); opacity: 0.35; }
+}
+
+@keyframes dust-drift-3 {
+  0% { transform: translate3d(0, 0, 0); opacity: 0.5; }
+  33% { transform: translate3d(-22px, -18px, 0); opacity: 0.92; }
+  66% { transform: translate3d(18px, -45px, 0); opacity: 0.6; }
+  100% { transform: translate3d(0, 0, 0); opacity: 0.5; }
+}
+
+@keyframes dust-drift-4 {
+  0% { transform: translate3d(0, 0, 0); opacity: 0.55; }
+  50% { transform: translate3d(18px, 22px, 0); opacity: 0.95; }
+  100% { transform: translate3d(-16px, 44px, 0); opacity: 0.45; }
+}
+
+/* ------------------------------------------------------------------------------
+   3. MOVING FOG ANIMATION LAYER
+   ------------------------------------------------------------------------------ */
+.sad-layer-fog {
+  z-index: 5;
+}
+
+.sad-fog-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none;
+}
+
+/* ------------------------------------------------------------------------------
+   4. ROAMING GHOSTS ANIMATION LAYER
+   ------------------------------------------------------------------------------ */
+.sad-layer-ghosts {
+  z-index: 8;
+}
+
+.sad-ghost-actor {
+  position: absolute;
+  pointer-events: none;
+  will-change: transform, opacity;
+  filter: drop-shadow(0 0 14px rgba(220, 235, 255, 0.6)) drop-shadow(0 0 28px rgba(185, 210, 255, 0.35));
+}
+
+.sad-ghost-svg {
+  display: block;
+}
+
+/* Ghost 1: Left terrace roamer (patio, lanterns, vine) */
+.ghost-actor-1 {
+  animation: ghost-roam-left 24s ease-in-out infinite, ghost-bob-1 3.4s ease-in-out infinite alternate;
+}
+
+@keyframes ghost-roam-left {
+  0% { transform: translate3d(6vw, 36vh, 0) rotate(-4deg); opacity: 0.75; }
+  30% { transform: translate3d(15vw, 50vh, 0) rotate(5deg); opacity: 0.92; }
+  60% { transform: translate3d(8vw, 68vh, 0) rotate(-6deg); opacity: 0.7; }
+  85% { transform: translate3d(4vw, 44vh, 0) rotate(3deg); opacity: 0.86; }
+  100% { transform: translate3d(6vw, 36vh, 0) rotate(-4deg); opacity: 0.75; }
+}
+
+@keyframes ghost-bob-1 {
+  0% { margin-top: -8px; }
+  100% { margin-top: 10px; }
+}
+
+/* Ghost 2: Right terrace roamer (terrace wall & lanterns) */
+.ghost-actor-2 {
+  animation: ghost-roam-right 27s ease-in-out infinite, ghost-bob-2 3.8s ease-in-out infinite alternate;
+}
+
+@keyframes ghost-roam-right {
+  0% { transform: translate3d(86vw, 42vh, 0) rotate(5deg); opacity: 0.76; }
+  35% { transform: translate3d(77vw, 26vh, 0) rotate(-6deg); opacity: 0.92; }
+  70% { transform: translate3d(87vw, 64vh, 0) rotate(7deg); opacity: 0.72; }
+  100% { transform: translate3d(86vw, 42vh, 0) rotate(5deg); opacity: 0.76; }
+}
+
+@keyframes ghost-bob-2 {
+  0% { margin-top: -10px; }
+  100% { margin-top: 8px; }
+}
+
+/* Ghost 3: Upper ethereal horizon drifter */
+.ghost-actor-3 {
+  animation: ghost-roam-upper 32s ease-in-out infinite, ghost-bob-3 4.2s ease-in-out infinite alternate;
+}
+
+@keyframes ghost-roam-upper {
+  0% { transform: translate3d(24vw, 11vh, 0) scale(0.9) rotate(-3deg); opacity: 0.55; }
+  50% { transform: translate3d(68vw, 7vh, 0) scale(0.96) rotate(4deg); opacity: 0.8; }
+  100% { transform: translate3d(24vw, 11vh, 0) scale(0.9) rotate(-3deg); opacity: 0.55; }
+}
+
+@keyframes ghost-bob-3 {
+  0% { margin-top: -6px; }
+  100% { margin-top: 6px; }
+}
+
+/* ------------------------------------------------------------------------------
+   RESPONSIVE & ACCESSIBILITY ADJUSTMENTS
+   ------------------------------------------------------------------------------ */
+@media (max-width: 768px) {
+  .sad-ghost-actor {
+    transform: scale(0.82);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sad-ghost-actor,
+  .sad-dust-particle {
+    animation: none !important;
+  }
+}
+
+/* ==============================================================================
+   CINEMATIC THUNDERSTORM LIGHTNING EFFECT (ON NAVIGATION)
+   ============================================================================== */
+.sad-lightning-container {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  user-select: none;
+  z-index: 3;
+  overflow: hidden;
+}
+
+/* 1. Primary Sky Illumination Flash with Radial Gradient */
+.sad-lightning-sky-flash {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  opacity: 0;
+}
+
+/* 2. Secondary Whole-Environment Atmospheric Glow */
+.sad-lightning-ambient-flash {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: rgba(215, 230, 255, 0.16);
+  opacity: 0;
+}
+
+/* 3. Branching Lightning Bolt Container in Distant Sky */
+.sad-lightning-bolt-wrapper {
+  position: absolute;
+  width: min(340px, 32vw);
+  height: min(440px, 46vh);
+  pointer-events: none;
+  transform-origin: top center;
+  opacity: 0;
+}
+
+.sad-lightning-bolt-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
+}
+
+/* Flash and Bolt Strike Animation (Double-flicker strike + smooth ~500ms dissipation) */
+.sad-lightning-container.is-striking .sad-lightning-sky-flash {
+  animation: lightning-sky-anim 520ms cubic-bezier(0.1, 0.9, 0.2, 1) forwards;
+}
+
+.sad-lightning-container.is-striking .sad-lightning-ambient-flash {
+  animation: lightning-ambient-anim 500ms ease-out forwards;
+}
+
+.sad-lightning-container.is-striking .sad-lightning-bolt-wrapper {
+  animation: lightning-bolt-anim 520ms ease-out forwards;
+}
+
+@keyframes lightning-sky-anim {
+  0% { opacity: 0; }
+  8% { opacity: calc(1 * var(--lightning-intensity, 1)); }
+  22% { opacity: calc(0.35 * var(--lightning-intensity, 1)); }
+  35% { opacity: calc(0.85 * var(--lightning-intensity, 1)); }
+  55% { opacity: calc(0.45 * var(--lightning-intensity, 1)); }
+  100% { opacity: 0; }
+}
+
+@keyframes lightning-ambient-anim {
+  0% { opacity: 0; }
+  8% { opacity: calc(1 * var(--lightning-intensity, 1)); }
+  22% { opacity: calc(0.28 * var(--lightning-intensity, 1)); }
+  35% { opacity: calc(0.72 * var(--lightning-intensity, 1)); }
+  60% { opacity: calc(0.25 * var(--lightning-intensity, 1)); }
+  100% { opacity: 0; }
+}
+
+@keyframes lightning-bolt-anim {
+  0% { opacity: 0; }
+  6% { opacity: 1; }
+  18% { opacity: 0.35; }
+  28% { opacity: 0.95; }
+  45% { opacity: 0.65; }
+  75% { opacity: 0.2; }
+  100% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sad-lightning-container.is-striking .sad-lightning-sky-flash,
+  .sad-lightning-container.is-striking .sad-lightning-ambient-flash,
+  .sad-lightning-container.is-striking .sad-lightning-bolt-wrapper {
+    animation: none !important;
+    opacity: 0 !important;
+  }
+}
+
+/* ==========================================================================
+   IMAGE-BASED BIRTHDAY COUNTDOWN PAGE — COUNTDOWN-LAST BACKGROUND
+   ========================================================================== */
+
+.birthday-countdown-page-root {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  min-height: 100svh;
+  margin: 0;
+  padding: 0;
+  background-color: #0b0612;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  user-select: none;
+}
+
+/* Ambient Blurred Background: Eliminates black bars on any aspect ratio */
+.birthday-ambient-bg {
+  position: absolute;
+  inset: -20px;
+  background-size: cover;
+  background-position: center;
+  filter: blur(28px) brightness(0.65);
+  transform: scale(1.08);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Proportion-Preserving Stage: Matches Native 1670 x 942 Canvas Aspect Ratio */
+.birthday-image-stage {
+  position: relative;
+  width: min(100vw, calc(100vh * (1670 / 942)));
+  height: min(100vh, calc(100vw * (942 / 1670)));
+  max-width: 100vw;
+  max-height: 100vh;
+  aspect-ratio: 1670 / 942;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Visual Background: 100% of Visual Artwork & Typography from final-countdown.png */
+.birthday-stage-bg-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  pointer-events: none;
+  user-select: none;
+  z-index: 1;
+}
+
+/* --------------------------------------------------------------------------
+   OVERLAY 1: COUNTDOWN TIMER NUMBERS & COLONS ONLY
+   Positioned precisely in the timer area of final-countdown.png
+   -------------------------------------------------------------------------- */
+.overlay-countdown-track {
+  position: absolute;
+  left: 29.5%;
+  top: 27.2%;
+  width: 41.0%;
+  height: 10.4%;
+  z-index: 10;
+  pointer-events: none;
+  box-sizing: border-box;
+}
+
+.countdown-col {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.countdown-col.days {
+  left: 0%;
+  width: 25%;
+}
+
+.countdown-col.colon-1 {
+  left: 25%;
+  width: 0;
+  transform: translateX(-50%);
+}
+
+.countdown-col.hours {
+  left: 25%;
+  width: 25%;
+}
+
+.countdown-col.colon-2 {
+  left: 50%;
+  width: 0;
+  transform: translateX(-50%);
+}
+
+.countdown-col.minutes {
+  left: 50%;
+  width: 25%;
+}
+
+.countdown-col.colon-3 {
+  left: 75%;
+  width: 0;
+  transform: translateX(-50%);
+}
+
+.countdown-col.seconds {
+  left: 75%;
+  width: 25%;
+}
+
+.countdown-digit-num {
+  font-family: 'Cinzel', 'Playfair Display', serif;
+  font-size: clamp(30px, 3.0vw, 46px);
+  font-weight: 700;
+  line-height: 1;
+  color: #ffffff;
+  /* Sharp, clearly readable digits with subtle warm golden glow - no excessive white bloom */
+  text-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.5),
+    0 0 6px rgba(255, 215, 140, 0.45),
+    0 0 14px rgba(240, 170, 70, 0.28);
+  letter-spacing: 0.03em;
+}
+
+.countdown-colon {
+  font-family: 'Cinzel', 'Playfair Display', serif;
+  font-size: clamp(24px, 2.3vw, 36px);
+  font-weight: 700;
+  line-height: 1;
+  color: #ffffff;
+  text-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.5),
+    0 0 5px rgba(255, 215, 140, 0.4);
+  transform: translateY(-2px);
+}
+
+/* --------------------------------------------------------------------------
+   OVERLAY 2: PASSWORD INPUT
+   Fitted 100% inside the golden-outlined pill area of final-countdown.png
+   -------------------------------------------------------------------------- */
+.overlay-password-form {
+  position: absolute;
+  left: 23.29%;
+  top: 64.23%;
+  width: 39.94%;
+  height: 6.79%;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  pointer-events: auto;
+  background: transparent !important;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.overlay-password-input {
+  width: 100%;
+  height: 100%;
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  border-radius: 9999px;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  /* Clean horizontal alignment right after key icon in artwork */
+  padding-left: clamp(48px, 4.2vw, 68px);
+  padding-right: 16px;
+  padding-top: 0;
+  padding-bottom: 0;
+  margin: 0;
+  color: #ffffff;
+  caret-color: #ffd47a;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-style: italic;
+  font-size: clamp(15px, 1.3vw, 20px);
+  font-weight: 500;
+  cursor: text;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+  box-sizing: border-box;
+}
+
+.overlay-password-input::placeholder {
+  color: rgba(255, 230, 215, 0.6);
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-style: italic;
+  font-size: clamp(15px, 1.3vw, 20px);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  opacity: 1;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+}
+
+.overlay-password-input:focus {
+  background: transparent !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Prevent unwanted browser autofill background */
+.overlay-password-input:-webkit-autofill,
+.overlay-password-input:-webkit-autofill:hover, 
+.overlay-password-input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #ffffff;
+  -webkit-box-shadow: 0 0 0px 1000px transparent inset;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+/* Error feedback notice positioned neatly below the box */
+.overlay-password-feedback {
+  position: absolute;
+  left: 23.29%;
+  top: 71.4%;
+  width: 39.94%;
+  text-align: center;
+  color: #fca5a5;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-style: italic;
+  font-size: 15px;
+  pointer-events: none;
+  z-index: 25;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.85);
+  box-sizing: border-box;
+}
+
+/* --------------------------------------------------------------------------
+   OVERLAY 3: HINT BUTTON
+   Fitted 100% inside the pink-outlined area of final-countdown.png
+   -------------------------------------------------------------------------- */
+.overlay-hint-button {
+  position: absolute;
+  left: 63.23%;
+  top: 64.01%;
+  width: 11.86%;
+  height: 7.22%;
+  z-index: 20;
+  background: transparent !important;
+  border: none !important;
+  cursor: pointer;
+  outline: none !important;
+  box-shadow: none !important;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  overflow: hidden;
+  pointer-events: auto;
+}
+
+.overlay-hint-button:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.hint-btn-text {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-style: italic;
+  font-size: clamp(15px, 1.25vw, 19px);
+  font-weight: 600;
+  color: #ffffff;
+  text-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.4),
+    0 0 8px rgba(255, 185, 215, 0.6);
+  letter-spacing: 0.02em;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* --------------------------------------------------------------------------
+   OVERLAY 4: MESSAGE FOR YOU BUTTON
+   Fitted 100% inside the glowing pill button of final-countdown.png
+   -------------------------------------------------------------------------- */
+.overlay-message-button {
+  position: absolute;
+  left: 31.38%;
+  top: 78.56%;
+  width: 39.76%;
+  height: 10.61%;
+  z-index: 20;
+  background: transparent !important;
+  border: none !important;
+  cursor: pointer;
+  outline: none !important;
+  box-shadow: none !important;
+  border-radius: 9999px;
+  pointer-events: auto;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.overlay-message-button:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* --------------------------------------------------------------------------
+   COUNTDOWN PAGE MODALS: MESSAGE FOR YOU & PASSWORD HINT
+   Translucent dark plum/burgundy glass cards with subtle gold/rose highlights
+   -------------------------------------------------------------------------- */
+.countdown-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(10, 4, 14, 0.70);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  animation: countdownModalFadeIn 0.25s ease-out;
+}
+
+.countdown-modal-card {
+  position: relative;
+  width: 100%;
+  max-width: 500px;
+  min-height: 280px;
+  max-height: 85vh;
+  overflow-y: auto;
+  background: linear-gradient(145deg, rgba(34, 14, 30, 0.94) 0%, rgba(20, 9, 22, 0.97) 100%);
+  border: 1px solid rgba(255, 215, 140, 0.35);
+  border-radius: 20px;
+  padding: 32px 28px 28px;
+  box-shadow:
+    0 20px 50px rgba(0, 0, 0, 0.8),
+    0 0 28px rgba(255, 180, 210, 0.18),
+    inset 0 1px 1px rgba(255, 240, 220, 0.2);
+  color: #fffaf0;
+  animation: countdownCardSlideIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-sizing: border-box;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 215, 140, 0.3) transparent;
+}
+
+.countdown-modal-hint-card {
+  max-width: 440px;
+  min-height: 240px;
+}
+
+.countdown-modal-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 215, 140, 0.28);
+  color: #ffe6cf;
+  font-size: 20px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.countdown-modal-close:hover {
+  background: rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+  border-color: rgba(255, 215, 140, 0.5);
+  transform: scale(1.08);
+}
+
+.countdown-modal-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.countdown-modal-badge {
+  font-size: 26px;
+  display: inline-block;
+  margin-bottom: 6px;
+  filter: drop-shadow(0 0 8px rgba(255, 215, 140, 0.4));
+}
+
+.countdown-modal-title {
+  margin: 0;
+  font-family: 'Cinzel', 'Playfair Display', 'Cormorant Garamond', Georgia, serif;
+  font-size: clamp(20px, 2.2vw, 26px);
+  font-weight: 700;
+  color: #ffffff;
+  text-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.5),
+    0 0 12px rgba(255, 215, 140, 0.5);
+  letter-spacing: 0.03em;
+}
+
+.countdown-modal-subtitle {
+  margin: 6px 0 0;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-style: italic;
+  font-size: 15px;
+  color: rgba(255, 220, 230, 0.8);
+}
+
+.countdown-modal-divider {
+  width: 60px;
+  height: 1px;
+  margin: 14px auto 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 215, 140, 0.6), transparent);
+}
+
+.countdown-modal-body {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-style: italic;
+  font-size: clamp(16px, 1.3vw, 18px);
+  line-height: 1.65;
+  color: #fff9f0;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+.countdown-modal-paragraph {
+  margin: 0 0 12px;
+}
+
+.countdown-modal-paragraph:last-child {
+  margin-bottom: 0;
+}
+
+.countdown-modal-footer {
+  margin-top: 20px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 215, 140, 0.15);
+  text-align: right;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-style: italic;
+}
+
+.countdown-modal-closing {
+  margin: 0;
+  font-size: 15px;
+  color: rgba(255, 225, 235, 0.85);
+}
+
+.countdown-modal-signature {
+  margin: 4px 0 0;
+  font-size: 17px;
+  font-weight: 600;
+  color: #ffd679;
+  text-shadow: 0 0 10px rgba(255, 215, 140, 0.5);
+}
+
+/* Hint Card Specific Highlight */
+.countdown-modal-hint-body {
+  text-align: center;
+}
+
+.countdown-modal-hint-highlight {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px dashed rgba(255, 185, 215, 0.4);
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin: 10px 0 14px;
+}
+
+.countdown-modal-hint-text {
+  margin: 0;
+  font-size: 19px;
+  font-weight: 600;
+  color: #ffd679;
+  text-shadow: 0 0 12px rgba(255, 215, 140, 0.6);
+  letter-spacing: 0.02em;
+}
+
+.countdown-modal-hint-note {
+  margin: 0;
+  font-size: 14px;
+  color: rgba(255, 225, 235, 0.7);
+  line-height: 1.5;
+}
+
+@keyframes countdownModalFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes countdownCardSlideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}

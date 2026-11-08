@@ -1,0 +1,69 @@
+import fs from 'fs';
+
+// Beautiful botanical laurel sprig SVG definition
+const botanicalSprigSvg = `
+<svg viewBox="0 0 36 64" fill="none" xmlns="http://www.w3.org/2000/svg" class="botanical-ornament">
+  <!-- Graceful curved main stem -->
+  <path
+    d="M 24 6 C 14 18, 12 42, 22 58"
+    stroke="currentColor"
+    stroke-width="1.3"
+    stroke-linecap="round"
+  />
+  <!-- Delicate curled base tendril flourish -->
+  <path
+    d="M 22 58 C 24 60, 27 61, 29 59 C 30 57, 28 55, 26 56"
+    stroke="currentColor"
+    stroke-width="1.1"
+    stroke-linecap="round"
+    fill="none"
+  />
+  <!-- Top terminal leaf / bud -->
+  <path
+    d="M 24 6 C 24 3, 22 1, 20 1 C 19 3, 21 5, 24 6 Z"
+    fill="currentColor"
+  />
+  <!-- Leaf Pair 1 (Upper small) -->
+  <path
+    d="M 21 13 C 16 10, 13 11, 11 13 C 14 16, 18 16, 21 13 Z"
+    fill="currentColor"
+  />
+  <path
+    d="M 21 15 C 25 12, 29 13, 31 16 C 27 18, 24 17, 21 15 Z"
+    fill="currentColor"
+  />
+  <!-- Leaf Pair 2 (Upper mid) -->
+  <path
+    d="M 17 23 C 11 19, 7 21, 5 24 C 9 27, 14 27, 17 23 Z"
+    fill="currentColor"
+  />
+  <path
+    d="M 17 25 C 22 22, 28 23, 30 27 C 26 29, 21 28, 17 25 Z"
+    fill="currentColor"
+  />
+  <!-- Leaf Pair 3 (Center prominent) -->
+  <path
+    d="M 15 34 C 8 30, 4 33, 2 37 C 7 40, 12 39, 15 34 Z"
+    fill="currentColor"
+  />
+  <path
+    d="M 15 36 C 21 33, 27 35, 29 39 C 25 41, 19 40, 15 36 Z"
+    fill="currentColor"
+  />
+  <!-- Leaf Pair 4 (Lower mid) -->
+  <path
+    d="M 16 45 C 10 42, 6 45, 5 49 C 9 51, 14 50, 16 45 Z"
+    fill="currentColor"
+  />
+  <path
+    d="M 17 47 C 22 45, 26 47, 27 51 C 24 53, 20 51, 17 47 Z"
+    fill="currentColor"
+  />
+  <!-- Small golden berry accent near center -->
+  <circle cx="16" cy="29" r="1.4" fill="currentColor" />
+  <circle cx="17" cy="40" r="1.4" fill="currentColor" />
+</svg>
+`;
+
+fs.writeFileSync('scratch/ornament-test.svg', botanicalSprigSvg);
+console.log('Saved ornament SVG');
