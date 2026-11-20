@@ -3,7 +3,9 @@ import Countdown from './Countdown';
 import FireworksCanvas from './FireworksCanvas';
 import HeartButton from './HeartButton';
 import BirthdayFireworksCelebration from './BirthdayFireworksCelebration';
+import SeeThisView from './SeeThisView';
 import { BIRTHDAY_CONFIG } from '../config';
+import { audioController } from '../utils/audioController';
 
 /**
  * CoverPage Component (Section 2: Firecracker & Rooftop Fireworks Celebration)
@@ -20,7 +22,7 @@ export default function CoverPage({
   celebrationSignal = 0,
 }) {
   const containerRef = useRef(null);
-  // Crackers / fireworks active state: false while Timer 2 is counting down, true when Timer 2 hits zero or is signaled
+  // Crackers / fireworks active state: starts true if celebrationSignal > 0 (Case C / fireworks active)
   const [crackersActive, setCrackersActive] = useState(() => celebrationSignal > 0);
   // Celebration stage: 'idle' | 'forming' | 'holding' | 'exiting'
   const [celebrationStage, setCelebrationStage] = useState('idle');
@@ -33,12 +35,13 @@ export default function CoverPage({
   });
 
   // Listen to celebrationSignal from App.jsx (e.g. from Firecracker Timer Test or Cover reset)
-  const prevSignalRef = useRef(celebrationSignal);
+  const prevSignalRef = useRef(0);
   useEffect(() => {
     if (celebrationSignal > 0 && celebrationSignal !== prevSignalRef.current) {
       prevSignalRef.current = celebrationSignal;
       setCrackersActive(true);
       setCelebrationStage('idle');
+      audioController.playWelcomeSong();
     } else if (celebrationSignal === 0) {
       prevSignalRef.current = 0;
       setCrackersActive(false);
@@ -46,21 +49,27 @@ export default function CoverPage({
     }
   }, [celebrationSignal]);
 
-  // When Timer 2 on the rooftop wall hits 0:
-  // Launch colorful crackers/fireworks in open sky; do NOT form HAPPY BIRTHDAY yet!
+  // When Timer 2 on the rooftop wall hits 00:00:00:00:
+  // Launch colorful crackers/fireworks in open sky and start welcome song
   const handleTimer2WallComplete = useCallback(() => {
     setCrackersActive(true);
+    setCelebrationStage('idle');
+    audioController.playWelcomeSong();
   }, []);
 
   // Heart button clicks:
-  // - First click: starts particle-based "HAPPY BIRTHDAY" animation
-  // - Second click: smoothly transitions to main birthday page
+  // - First click: stop firecracker animation and display HAPPY BIRTHDAY particle formation
+  //   (must NOT stop or restart the welcome song)
+  // - Second click: permanently stops welcome song and smoothly transitions to main birthday page
   const handleHeartClick = useCallback(() => {
     if (celebrationStage === 'idle') {
-      // First click: start "HAPPY BIRTHDAY" letter animation
+      // First click: stop firecracker animation and start "HAPPY BIRTHDAY" letter animation
       setCelebrationStage('forming');
     } else if (celebrationStage === 'holding') {
-      // Second click: smoothly proceed to main birthday page
+      // Second click: permanently stop welcome song & prime audio playback in user gesture context
+      audioController.stopWelcomeSongPermanently();
+      audioController.primeOnSecondHeartClick();
+      // Smoothly proceed to main birthday page
       setCelebrationStage('exiting');
     }
     // Clicks during 'forming' or 'exiting' are safely ignored
@@ -72,6 +81,8 @@ export default function CoverPage({
   }, []);
 
   const handleCelebrationComplete = useCallback(() => {
+    // Ensure welcome song is permanently stopped before transitioning
+    audioController.stopWelcomeSongPermanently();
     // Transition to main birthday page after smooth fade out
     onProceedToMain?.();
   }, [onProceedToMain]);
@@ -134,7 +145,7 @@ export default function CoverPage({
       </div>
 
       {/* Coordinate Layer aligned to cover.png */}
-      {imageBounds.width > 0 && (
+      {imageBounds.width > 0 && !crackersActive && (
         <div
           className="cover-image-overlay-layer"
           style={{
@@ -157,8 +168,10 @@ export default function CoverPage({
         </div>
       )}
 
-      {/* Colorful Crackers / Fireworks Canvas Layer (Active when Timer 2 completes or signaled, until exit) */}
-      <FireworksCanvas active={crackersActive && celebrationStage !== 'exiting'} />
+      {/* Colorful Crackers / Fireworks Canvas Layer:
+          Active ONLY when inside timer reaches 00:00:00:00 AND before first heart click.
+          Stops immediately on first heart click! */}
+      <FireworksCanvas active={crackersActive && celebrationStage === 'idle'} />
 
       {/* Floating Glowing Heart Button Near Right Edge (<M>) - Appears & active when crackers start */}
       {crackersActive && (

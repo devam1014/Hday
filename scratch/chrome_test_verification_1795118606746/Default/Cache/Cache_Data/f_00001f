@@ -1,0 +1,566 @@
+import { createHotContext as __vite__createHotContext } from "/@vite/client";import.meta.hot = __vite__createHotContext("/src/components/MusicPlayer.jsx");import __vite__cjsImport0_react_jsxDevRuntime from "/node_modules/.vite/deps/react_jsx-dev-runtime.js?v=8a6794f3"; const jsxDEV = __vite__cjsImport0_react_jsxDevRuntime["jsxDEV"];
+import * as RefreshRuntime from "/@react-refresh";
+const inWebWorker = typeof WorkerGlobalScope !== "undefined" && self instanceof WorkerGlobalScope;
+let prevRefreshReg;
+let prevRefreshSig;
+if (import.meta.hot && !inWebWorker) {
+  if (!window.$RefreshReg$) {
+    throw new Error(
+      "@vitejs/plugin-react can't detect preamble. Something is wrong."
+    );
+  }
+  prevRefreshReg = window.$RefreshReg$;
+  prevRefreshSig = window.$RefreshSig$;
+  window.$RefreshReg$ = RefreshRuntime.getRefreshReg("C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/MusicPlayer.jsx");
+  window.$RefreshSig$ = RefreshRuntime.createSignatureFunctionForTransform;
+}
+var _s = $RefreshSig$();
+import __vite__cjsImport3_react from "/node_modules/.vite/deps/react.js?v=8a6794f3"; const React = __vite__cjsImport3_react.__esModule ? __vite__cjsImport3_react.default : __vite__cjsImport3_react; const useState = __vite__cjsImport3_react["useState"]; const useEffect = __vite__cjsImport3_react["useEffect"]; const useRef = __vite__cjsImport3_react["useRef"]; const useCallback = __vite__cjsImport3_react["useCallback"];
+import { audioController } from "/src/utils/audioController.js?t=1795118582611";
+export default function MusicPlayer() {
+  _s();
+  const [audioState, setAudioState] = useState(() => audioController.getState());
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [showVolumePopup, setShowVolumePopup] = useState(false);
+  const playerRef = useRef(null);
+  const dropdownRef = useRef(null);
+  useEffect(() => {
+    const unsubscribe = audioController.subscribe((newState) => {
+      setAudioState(newState);
+    });
+    return () => unsubscribe();
+  }, []);
+  const { songs, currentIndex, isPlaying, volume, isMuted, hasStarted } = audioState;
+  const hasSongs = songs && songs.length > 0;
+  useEffect(() => {
+    if (!isDropdownOpen) return;
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target) && playerRef.current && !playerRef.current.contains(e.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") {
+        setIsDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("touchstart", handleClickOutside);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isDropdownOpen]);
+  const handleTogglePlay = useCallback((e) => {
+    e?.stopPropagation();
+    audioController.togglePlay("main");
+  }, []);
+  const handlePrev = useCallback((e) => {
+    e?.stopPropagation();
+    audioController.prev("main");
+  }, []);
+  const handleNext = useCallback((e) => {
+    e?.stopPropagation();
+    audioController.next("main");
+  }, []);
+  const handleSelectTrack = useCallback((index, e) => {
+    e?.stopPropagation();
+    audioController.selectTrack("main", index);
+    setIsDropdownOpen(false);
+  }, []);
+  const handleToggleMute = useCallback((e) => {
+    e?.stopPropagation();
+    audioController.toggleMute("main");
+  }, []);
+  const handleVolumeChange = useCallback((e) => {
+    e?.stopPropagation();
+    const val = parseFloat(e.target.value);
+    audioController.setVolume("main", val);
+  }, []);
+  const equalizerStateClass = isPlaying ? "is-playing" : hasStarted ? "is-paused" : "is-inactive";
+  return /* @__PURE__ */ jsxDEV("div", { className: "music-player-wrapper", ref: playerRef, children: [
+    /* @__PURE__ */ jsxDEV(
+      "div",
+      {
+        className: `music-player-pill ${isPlaying ? "is-playing" : "is-paused"}`,
+        role: "region",
+        "aria-label": "Music Player: Dedicated to You",
+        children: [
+          /* @__PURE__ */ jsxDEV(
+            "div",
+            {
+              className: "music-player-label-section",
+              onClick: () => hasSongs && setIsDropdownOpen((prev) => !prev),
+              role: "button",
+              tabIndex: 0,
+              title: "Click to view playlist tracks",
+              "aria-expanded": isDropdownOpen,
+              onKeyDown: (e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  if (hasSongs) setIsDropdownOpen((prev) => !prev);
+                }
+              },
+              children: /* @__PURE__ */ jsxDEV("span", { className: "music-player-label-text", children: "DEDICATED TO YOU" }, void 0, false, {
+                fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/MusicPlayer.jsx",
+                lineNumber: 149,
+                columnNumber: 11
+              }, this)
+            },
+            void 0,
+            false,
+            {
+              fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/MusicPlayer.jsx",
+              lineNumber: 135,
+              columnNumber: 9
+            },
+            this
+          ),
+          /* @__PURE__ */ jsxDEV(
+            "div",
+            {
+              className: `music-spectrum-equalizer ${equalizerStateClass}`,
+              "aria-hidden": "true",
+              onClick: () => hasSongs && setIsDropdownOpen((prev) => !prev),
+              title: "Playlist equalizer",
+              children: Array.from({ length: 36 }).map(
+                (_, i) => /* @__PURE__ */ jsxDEV("span", { className: `spectrum-bar bar-${i + 1}` }, i, false, {
+                  fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/MusicPlayer.jsx",
+                  lineNumber: 160,
+                  columnNumber: 11
+                }, this)
+              )
+            },
+            void 0,
+            false,
+            {
+              fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/MusicPlayer.jsx",
+              lineNumber: 153,
+              columnNumber: 9
+            },
+            this
+          ),
+          /* @__PURE__ */ jsxDEV("div", { className: "music-player-controls", children: [
+            /* @__PURE__ */ jsxDEV(
+              "button",
+              {
+                type: "button",
+                className: "music-ctrl-btn",
+                onClick: handlePrev,
+                disabled: !hasSongs,
+                "aria-label": "Previous Track",
+                title: "Previous Track",
+                children: /* @__PURE__ */ jsxDEV("svg", { width: "15", height: "15", viewBox: "0 0 24 24", fill: "currentColor", children: /* @__PURE__ */ jsxDEV("path", { d: "M6 6h2v12H6zm3.5 6l8.5 6V6z" }, void 0, false, {
+                  fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/MusicPlayer.jsx",
+                  lineNumber: 175,
+                  columnNumber: 15
+                }, this) }, void 0, false, {
+                  fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/MusicPlayer.jsx",
+                  lineNumber: 174,
+                  columnNumber: 13
+                }, this)
+              },
+              void 0,
+              false,
+              {
+                fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/MusicPlayer.jsx",
+                lineNumber: 166,
+                columnNumber: 11
+              },
+              this
+            ),
+            /* @__PURE__ */ jsxDEV(
+              "button",
+              {
+                type: "button",
+                className: "music-ctrl-btn music-play-btn",
+                onClick: handleTogglePlay,
+                disabled: !hasSongs,
+                "aria-label": isPlaying ? "Pause Music" : "Play Music",
+                title: isPlaying ? "Pause Music" : "Play Music",
+                children: isPlaying ? /* @__PURE__ */ jsxDEV("svg", { width: "15", height: "15", viewBox: "0 0 24 24", fill: "currentColor", children: /* @__PURE__ */ jsxDEV("path", { d: "M6 19h4V5H6v14zm8-14v14h4V5h-4z" }, void 0, false, {
+                  fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/MusicPlayer.jsx",
+                  lineNumber: 189,
+                  columnNumber: 17
+                }, this) }, void 0, false, {
+                  fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/MusicPlayer.jsx",
+                  lineNumber: 188,
+                  columnNumber: 13
+                }, this) : /* @__PURE__ */ jsxDEV("svg", { width: "15", height: "15", viewBox: "0 0 24 24", fill: "currentColor", style: { marginLeft: "1.5px" }, children: /* @__PURE__ */ jsxDEV("path", { d: "M8 5v14l11-7z" }, void 0, false, {
+                  fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/MusicPlayer.jsx",
+                  lineNumber: 193,
+                  columnNumber: 17
+                }, this) }, void 0, false, {
+                  fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/MusicPlayer.jsx",
+                  lineNumber: 192,
+                  columnNumber: 13
+                }, this)
+              },
+              void 0,
+              false,
+              {
+                fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/MusicPlayer.jsx",
+                lineNumber: 179,
+                columnNumber: 11
+              },
+              this
+            ),
+            /* @__PURE__ */ jsxDEV(
+              "button",
+              {
+                type: "button",
+                className: "music-ctrl-btn",
+                onClick: handleNext,
+                disabled: !hasSongs,
+                "aria-label": "Next Track",
+                title: "Next Track",
+                children: /* @__PURE__ */ jsxDEV("svg", { width: "15", height: "15", viewBox: "0 0 24 24", fill: "currentColor", children: /* @__PURE__ */ jsxDEV("path", { d: "M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z" }, void 0, false, {
+                  fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/MusicPlayer.jsx",
+                  lineNumber: 207,
+                  columnNumber: 15
+                }, this) }, void 0, false, {
+                  fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/MusicPlayer.jsx",
+                  lineNumber: 206,
+                  columnNumber: 13
+                }, this)
+              },
+              void 0,
+              false,
+              {
+                fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/MusicPlayer.jsx",
+                lineNumber: 198,
+                columnNumber: 11
+              },
+              this
+            )
+          ] }, void 0, true, {
+            fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/MusicPlayer.jsx",
+            lineNumber: 165,
+            columnNumber: 9
+          }, this),
+          /* @__PURE__ */ jsxDEV("div", { className: "music-vertical-divider", "aria-hidden": "true" }, void 0, false, {
+            fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/MusicPlayer.jsx",
+            lineNumber: 213,
+            columnNumber: 9
+          }, this),
+          /* @__PURE__ */ jsxDEV("div", { className: "music-player-actions", children: [
+            /* @__PURE__ */ jsxDEV(
+              "div",
+              {
+                className: "music-volume-container",
+                onMouseEnter: () => setShowVolumePopup(true),
+                onMouseLeave: () => setShowVolumePopup(false),
+                onClick: (e) => e.stopPropagation(),
+                children: [
+                  /* @__PURE__ */ jsxDEV(
+                    "button",
+                    {
+                      type: "button",
+                      className: "music-ctrl-btn music-vol-btn",
+                      onClick: handleToggleMute,
+                      "aria-label": isMuted ? "Unmute" : "Mute",
+                      title: isMuted ? "Unmute" : "Volume",
+                      children: isMuted || volume === 0 ? /* @__PURE__ */ jsxDEV("svg", { width: "15", height: "15", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round", children: [
+                        /* @__PURE__ */ jsxDEV("polygon", { points: "11 5 6 9 2 9 2 15 6 15 11 19 11 5" }, void 0, false, {
+                          fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/MusicPlayer.jsx",
+                          lineNumber: 233,
+                          columnNumber: 19
+                        }, this),
+                        /* @__PURE__ */ jsxDEV("line", { x1: "23", y1: "9", x2: "17", y2: "15" }, void 0, false, {
+                          fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/MusicPlayer.jsx",
+                          lineNumber: 234,
+                          columnNumber: 19
+                        }, this),
+                        /* @__PURE__ */ jsxDEV("line", { x1: "17", y1: "9", x2: "23", y2: "15" }, void 0, false, {
+                          fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/MusicPlayer.jsx",
+                          lineNumber: 235,
+                          columnNumber: 19
+                        }, this)
+                      ] }, void 0, true, {
+                        fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/MusicPlayer.jsx",
+                        lineNumber: 232,
+                        columnNumber: 15
+                      }, this) : volume < 0.5 ? /* @__PURE__ */ jsxDEV("svg", { width: "15", height: "15", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round", children: [
+                        /* @__PURE__ */ jsxDEV("polygon", { points: "11 5 6 9 2 9 2 15 6 15 11 19 11 5" }, void 0, false, {
+                          fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/MusicPlayer.jsx",
+                          lineNumber: 239,
+                          columnNumber: 19
+                        }, this),
+                        /* @__PURE__ */ jsxDEV("path", { d: "M15.54 8.46a5 5 0 0 1 0 7.07" }, void 0, false, {
+                          fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/MusicPlayer.jsx",
+                          lineNumber: 240,
+                          columnNumber: 19
+                        }, this)
+                      ] }, void 0, true, {
+                        fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/MusicPlayer.jsx",
+                        lineNumber: 238,
+                        columnNumber: 15
+                      }, this) : /* @__PURE__ */ jsxDEV("svg", { width: "15", height: "15", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round", children: [
+                        /* @__PURE__ */ jsxDEV("polygon", { points: "11 5 6 9 2 9 2 15 6 15 11 19 11 5" }, void 0, false, {
+                          fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/MusicPlayer.jsx",
+                          lineNumber: 244,
+                          columnNumber: 19
+                        }, this),
+                        /* @__PURE__ */ jsxDEV("path", { d: "M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07" }, void 0, false, {
+                          fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/MusicPlayer.jsx",
+                          lineNumber: 245,
+                          columnNumber: 19
+                        }, this)
+                      ] }, void 0, true, {
+                        fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/MusicPlayer.jsx",
+                        lineNumber: 243,
+                        columnNumber: 15
+                      }, this)
+                    },
+                    void 0,
+                    false,
+                    {
+                      fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/MusicPlayer.jsx",
+                      lineNumber: 224,
+                      columnNumber: 13
+                    },
+                    this
+                  ),
+                  /* @__PURE__ */ jsxDEV(
+                    "div",
+                    {
+                      className: `music-volume-popup ${showVolumePopup ? "is-visible" : ""}`,
+                      onClick: (e) => e.stopPropagation(),
+                      onMouseDown: (e) => e.stopPropagation(),
+                      onTouchStart: (e) => e.stopPropagation(),
+                      children: /* @__PURE__ */ jsxDEV(
+                        "input",
+                        {
+                          type: "range",
+                          min: "0",
+                          max: "1",
+                          step: "0.02",
+                          value: isMuted ? 0 : volume,
+                          onInput: handleVolumeChange,
+                          onChange: handleVolumeChange,
+                          onMouseDown: (e) => e.stopPropagation(),
+                          onTouchStart: (e) => e.stopPropagation(),
+                          className: "music-volume-slider",
+                          "aria-label": "Volume slider"
+                        },
+                        void 0,
+                        false,
+                        {
+                          fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/MusicPlayer.jsx",
+                          lineNumber: 257,
+                          columnNumber: 15
+                        },
+                        this
+                      )
+                    },
+                    void 0,
+                    false,
+                    {
+                      fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/MusicPlayer.jsx",
+                      lineNumber: 251,
+                      columnNumber: 13
+                    },
+                    this
+                  )
+                ]
+              },
+              void 0,
+              true,
+              {
+                fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/MusicPlayer.jsx",
+                lineNumber: 218,
+                columnNumber: 11
+              },
+              this
+            ),
+            /* @__PURE__ */ jsxDEV(
+              "button",
+              {
+                type: "button",
+                className: `music-ctrl-btn music-playlist-btn ${isDropdownOpen ? "is-active" : ""}`,
+                onClick: () => hasSongs && setIsDropdownOpen((prev) => !prev),
+                disabled: !hasSongs,
+                "aria-label": "View Playlist",
+                title: "View Playlist",
+                "aria-expanded": isDropdownOpen,
+                children: /* @__PURE__ */ jsxDEV("svg", { width: "15", height: "15", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round", children: [
+                  /* @__PURE__ */ jsxDEV("line", { x1: "8", y1: "6", x2: "21", y2: "6" }, void 0, false, {
+                    fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/MusicPlayer.jsx",
+                    lineNumber: 284,
+                    columnNumber: 15
+                  }, this),
+                  /* @__PURE__ */ jsxDEV("line", { x1: "8", y1: "12", x2: "21", y2: "12" }, void 0, false, {
+                    fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/MusicPlayer.jsx",
+                    lineNumber: 285,
+                    columnNumber: 15
+                  }, this),
+                  /* @__PURE__ */ jsxDEV("line", { x1: "8", y1: "18", x2: "21", y2: "18" }, void 0, false, {
+                    fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/MusicPlayer.jsx",
+                    lineNumber: 286,
+                    columnNumber: 15
+                  }, this),
+                  /* @__PURE__ */ jsxDEV("line", { x1: "3", y1: "6", x2: "3.01", y2: "6" }, void 0, false, {
+                    fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/MusicPlayer.jsx",
+                    lineNumber: 287,
+                    columnNumber: 15
+                  }, this),
+                  /* @__PURE__ */ jsxDEV("line", { x1: "3", y1: "12", x2: "3.01", y2: "12" }, void 0, false, {
+                    fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/MusicPlayer.jsx",
+                    lineNumber: 288,
+                    columnNumber: 15
+                  }, this),
+                  /* @__PURE__ */ jsxDEV("line", { x1: "3", y1: "18", x2: "3.01", y2: "18" }, void 0, false, {
+                    fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/MusicPlayer.jsx",
+                    lineNumber: 289,
+                    columnNumber: 15
+                  }, this)
+                ] }, void 0, true, {
+                  fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/MusicPlayer.jsx",
+                  lineNumber: 283,
+                  columnNumber: 13
+                }, this)
+              },
+              void 0,
+              false,
+              {
+                fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/MusicPlayer.jsx",
+                lineNumber: 274,
+                columnNumber: 11
+              },
+              this
+            )
+          ] }, void 0, true, {
+            fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/MusicPlayer.jsx",
+            lineNumber: 216,
+            columnNumber: 9
+          }, this)
+        ]
+      },
+      void 0,
+      true,
+      {
+        fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/MusicPlayer.jsx",
+        lineNumber: 129,
+        columnNumber: 7
+      },
+      this
+    ),
+    isDropdownOpen && hasSongs && /* @__PURE__ */ jsxDEV(
+      "div",
+      {
+        ref: dropdownRef,
+        className: "music-playlist-dropdown",
+        role: "dialog",
+        "aria-label": "Playlist Tracks",
+        children: [
+          /* @__PURE__ */ jsxDEV("div", { className: "music-playlist-header", children: [
+            /* @__PURE__ */ jsxDEV("span", { className: "playlist-header-title", children: "Dedicated to You" }, void 0, false, {
+              fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/MusicPlayer.jsx",
+              lineNumber: 304,
+              columnNumber: 13
+            }, this),
+            /* @__PURE__ */ jsxDEV("span", { className: "playlist-header-count", children: [
+              songs.length,
+              " ",
+              songs.length === 1 ? "track" : "tracks"
+            ] }, void 0, true, {
+              fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/MusicPlayer.jsx",
+              lineNumber: 305,
+              columnNumber: 13
+            }, this)
+          ] }, void 0, true, {
+            fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/MusicPlayer.jsx",
+            lineNumber: 303,
+            columnNumber: 11
+          }, this),
+          /* @__PURE__ */ jsxDEV("ul", { className: "music-playlist-list", role: "listbox", children: songs.map((song, idx) => {
+            const isSelected = idx === currentIndex;
+            return /* @__PURE__ */ jsxDEV(
+              "li",
+              {
+                className: `music-playlist-item ${isSelected ? "is-selected" : ""}`,
+                onClick: () => handleSelectTrack(idx),
+                role: "option",
+                "aria-selected": isSelected,
+                tabIndex: 0,
+                onKeyDown: (e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    handleSelectTrack(idx);
+                  }
+                },
+                children: [
+                  /* @__PURE__ */ jsxDEV("span", { className: "music-item-index", children: isSelected && isPlaying ? /* @__PURE__ */ jsxDEV("span", { className: "eq-dot-indicator" }, void 0, false, {
+                    fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/MusicPlayer.jsx",
+                    lineNumber: 328,
+                    columnNumber: 19
+                  }, this) : `${idx + 1}` }, void 0, false, {
+                    fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/MusicPlayer.jsx",
+                    lineNumber: 326,
+                    columnNumber: 19
+                  }, this),
+                  /* @__PURE__ */ jsxDEV("span", { className: "music-item-title", title: song.title, children: song.title }, void 0, false, {
+                    fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/MusicPlayer.jsx",
+                    lineNumber: 333,
+                    columnNumber: 19
+                  }, this),
+                  isSelected && /* @__PURE__ */ jsxDEV("span", { className: "music-item-badge", children: "Playing" }, void 0, false, {
+                    fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/MusicPlayer.jsx",
+                    lineNumber: 337,
+                    columnNumber: 17
+                  }, this)
+                ]
+              },
+              song.id || idx,
+              true,
+              {
+                fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/MusicPlayer.jsx",
+                lineNumber: 312,
+                columnNumber: 15
+              },
+              this
+            );
+          }) }, void 0, false, {
+            fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/MusicPlayer.jsx",
+            lineNumber: 308,
+            columnNumber: 11
+          }, this)
+        ]
+      },
+      void 0,
+      true,
+      {
+        fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/MusicPlayer.jsx",
+        lineNumber: 297,
+        columnNumber: 7
+      },
+      this
+    )
+  ] }, void 0, true, {
+    fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/MusicPlayer.jsx",
+    lineNumber: 127,
+    columnNumber: 5
+  }, this);
+}
+_s(MusicPlayer, "E6aexF8fx++eot2IvQnjEdr+B0s=");
+_c = MusicPlayer;
+var _c;
+$RefreshReg$(_c, "MusicPlayer");
+if (import.meta.hot && !inWebWorker) {
+  window.$RefreshReg$ = prevRefreshReg;
+  window.$RefreshSig$ = prevRefreshSig;
+}
+if (import.meta.hot && !inWebWorker) {
+  RefreshRuntime.__hmr_import(import.meta.url).then((currentExports) => {
+    RefreshRuntime.registerExportsForReactRefresh("C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/MusicPlayer.jsx", currentExports);
+    import.meta.hot.accept((nextExports) => {
+      if (!nextExports) return;
+      const invalidateMessage = RefreshRuntime.validateRefreshBoundaryAndEnqueueUpdate("C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/MusicPlayer.jsx", currentExports, nextExports);
+      if (invalidateMessage) import.meta.hot.invalidate(invalidateMessage);
+    });
+  });
+}
+
+//# sourceMappingURL=data:application/json;base64,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c0JBQWhCO0FBQUE7QUFBQTtBQUFBO0FBQUEseUJBQWtDLElBRWxDLEdBQUcyQyxNQUFNLENBQUMsTUFKZDtBQUFBO0FBQUE7QUFBQTtBQUFBLHlCQU1BO0FBQUEsa0JBQ0EsdUJBQUMsVUFBSyxXQUFVLG9CQUFtQixPQUFPRCxLQUFLRyxPQUM1Q0gsZUFBS0csU0FEUjtBQUFBO0FBQUE7QUFBQTtBQUFBLHlCQUVBO0FBQUEsa0JBQ0NELGNBQ0MsdUJBQUMsVUFBSyxXQUFVLG9CQUFtQix1QkFBbkM7QUFBQTtBQUFBO0FBQUE7QUFBQSx5QkFBMEM7QUFBQTtBQUFBO0FBQUEsY0F4QnZDRixLQUFLSSxNQUFNSDtBQUFBQSxjQURsQjtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBLFlBMkJBO0FBQUEsVUFFSixDQUFDLEtBakNIO0FBQUE7QUFBQTtBQUFBO0FBQUEsaUJBa0NBO0FBQUE7QUFBQTtBQUFBLE1BN0NGO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQSxJQThDQTtBQUFBLE9BeE5KO0FBQUE7QUFBQTtBQUFBO0FBQUEsU0EwTkE7QUFFSjtBQUFDMUQsR0FyVHVCRCxhQUFXO0FBQUEsS0FBWEE7QUFBVyxJQUFBK0Q7QUFBQSxhQUFBQSxJQUFBIiwibmFtZXMiOlsiUmVhY3QiLCJ1c2VTdGF0ZSIsInVzZUVmZmVjdCIsInVzZVJlZiIsInVzZUNhbGxiYWNrIiwiYXVkaW9Db250cm9sbGVyIiwiTXVzaWNQbGF5ZXIiLCJfcyIsImF1ZGlvU3RhdGUiLCJzZXRBdWRpb1N0YXRlIiwiZ2V0U3RhdGUiLCJpc0Ryb3Bkb3duT3BlbiIsInNldElzRHJvcGRvd25PcGVuIiwic2hvd1ZvbHVtZVBvcHVwIiwic2V0U2hvd1ZvbHVtZVBvcHVwIiwicGxheWVyUmVmIiwiZHJvcGRvd25SZWYiLCJ1bnN1YnNjcmliZSIsInN1YnNjcmliZSIsIm5ld1N0YXRlIiwic29uZ3MiLCJjdXJyZW50SW5kZXgiLCJpc1BsYXlpbmciLCJ2b2x1bWUiLCJpc011dGVkIiwiaGFzU3RhcnRlZCIsImhhc1NvbmdzIiwibGVuZ3RoIiwiaGFuZGxlQ2xpY2tPdXRzaWRlIiwiZSIsImN1cnJlbnQiLCJjb250YWlucyIsInRhcmdldCIsImhhbmRsZUtleURvd24iLCJrZXkiLCJkb2N1bWVudCIsImFkZEV2ZW50TGlzdGVuZXIiLCJ3aW5kb3ciLCJyZW1vdmVFdmVudExpc3RlbmVyIiwiaGFuZGxlVG9nZ2xlUGxheSIsInN0b3BQcm9wYWdhdGlvbiIsInRvZ2dsZVBsYXkiLCJoYW5kbGVQcmV2IiwicHJldiIsImhhbmRsZU5leHQiLCJuZXh0IiwiaGFuZGxlU2VsZWN0VHJhY2siLCJpbmRleCIsInNlbGVjdFRyYWNrIiwiaGFuZGxlVG9nZ2xlTXV0ZSIsInRvZ2dsZU11dGUiLCJoYW5kbGVWb2x1bWVDaGFuZ2UiLCJ2YWwiLCJwYXJzZUZsb2F0IiwidmFsdWUiLCJzZXRWb2x1bWUiLCJlcXVhbGl6ZXJTdGF0ZUNsYXNzIiwicHJldmVudERlZmF1bHQiLCJBcnJheSIsImZyb20iLCJtYXAiLCJfIiwiaSIsIm1hcmdpbkxlZnQiLCJzb25nIiwiaWR4IiwiaXNTZWxlY3RlZCIsInRpdGxlIiwiaWQiLCJfYyJdLCJpZ25vcmVMaXN0IjpbXSwic291cmNlcyI6WyJNdXNpY1BsYXllci5qc3giXSwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IFJlYWN0LCB7IHVzZVN0YXRlLCB1c2VFZmZlY3QsIHVzZVJlZiwgdXNlQ2FsbGJhY2sgfSBmcm9tICdyZWFjdCc7XG5pbXBvcnQgeyBhdWRpb0NvbnRyb2xsZXIgfSBmcm9tICcuLi91dGlscy9hdWRpb0NvbnRyb2xsZXInO1xuXG4vKipcbiAqIE11c2ljUGxheWVyIOKAlCBcIkRlZGljYXRlZCB0byBZb3VcIlxuICogXG4gKiBMYXlvdXQ6XG4gKiBbIERlZGljYXRlZCB0byBZb3UgfCBBbmltYXRlZCBFcXVhbGl6ZXIgfCBQcmV2aW91cyB8IFBsYXkvUGF1c2UgfCBOZXh0IHwgVm9sdW1lIHwgUGxheWxpc3QgRHJvcGRvd24gXVxuICogXG4gKiBGZWF0dXJlczpcbiAqIC0gVHJhbnNwYXJlbnQgZnJvc3RlZC1nbGFzcyBiYWNrZ3JvdW5kIGFsbG93aW5nIHN1bnNldCBjb2xvdXJzIHRvIHNob3cgdGhyb3VnaC5cbiAqIC0gVGhpbiwgc3VidGxlLCBlbGVnYW50IGJvcmRlciB3aXRoIHNtb290aCByb3VuZGVkIGNvcm5lcnMuXG4gKiAtIE9ubHkgZGlzcGxheXMgdGhlIHN0YXRpYyB0ZXh0IFwiRGVkaWNhdGVkIHRvIFlvdVwiIChuZXZlciBzb25nL2FydGlzdC9maWxlbmFtZSkuXG4gKiAtIE11bHRpLWNvbG91ciBncmFkaWVudCBlcXVhbGl6ZXIgKDI0IGJhcnMpIGFjcm9zcyB0dXJxdW9pc2UsIGN5YW4sIGJsdWUsIHZpb2xldCAmIGdvbGQuXG4gKiAtIFByZXZpb3VzLCBQbGF5L1BhdXNlLCBOZXh0IGNvbnRyb2xzLlxuICogLSBWb2x1bWUgc2xpZGVyIHdpdGggbXV0ZSB0b2dnbGUuXG4gKiAtIFBsYXlsaXN0IGRyb3Bkb3duIHNob3dpbmcgYWxsIHNvbmdzIGluIGV4YWN0IG1hbmlmZXN0IG9yZGVyIGZyb20gc3JjL2NvbmZpZy9wbGF5bGlzdC1vcmRlci5qc29uLlxuICovXG5leHBvcnQgZGVmYXVsdCBmdW5jdGlvbiBNdXNpY1BsYXllcigpIHtcbiAgY29uc3QgW2F1ZGlvU3RhdGUsIHNldEF1ZGlvU3RhdGVdID0gdXNlU3RhdGUoKCkgPT4gYXVkaW9Db250cm9sbGVyLmdldFN0YXRlKCkpO1xuICBjb25zdCBbaXNEcm9wZG93bk9wZW4sIHNldElzRHJvcGRvd25PcGVuXSA9IHVzZVN0YXRlKGZhbHNlKTtcbiAgY29uc3QgW3Nob3dWb2x1bWVQb3B1cCwgc2V0U2hvd1ZvbHVtZVBvcHVwXSA9IHVzZVN0YXRlKGZhbHNlKTtcblxuICBjb25zdCBwbGF5ZXJSZWYgPSB1c2VSZWYobnVsbCk7XG4gIGNvbnN0IGRyb3Bkb3duUmVmID0gdXNlUmVmKG51bGwpO1xuXG4gIC8vIFN1YnNjcmliZSB0byBhdWRpbyBjb250cm9sbGVyIHN0YXRlXG4gIHVzZUVmZmVjdCgoKSA9PiB7XG4gICAgY29uc3QgdW5zdWJzY3JpYmUgPSBhdWRpb0NvbnRyb2xsZXIuc3Vic2NyaWJlKChuZXdTdGF0ZSkgPT4ge1xuICAgICAgc2V0QXVkaW9TdGF0ZShuZXdTdGF0ZSk7XG4gICAgfSk7XG4gICAgcmV0dXJuICgpID0+IHVuc3Vic2NyaWJlKCk7XG4gIH0sIFtdKTtcblxuICBjb25zdCB7IHNvbmdzLCBjdXJyZW50SW5kZXgsIGlzUGxheWluZywgdm9sdW1lLCBpc011dGVkLCBoYXNTdGFydGVkIH0gPSBhdWRpb1N0YXRlO1xuICBjb25zdCBoYXNTb25ncyA9IHNvbmdzICYmIHNvbmdzLmxlbmd0aCA+IDA7XG5cbiAgLy8gQ2xvc2UgZHJvcGRvd24gb24gY2xpY2sgb3V0c2lkZSBvciBFc2NhcGUga2V5XG4gIHVzZUVmZmVjdCgoKSA9PiB7XG4gICAgaWYgKCFpc0Ryb3Bkb3duT3BlbikgcmV0dXJuO1xuXG4gICAgY29uc3QgaGFuZGxlQ2xpY2tPdXRzaWRlID0gKGUpID0+IHtcbiAgICAgIGlmIChcbiAgICAgICAgZHJvcGRvd25SZWYuY3VycmVudCAmJlxuICAgICAgICAhZHJvcGRvd25SZWYuY3VycmVudC5jb250YWlucyhlLnRhcmdldCkgJiZcbiAgICAgICAgcGxheWVyUmVmLmN1cnJlbnQgJiZcbiAgICAgICAgIXBsYXllclJlZi5jdXJyZW50LmNvbnRhaW5zKGUudGFyZ2V0KVxuICAgICAgKSB7XG4gICAgICAgIHNldElzRHJvcGRvd25PcGVuKGZhbHNlKTtcbiAgICAgIH1cbiAgICB9O1xuXG4gICAgY29uc3QgaGFuZGxlS2V5RG93biA9IChlKSA9PiB7XG4gICAgICBpZiAoZS5rZXkgPT09ICdFc2NhcGUnKSB7XG4gICAgICAgIHNldElzRHJvcGRvd25PcGVuKGZhbHNlKTtcbiAgICAgIH1cbiAgICB9O1xuXG4gICAgZG9jdW1lbnQuYWRkRXZlbnRMaXN0ZW5lcignbW91c2Vkb3duJywgaGFuZGxlQ2xpY2tPdXRzaWRlKTtcbiAgICBkb2N1bWVudC5hZGRFdmVudExpc3RlbmVyKCd0b3VjaHN0YXJ0JywgaGFuZGxlQ2xpY2tPdXRzaWRlKTtcbiAgICB3aW5kb3cuYWRkRXZlbnRMaXN0ZW5lcigna2V5ZG93bicsIGhhbmRsZUtleURvd24pO1xuXG4gICAgcmV0dXJuICgpID0+IHtcbiAgICAgIGRvY3VtZW50LnJlbW92ZUV2ZW50TGlzdGVuZXIoJ21vdXNlZG93bicsIGhhbmRsZUNsaWNrT3V0c2lkZSk7XG4gICAgICBkb2N1bWVudC5yZW1vdmVFdmVudExpc3RlbmVyKCd0b3VjaHN0YXJ0JywgaGFuZGxlQ2xpY2tPdXRzaWRlKTtcbiAgICAgIHdpbmRvdy5yZW1vdmVFdmVudExpc3RlbmVyKCdrZXlkb3duJywgaGFuZGxlS2V5RG93bik7XG4gICAgfTtcbiAgfSwgW2lzRHJvcGRvd25PcGVuXSk7XG5cbiAgY29uc3QgaGFuZGxlVG9nZ2xlUGxheSA9IHVzZUNhbGxiYWNrKChlKSA9PiB7XG4gICAgZT8uc3RvcFByb3BhZ2F0aW9uKCk7XG4gICAgYXVkaW9Db250cm9sbGVyLnRvZ2dsZVBsYXkoJ21haW4nKTtcbiAgfSwgW10pO1xuXG4gIGNvbnN0IGhhbmRsZVByZXYgPSB1c2VDYWxsYmFjaygoZSkgPT4ge1xuICAgIGU/LnN0b3BQcm9wYWdhdGlvbigpO1xuICAgIGF1ZGlvQ29udHJvbGxlci5wcmV2KCdtYWluJyk7XG4gIH0sIFtdKTtcblxuICBjb25zdCBoYW5kbGVOZXh0ID0gdXNlQ2FsbGJhY2soKGUpID0+IHtcbiAgICBlPy5zdG9wUHJvcGFnYXRpb24oKTtcbiAgICBhdWRpb0NvbnRyb2xsZXIubmV4dCgnbWFpbicpO1xuICB9LCBbXSk7XG5cbiAgY29uc3QgaGFuZGxlU2VsZWN0VHJhY2sgPSB1c2VDYWxsYmFjaygoaW5kZXgsIGUpID0+IHtcbiAgICBlPy5zdG9wUHJvcGFnYXRpb24oKTtcbiAgICBhdWRpb0NvbnRyb2xsZXIuc2VsZWN0VHJhY2soJ21haW4nLCBpbmRleCk7XG4gICAgc2V0SXNEcm9wZG93bk9wZW4oZmFsc2UpO1xuICB9LCBbXSk7XG5cbiAgY29uc3QgaGFuZGxlVG9nZ2xlTXV0ZSA9IHVzZUNhbGxiYWNrKChlKSA9PiB7XG4gICAgZT8uc3RvcFByb3BhZ2F0aW9uKCk7XG4gICAgYXVkaW9Db250cm9sbGVyLnRvZ2dsZU11dGUoJ21haW4nKTtcbiAgfSwgW10pO1xuXG4gIGNvbnN0IGhhbmRsZVZvbHVtZUNoYW5nZSA9IHVzZUNhbGxiYWNrKChlKSA9PiB7XG4gICAgZT8uc3RvcFByb3BhZ2F0aW9uKCk7XG4gICAgY29uc3QgdmFsID0gcGFyc2VGbG9hdChlLnRhcmdldC52YWx1ZSk7XG4gICAgYXVkaW9Db250cm9sbGVyLnNldFZvbHVtZSgnbWFpbicsIHZhbCk7XG4gIH0sIFtdKTtcblxuICAvLyBFcXVhbGl6ZXIgcGxheWJhY2sgc3RhdGUgY2xhc3NcbiAgY29uc3QgZXF1YWxpemVyU3RhdGVDbGFzcyA9IGlzUGxheWluZ1xuICAgID8gJ2lzLXBsYXlpbmcnXG4gICAgOiAoaGFzU3RhcnRlZCA/ICdpcy1wYXVzZWQnIDogJ2lzLWluYWN0aXZlJyk7XG5cbiAgcmV0dXJuIChcbiAgICA8ZGl2IGNsYXNzTmFtZT1cIm11c2ljLXBsYXllci13cmFwcGVyXCIgcmVmPXtwbGF5ZXJSZWZ9PlxuICAgICAgey8qIEhvcml6b250YWwgRnJvc3RlZC1HbGFzcyBNdXNpYyBCYXIgKi99XG4gICAgICA8ZGl2XG4gICAgICAgIGNsYXNzTmFtZT17YG11c2ljLXBsYXllci1waWxsICR7aXNQbGF5aW5nID8gJ2lzLXBsYXlpbmcnIDogJ2lzLXBhdXNlZCd9YH1cbiAgICAgICAgcm9sZT1cInJlZ2lvblwiXG4gICAgICAgIGFyaWEtbGFiZWw9XCJNdXNpYyBQbGF5ZXI6IERlZGljYXRlZCB0byBZb3VcIlxuICAgICAgPlxuICAgICAgICB7LyogMS4gU3RhdGljIExhYmVsOiBPTkxZIFwiREVESUNBVEVEIFRPIFlPVVwiICovfVxuICAgICAgICA8ZGl2XG4gICAgICAgICAgY2xhc3NOYW1lPVwibXVzaWMtcGxheWVyLWxhYmVsLXNlY3Rpb25cIlxuICAgICAgICAgIG9uQ2xpY2s9eygpID0+IGhhc1NvbmdzICYmIHNldElzRHJvcGRvd25PcGVuKChwcmV2KSA9PiAhcHJldil9XG4gICAgICAgICAgcm9sZT1cImJ1dHRvblwiXG4gICAgICAgICAgdGFiSW5kZXg9ezB9XG4gICAgICAgICAgdGl0bGU9XCJDbGljayB0byB2aWV3IHBsYXlsaXN0IHRyYWNrc1wiXG4gICAgICAgICAgYXJpYS1leHBhbmRlZD17aXNEcm9wZG93bk9wZW59XG4gICAgICAgICAgb25LZXlEb3duPXsoZSkgPT4ge1xuICAgICAgICAgICAgaWYgKGUua2V5ID09PSAnRW50ZXInIHx8IGUua2V5ID09PSAnICcpIHtcbiAgICAgICAgICAgICAgZS5wcmV2ZW50RGVmYXVsdCgpO1xuICAgICAgICAgICAgICBpZiAoaGFzU29uZ3MpIHNldElzRHJvcGRvd25PcGVuKChwcmV2KSA9PiAhcHJldik7XG4gICAgICAgICAgICB9XG4gICAgICAgICAgfX1cbiAgICAgICAgPlxuICAgICAgICAgIDxzcGFuIGNsYXNzTmFtZT1cIm11c2ljLXBsYXllci1sYWJlbC10ZXh0XCI+REVESUNBVEVEIFRPIFlPVTwvc3Bhbj5cbiAgICAgICAgPC9kaXY+XG5cbiAgICAgICAgey8qIDIuIEFuaW1hdGVkIEVxdWFsaXplciDigJQgMzYgTmFycm93IFZlcnRpY2FsIEJhcnMgd2l0aCBNdWx0aWNvbG9yIEdyYWRpZW50ICovfVxuICAgICAgICA8ZGl2XG4gICAgICAgICAgY2xhc3NOYW1lPXtgbXVzaWMtc3BlY3RydW0tZXF1YWxpemVyICR7ZXF1YWxpemVyU3RhdGVDbGFzc31gfVxuICAgICAgICAgIGFyaWEtaGlkZGVuPVwidHJ1ZVwiXG4gICAgICAgICAgb25DbGljaz17KCkgPT4gaGFzU29uZ3MgJiYgc2V0SXNEcm9wZG93bk9wZW4oKHByZXYpID0+ICFwcmV2KX1cbiAgICAgICAgICB0aXRsZT1cIlBsYXlsaXN0IGVxdWFsaXplclwiXG4gICAgICAgID5cbiAgICAgICAgICB7QXJyYXkuZnJvbSh7IGxlbmd0aDogMzYgfSkubWFwKChfLCBpKSA9PiAoXG4gICAgICAgICAgICA8c3BhbiBrZXk9e2l9IGNsYXNzTmFtZT17YHNwZWN0cnVtLWJhciBiYXItJHtpICsgMX1gfSAvPlxuICAgICAgICAgICkpfVxuICAgICAgICA8L2Rpdj5cblxuICAgICAgICB7LyogMy4gQ29udHJvbHM6IFByZXZpb3VzLCBQbGF5L1BhdXNlLCBOZXh0ICovfVxuICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cIm11c2ljLXBsYXllci1jb250cm9sc1wiPlxuICAgICAgICAgIDxidXR0b25cbiAgICAgICAgICAgIHR5cGU9XCJidXR0b25cIlxuICAgICAgICAgICAgY2xhc3NOYW1lPVwibXVzaWMtY3RybC1idG5cIlxuICAgICAgICAgICAgb25DbGljaz17aGFuZGxlUHJldn1cbiAgICAgICAgICAgIGRpc2FibGVkPXshaGFzU29uZ3N9XG4gICAgICAgICAgICBhcmlhLWxhYmVsPVwiUHJldmlvdXMgVHJhY2tcIlxuICAgICAgICAgICAgdGl0bGU9XCJQcmV2aW91cyBUcmFja1wiXG4gICAgICAgICAgPlxuICAgICAgICAgICAgPHN2ZyB3aWR0aD1cIjE1XCIgaGVpZ2h0PVwiMTVcIiB2aWV3Qm94PVwiMCAwIDI0IDI0XCIgZmlsbD1cImN1cnJlbnRDb2xvclwiPlxuICAgICAgICAgICAgICA8cGF0aCBkPVwiTTYgNmgydjEySDZ6bTMuNSA2bDguNSA2VjZ6XCIgLz5cbiAgICAgICAgICAgIDwvc3ZnPlxuICAgICAgICAgIDwvYnV0dG9uPlxuXG4gICAgICAgICAgPGJ1dHRvblxuICAgICAgICAgICAgdHlwZT1cImJ1dHRvblwiXG4gICAgICAgICAgICBjbGFzc05hbWU9XCJtdXNpYy1jdHJsLWJ0biBtdXNpYy1wbGF5LWJ0blwiXG4gICAgICAgICAgICBvbkNsaWNrPXtoYW5kbGVUb2dnbGVQbGF5fVxuICAgICAgICAgICAgZGlzYWJsZWQ9eyFoYXNTb25nc31cbiAgICAgICAgICAgIGFyaWEtbGFiZWw9e2lzUGxheWluZyA/IFwiUGF1c2UgTXVzaWNcIiA6IFwiUGxheSBNdXNpY1wifVxuICAgICAgICAgICAgdGl0bGU9e2lzUGxheWluZyA/IFwiUGF1c2UgTXVzaWNcIiA6IFwiUGxheSBNdXNpY1wifVxuICAgICAgICAgID5cbiAgICAgICAgICAgIHtpc1BsYXlpbmcgPyAoXG4gICAgICAgICAgICAgIDxzdmcgd2lkdGg9XCIxNVwiIGhlaWdodD1cIjE1XCIgdmlld0JveD1cIjAgMCAyNCAyNFwiIGZpbGw9XCJjdXJyZW50Q29sb3JcIj5cbiAgICAgICAgICAgICAgICA8cGF0aCBkPVwiTTYgMTloNFY1SDZ2MTR6bTgtMTR2MTRoNFY1aC00elwiIC8+XG4gICAgICAgICAgICAgIDwvc3ZnPlxuICAgICAgICAgICAgKSA6IChcbiAgICAgICAgICAgICAgPHN2ZyB3aWR0aD1cIjE1XCIgaGVpZ2h0PVwiMTVcIiB2aWV3Qm94PVwiMCAwIDI0IDI0XCIgZmlsbD1cImN1cnJlbnRDb2xvclwiIHN0eWxlPXt7IG1hcmdpbkxlZnQ6ICcxLjVweCcgfX0+XG4gICAgICAgICAgICAgICAgPHBhdGggZD1cIk04IDV2MTRsMTEtN3pcIiAvPlxuICAgICAgICAgICAgICA8L3N2Zz5cbiAgICAgICAgICAgICl9XG4gICAgICAgICAgPC9idXR0b24+XG5cbiAgICAgICAgICA8YnV0dG9uXG4gICAgICAgICAgICB0eXBlPVwiYnV0dG9uXCJcbiAgICAgICAgICAgIGNsYXNzTmFtZT1cIm11c2ljLWN0cmwtYnRuXCJcbiAgICAgICAgICAgIG9uQ2xpY2s9e2hhbmRsZU5leHR9XG4gICAgICAgICAgICBkaXNhYmxlZD17IWhhc1NvbmdzfVxuICAgICAgICAgICAgYXJpYS1sYWJlbD1cIk5leHQgVHJhY2tcIlxuICAgICAgICAgICAgdGl0bGU9XCJOZXh0IFRyYWNrXCJcbiAgICAgICAgICA+XG4gICAgICAgICAgICA8c3ZnIHdpZHRoPVwiMTVcIiBoZWlnaHQ9XCIxNVwiIHZpZXdCb3g9XCIwIDAgMjQgMjRcIiBmaWxsPVwiY3VycmVudENvbG9yXCI+XG4gICAgICAgICAgICAgIDxwYXRoIGQ9XCJNNiAxOGw4LjUtNkw2IDZ2MTJ6TTE2IDZ2MTJoMlY2aC0yelwiIC8+XG4gICAgICAgICAgICA8L3N2Zz5cbiAgICAgICAgICA8L2J1dHRvbj5cbiAgICAgICAgPC9kaXY+XG5cbiAgICAgICAgey8qIFRoaW4gVmVydGljYWwgRGl2aWRlciAqL31cbiAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJtdXNpYy12ZXJ0aWNhbC1kaXZpZGVyXCIgYXJpYS1oaWRkZW49XCJ0cnVlXCIgLz5cblxuICAgICAgICB7LyogNC4gQWN0aW9uczogVm9sdW1lICYgUGxheWxpc3QgRHJvcGRvd24gVHJpZ2dlciAqL31cbiAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJtdXNpYy1wbGF5ZXItYWN0aW9uc1wiPlxuICAgICAgICAgIHsvKiBWb2x1bWUgQ29udHJvbCAqL31cbiAgICAgICAgICA8ZGl2XG4gICAgICAgICAgICBjbGFzc05hbWU9XCJtdXNpYy12b2x1bWUtY29udGFpbmVyXCJcbiAgICAgICAgICAgIG9uTW91c2VFbnRlcj17KCkgPT4gc2V0U2hvd1ZvbHVtZVBvcHVwKHRydWUpfVxuICAgICAgICAgICAgb25Nb3VzZUxlYXZlPXsoKSA9PiBzZXRTaG93Vm9sdW1lUG9wdXAoZmFsc2UpfVxuICAgICAgICAgICAgb25DbGljaz17KGUpID0+IGUuc3RvcFByb3BhZ2F0aW9uKCl9XG4gICAgICAgICAgPlxuICAgICAgICAgICAgPGJ1dHRvblxuICAgICAgICAgICAgICB0eXBlPVwiYnV0dG9uXCJcbiAgICAgICAgICAgICAgY2xhc3NOYW1lPVwibXVzaWMtY3RybC1idG4gbXVzaWMtdm9sLWJ0blwiXG4gICAgICAgICAgICAgIG9uQ2xpY2s9e2hhbmRsZVRvZ2dsZU11dGV9XG4gICAgICAgICAgICAgIGFyaWEtbGFiZWw9e2lzTXV0ZWQgPyBcIlVubXV0ZVwiIDogXCJNdXRlXCJ9XG4gICAgICAgICAgICAgIHRpdGxlPXtpc011dGVkID8gXCJVbm11dGVcIiA6IFwiVm9sdW1lXCJ9XG4gICAgICAgICAgICA+XG4gICAgICAgICAgICAgIHtpc011dGVkIHx8IHZvbHVtZSA9PT0gMCA/IChcbiAgICAgICAgICAgICAgICA8c3ZnIHdpZHRoPVwiMTVcIiBoZWlnaHQ9XCIxNVwiIHZpZXdCb3g9XCIwIDAgMjQgMjRcIiBmaWxsPVwibm9uZVwiIHN0cm9rZT1cImN1cnJlbnRDb2xvclwiIHN0cm9rZVdpZHRoPVwiMlwiIHN0cm9rZUxpbmVjYXA9XCJyb3VuZFwiIHN0cm9rZUxpbmVqb2luPVwicm91bmRcIj5cbiAgICAgICAgICAgICAgICAgIDxwb2x5Z29uIHBvaW50cz1cIjExIDUgNiA5IDIgOSAyIDE1IDYgMTUgMTEgMTkgMTEgNVwiIC8+XG4gICAgICAgICAgICAgICAgICA8bGluZSB4MT1cIjIzXCIgeTE9XCI5XCIgeDI9XCIxN1wiIHkyPVwiMTVcIiAvPlxuICAgICAgICAgICAgICAgICAgPGxpbmUgeDE9XCIxN1wiIHkxPVwiOVwiIHgyPVwiMjNcIiB5Mj1cIjE1XCIgLz5cbiAgICAgICAgICAgICAgICA8L3N2Zz5cbiAgICAgICAgICAgICAgKSA6IHZvbHVtZSA8IDAuNSA/IChcbiAgICAgICAgICAgICAgICA8c3ZnIHdpZHRoPVwiMTVcIiBoZWlnaHQ9XCIxNVwiIHZpZXdCb3g9XCIwIDAgMjQgMjRcIiBmaWxsPVwibm9uZVwiIHN0cm9rZT1cImN1cnJlbnRDb2xvclwiIHN0cm9rZVdpZHRoPVwiMlwiIHN0cm9rZUxpbmVjYXA9XCJyb3VuZFwiIHN0cm9rZUxpbmVqb2luPVwicm91bmRcIj5cbiAgICAgICAgICAgICAgICAgIDxwb2x5Z29uIHBvaW50cz1cIjExIDUgNiA5IDIgOSAyIDE1IDYgMTUgMTEgMTkgMTEgNVwiIC8+XG4gICAgICAgICAgICAgICAgICA8cGF0aCBkPVwiTTE1LjU0IDguNDZhNSA1IDAgMCAxIDAgNy4wN1wiIC8+XG4gICAgICAgICAgICAgICAgPC9zdmc+XG4gICAgICAgICAgICAgICkgOiAoXG4gICAgICAgICAgICAgICAgPHN2ZyB3aWR0aD1cIjE1XCIgaGVpZ2h0PVwiMTVcIiB2aWV3Qm94PVwiMCAwIDI0IDI0XCIgZmlsbD1cIm5vbmVcIiBzdHJva2U9XCJjdXJyZW50Q29sb3JcIiBzdHJva2VXaWR0aD1cIjJcIiBzdHJva2VMaW5lY2FwPVwicm91bmRcIiBzdHJva2VMaW5lam9pbj1cInJvdW5kXCI+XG4gICAgICAgICAgICAgICAgICA8cG9seWdvbiBwb2ludHM9XCIxMSA1IDYgOSAyIDkgMiAxNSA2IDE1IDExIDE5IDExIDVcIiAvPlxuICAgICAgICAgICAgICAgICAgPHBhdGggZD1cIk0xOS4wNyA0LjkzYTEwIDEwIDAgMCAxIDAgMTQuMTRNMTUuNTQgOC40NmE1IDUgMCAwIDEgMCA3LjA3XCIgLz5cbiAgICAgICAgICAgICAgICA8L3N2Zz5cbiAgICAgICAgICAgICAgKX1cbiAgICAgICAgICAgIDwvYnV0dG9uPlxuXG4gICAgICAgICAgICB7LyogVmVydGljYWwgVm9sdW1lIFNsaWRlciBQb3B1cCAqL31cbiAgICAgICAgICAgIDxkaXZcbiAgICAgICAgICAgICAgY2xhc3NOYW1lPXtgbXVzaWMtdm9sdW1lLXBvcHVwICR7c2hvd1ZvbHVtZVBvcHVwID8gJ2lzLXZpc2libGUnIDogJyd9YH1cbiAgICAgICAgICAgICAgb25DbGljaz17KGUpID0+IGUuc3RvcFByb3BhZ2F0aW9uKCl9XG4gICAgICAgICAgICAgIG9uTW91c2VEb3duPXsoZSkgPT4gZS5zdG9wUHJvcGFnYXRpb24oKX1cbiAgICAgICAgICAgICAgb25Ub3VjaFN0YXJ0PXsoZSkgPT4gZS5zdG9wUHJvcGFnYXRpb24oKX1cbiAgICAgICAgICAgID5cbiAgICAgICAgICAgICAgPGlucHV0XG4gICAgICAgICAgICAgICAgdHlwZT1cInJhbmdlXCJcbiAgICAgICAgICAgICAgICBtaW49XCIwXCJcbiAgICAgICAgICAgICAgICBtYXg9XCIxXCJcbiAgICAgICAgICAgICAgICBzdGVwPVwiMC4wMlwiXG4gICAgICAgICAgICAgICAgdmFsdWU9e2lzTXV0ZWQgPyAwIDogdm9sdW1lfVxuICAgICAgICAgICAgICAgIG9uSW5wdXQ9e2hhbmRsZVZvbHVtZUNoYW5nZX1cbiAgICAgICAgICAgICAgICBvbkNoYW5nZT17aGFuZGxlVm9sdW1lQ2hhbmdlfVxuICAgICAgICAgICAgICAgIG9uTW91c2VEb3duPXsoZSkgPT4gZS5zdG9wUHJvcGFnYXRpb24oKX1cbiAgICAgICAgICAgICAgICBvblRvdWNoU3RhcnQ9eyhlKSA9PiBlLnN0b3BQcm9wYWdhdGlvbigpfVxuICAgICAgICAgICAgICAgIGNsYXNzTmFtZT1cIm11c2ljLXZvbHVtZS1zbGlkZXJcIlxuICAgICAgICAgICAgICAgIGFyaWEtbGFiZWw9XCJWb2x1bWUgc2xpZGVyXCJcbiAgICAgICAgICAgICAgLz5cbiAgICAgICAgICAgIDwvZGl2PlxuICAgICAgICAgIDwvZGl2PlxuXG4gICAgICAgICAgey8qIFBsYXlsaXN0IERyb3Bkb3duIEJ1dHRvbiAqL31cbiAgICAgICAgICA8YnV0dG9uXG4gICAgICAgICAgICB0eXBlPVwiYnV0dG9uXCJcbiAgICAgICAgICAgIGNsYXNzTmFtZT17YG11c2ljLWN0cmwtYnRuIG11c2ljLXBsYXlsaXN0LWJ0biAke2lzRHJvcGRvd25PcGVuID8gJ2lzLWFjdGl2ZScgOiAnJ31gfVxuICAgICAgICAgICAgb25DbGljaz17KCkgPT4gaGFzU29uZ3MgJiYgc2V0SXNEcm9wZG93bk9wZW4oKHByZXYpID0+ICFwcmV2KX1cbiAgICAgICAgICAgIGRpc2FibGVkPXshaGFzU29uZ3N9XG4gICAgICAgICAgICBhcmlhLWxhYmVsPVwiVmlldyBQbGF5bGlzdFwiXG4gICAgICAgICAgICB0aXRsZT1cIlZpZXcgUGxheWxpc3RcIlxuICAgICAgICAgICAgYXJpYS1leHBhbmRlZD17aXNEcm9wZG93bk9wZW59XG4gICAgICAgICAgPlxuICAgICAgICAgICAgPHN2ZyB3aWR0aD1cIjE1XCIgaGVpZ2h0PVwiMTVcIiB2aWV3Qm94PVwiMCAwIDI0IDI0XCIgZmlsbD1cIm5vbmVcIiBzdHJva2U9XCJjdXJyZW50Q29sb3JcIiBzdHJva2VXaWR0aD1cIjJcIiBzdHJva2VMaW5lY2FwPVwicm91bmRcIiBzdHJva2VMaW5lam9pbj1cInJvdW5kXCI+XG4gICAgICAgICAgICAgIDxsaW5lIHgxPVwiOFwiIHkxPVwiNlwiIHgyPVwiMjFcIiB5Mj1cIjZcIiAvPlxuICAgICAgICAgICAgICA8bGluZSB4MT1cIjhcIiB5MT1cIjEyXCIgeDI9XCIyMVwiIHkyPVwiMTJcIiAvPlxuICAgICAgICAgICAgICA8bGluZSB4MT1cIjhcIiB5MT1cIjE4XCIgeDI9XCIyMVwiIHkyPVwiMThcIiAvPlxuICAgICAgICAgICAgICA8bGluZSB4MT1cIjNcIiB5MT1cIjZcIiB4Mj1cIjMuMDFcIiB5Mj1cIjZcIiAvPlxuICAgICAgICAgICAgICA8bGluZSB4MT1cIjNcIiB5MT1cIjEyXCIgeDI9XCIzLjAxXCIgeTI9XCIxMlwiIC8+XG4gICAgICAgICAgICAgIDxsaW5lIHgxPVwiM1wiIHkxPVwiMThcIiB4Mj1cIjMuMDFcIiB5Mj1cIjE4XCIgLz5cbiAgICAgICAgICAgIDwvc3ZnPlxuICAgICAgICAgIDwvYnV0dG9uPlxuICAgICAgICA8L2Rpdj5cbiAgICAgIDwvZGl2PlxuXG4gICAgICB7LyogUGxheWxpc3QgRHJvcGRvd24gTWVudSAoU2Nyb2xsYWJsZSwgaGlnaGxpZ2h0ZWQgY3VycmVudCB0cmFjayBpbiBleGFjdCBtYW5pZmVzdCBvcmRlcikgKi99XG4gICAgICB7aXNEcm9wZG93bk9wZW4gJiYgaGFzU29uZ3MgJiYgKFxuICAgICAgICA8ZGl2XG4gICAgICAgICAgcmVmPXtkcm9wZG93blJlZn1cbiAgICAgICAgICBjbGFzc05hbWU9XCJtdXNpYy1wbGF5bGlzdC1kcm9wZG93blwiXG4gICAgICAgICAgcm9sZT1cImRpYWxvZ1wiXG4gICAgICAgICAgYXJpYS1sYWJlbD1cIlBsYXlsaXN0IFRyYWNrc1wiXG4gICAgICAgID5cbiAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cIm11c2ljLXBsYXlsaXN0LWhlYWRlclwiPlxuICAgICAgICAgICAgPHNwYW4gY2xhc3NOYW1lPVwicGxheWxpc3QtaGVhZGVyLXRpdGxlXCI+RGVkaWNhdGVkIHRvIFlvdTwvc3Bhbj5cbiAgICAgICAgICAgIDxzcGFuIGNsYXNzTmFtZT1cInBsYXlsaXN0LWhlYWRlci1jb3VudFwiPntzb25ncy5sZW5ndGh9IHtzb25ncy5sZW5ndGggPT09IDEgPyAndHJhY2snIDogJ3RyYWNrcyd9PC9zcGFuPlxuICAgICAgICAgIDwvZGl2PlxuXG4gICAgICAgICAgPHVsIGNsYXNzTmFtZT1cIm11c2ljLXBsYXlsaXN0LWxpc3RcIiByb2xlPVwibGlzdGJveFwiPlxuICAgICAgICAgICAge3NvbmdzLm1hcCgoc29uZywgaWR4KSA9PiB7XG4gICAgICAgICAgICAgIGNvbnN0IGlzU2VsZWN0ZWQgPSBpZHggPT09IGN1cnJlbnRJbmRleDtcbiAgICAgICAgICAgICAgcmV0dXJuIChcbiAgICAgICAgICAgICAgICA8bGlcbiAgICAgICAgICAgICAgICAgIGtleT17c29uZy5pZCB8fCBpZHh9XG4gICAgICAgICAgICAgICAgICBjbGFzc05hbWU9e2BtdXNpYy1wbGF5bGlzdC1pdGVtICR7aXNTZWxlY3RlZCA/ICdpcy1zZWxlY3RlZCcgOiAnJ31gfVxuICAgICAgICAgICAgICAgICAgb25DbGljaz17KCkgPT4gaGFuZGxlU2VsZWN0VHJhY2soaWR4KX1cbiAgICAgICAgICAgICAgICAgIHJvbGU9XCJvcHRpb25cIlxuICAgICAgICAgICAgICAgICAgYXJpYS1zZWxlY3RlZD17aXNTZWxlY3RlZH1cbiAgICAgICAgICAgICAgICAgIHRhYkluZGV4PXswfVxuICAgICAgICAgICAgICAgICAgb25LZXlEb3duPXsoZSkgPT4ge1xuICAgICAgICAgICAgICAgICAgICBpZiAoZS5rZXkgPT09ICdFbnRlcicgfHwgZS5rZXkgPT09ICcgJykge1xuICAgICAgICAgICAgICAgICAgICAgIGUucHJldmVudERlZmF1bHQoKTtcbiAgICAgICAgICAgICAgICAgICAgICBoYW5kbGVTZWxlY3RUcmFjayhpZHgpO1xuICAgICAgICAgICAgICAgICAgICB9XG4gICAgICAgICAgICAgICAgICB9fVxuICAgICAgICAgICAgICAgID5cbiAgICAgICAgICAgICAgICAgIDxzcGFuIGNsYXNzTmFtZT1cIm11c2ljLWl0ZW0taW5kZXhcIj5cbiAgICAgICAgICAgICAgICAgICAge2lzU2VsZWN0ZWQgJiYgaXNQbGF5aW5nID8gKFxuICAgICAgICAgICAgICAgICAgICAgIDxzcGFuIGNsYXNzTmFtZT1cImVxLWRvdC1pbmRpY2F0b3JcIiAvPlxuICAgICAgICAgICAgICAgICAgICApIDogKFxuICAgICAgICAgICAgICAgICAgICAgIGAke2lkeCArIDF9YFxuICAgICAgICAgICAgICAgICAgICApfVxuICAgICAgICAgICAgICAgICAgPC9zcGFuPlxuICAgICAgICAgICAgICAgICAgPHNwYW4gY2xhc3NOYW1lPVwibXVzaWMtaXRlbS10aXRsZVwiIHRpdGxlPXtzb25nLnRpdGxlfT5cbiAgICAgICAgICAgICAgICAgICAge3NvbmcudGl0bGV9XG4gICAgICAgICAgICAgICAgICA8L3NwYW4+XG4gICAgICAgICAgICAgICAgICB7aXNTZWxlY3RlZCAmJiAoXG4gICAgICAgICAgICAgICAgICAgIDxzcGFuIGNsYXNzTmFtZT1cIm11c2ljLWl0ZW0tYmFkZ2VcIj5QbGF5aW5nPC9zcGFuPlxuICAgICAgICAgICAgICAgICAgKX1cbiAgICAgICAgICAgICAgICA8L2xpPlxuICAgICAgICAgICAgICApO1xuICAgICAgICAgICAgfSl9XG4gICAgICAgICAgPC91bD5cbiAgICAgICAgPC9kaXY+XG4gICAgICApfVxuICAgIDwvZGl2PlxuICApO1xufVxuIl0sImZpbGUiOiJDOi9Vc2Vycy9kZXZhbS9PbmVEcml2ZS9EZXNrdG9wL0hhcHBwaWVzdC1CaXJ0aGFkeS1NaWlvb28vc3JjL2NvbXBvbmVudHMvTXVzaWNQbGF5ZXIuanN4In0=

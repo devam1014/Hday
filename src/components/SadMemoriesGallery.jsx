@@ -1,12 +1,16 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
-import { ArrowLeft, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ArrowLeft, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 import sadBg from '../../sad.png';
 import sadCover from '../../sad-cover.jpg';
 import sadFrame from '../../sad-frame.png?v=2';
 import sadImg from '../../sad-img.png';
 import { getSadPhotos } from '../data/sadPhotos';
+import { BIRTHDAY_CONFIG } from '../config';
 import SadAtmosphere from './SadAtmosphere';
 import SadLightning from './SadLightning';
+import GalleryMusicPlayer from './GalleryMusicPlayer';
+import GalleryVideoPlayer from './GalleryVideoPlayer';
+import SeeThisView from './SeeThisView';
 
 /**
  * SadMemoriesGallery Component
@@ -20,16 +24,36 @@ import SadLightning from './SadLightning';
  *    - Each photo is fitted precisely inside the opening behind the frame.
  *    - Each photo displays its corresponding message and counter (e.g. 1 of 5).
  */
-export default function SadMemoriesGallery({ onBack }) {
+export default function SadMemoriesGallery({
+  onBack,
+  onPreviousSection,
+  onNextPage,
+  initialView = 'cover',
+  initialPhotoIndex = 0,
+  onStateChange,
+}) {
   // 'cover' (sad-cover.jpg) | 'img' (sad-img.png)
-  const [view, setView] = useState('cover');
-  const [photoIndex, setPhotoIndex] = useState(0); // 0..4 (Photos 1..5)
+  const [view, setView] = useState(initialView);
+  const [photoIndex, setPhotoIndex] = useState(initialPhotoIndex); // 0..4 (Photos 1..5)
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [transitionPhase, setTransitionPhase] = useState('idle'); // 'idle' | 'out' | 'in'
   const [transitionDir, setTransitionDir] = useState('forward'); // 'forward' | 'backward'
   const [photoFading, setPhotoFading] = useState(false);
   const [imageErrors, setImageErrors] = useState({});
   const [lightningTrigger, setLightningTrigger] = useState(0);
+
+  // Synchronize state changes with parent
+  useEffect(() => {
+    if (onStateChange) {
+      onStateChange({ view, photoIndex });
+    }
+  }, [view, photoIndex, onStateChange]);
+
+  // Support direct prop updates if re-opened
+  useEffect(() => {
+    if (initialView) setView(initialView);
+    if (typeof initialPhotoIndex === 'number') setPhotoIndex(initialPhotoIndex);
+  }, [initialView, initialPhotoIndex]);
 
   const photos = getSadPhotos();
   const currentPhoto = photos[photoIndex] || photos[0];
@@ -50,10 +74,10 @@ export default function SadMemoriesGallery({ onBack }) {
     };
   }, []);
 
-  // Preload photos
+  // Preload photos (only images)
   useEffect(() => {
     photos.forEach((p) => {
-      if (p.src) {
+      if (p.src && p.type !== 'video') {
         const img = new Image();
         img.src = p.src;
       }
@@ -149,7 +173,7 @@ export default function SadMemoriesGallery({ onBack }) {
       {/* Full-Page Moonlit Terrace Background (sad.png) */}
       <div className="sad-gallery-background-wrapper" aria-hidden="true">
         <img
-          src={sadBg}
+          src={BIRTHDAY_CONFIG.sadGallery?.background || sadBg}
           alt="Sad memories moonlit background"
           className="sad-gallery-background-img"
         />
@@ -162,17 +186,18 @@ export default function SadMemoriesGallery({ onBack }) {
       {/* Cinematic Atmospheric Animation Layers (Rain, Fog, Dust, Ghosts) */}
       <SadAtmosphere />
 
-      {/* Top Header Bar with Discrete Back Button */}
-      {onBack && (
+      {/* Upper-Left: Previous Section Button (Navigates directly back to Main Birthday Section 13) */}
+      {(onPreviousSection || onBack) && (
         <header className="sad-gallery-top-bar">
           <button
             type="button"
-            onClick={onBack}
-            className="sad-gallery-back-button"
-            aria-label="Return to Birthday Page"
+            onClick={onPreviousSection || onBack}
+            className="corner-nav-btn corner-nav-prev"
+            aria-label="Previous Section: Return to Main Birthday Section 13"
+            title="Return to Section 13"
           >
-            <ArrowLeft size={17} className="back-btn-icon" />
-            <span className="back-btn-text">Back to Birthday</span>
+            <ArrowLeft size={16} className="corner-nav-icon" />
+            <span className="corner-nav-text">Previous Section</span>
           </button>
         </header>
       )}
@@ -185,8 +210,8 @@ export default function SadMemoriesGallery({ onBack }) {
           onClick={handlePrev}
           disabled={isPrevDisabled}
           className={`gallery-nav-arrow arrow-left ${isPrevDisabled ? 'is-disabled' : ''}`}
-          aria-label={view === 'cover' ? 'Album Cover' : photoIndex === 0 ? 'Back to Album Cover' : `Previous Photo (${photoIndex} of 5)`}
-          title={view === 'cover' ? 'Album Cover' : photoIndex === 0 ? 'Back to Album Cover' : `Previous Photo (${photoIndex} of 5)`}
+          aria-label={view === 'cover' ? 'Album Cover' : photoIndex === 0 ? 'Back to Album Cover' : `Previous Photo (${photoIndex} of ${photos.length})`}
+          title={view === 'cover' ? 'Album Cover' : photoIndex === 0 ? 'Back to Album Cover' : `Previous Photo (${photoIndex} of ${photos.length})`}
         >
           <ChevronLeft size={28} />
         </button>
@@ -202,7 +227,7 @@ export default function SadMemoriesGallery({ onBack }) {
               {/* Cover Image Layer: Positioned inside opening BEHIND decorative frame */}
               <div className="sad-cover-container">
                 <img
-                  src={sadCover}
+                  src={BIRTHDAY_CONFIG.sadGallery?.albumCover || sadCover}
                   alt="Sad Memories Album Cover"
                   className="sad-cover-img"
                   loading="eager"
@@ -220,9 +245,16 @@ export default function SadMemoriesGallery({ onBack }) {
           ) : (
             /* STEP 2: Large Symmetrical Glassmorphism Photo Container */
             <>
-              {/* 1. Photo Display Wrapper */}
+              {/* 1. Media Display Wrapper (Image or Video) */}
               <div className="sad-glass-photo-wrapper">
-                {currentPhoto?.src && !imageErrors[currentPhoto.id] ? (
+                {currentPhoto?.type === 'video' && currentPhoto?.src ? (
+                  <GalleryVideoPlayer
+                    src={currentPhoto.src}
+                    alt={currentPhoto.alt || `Memory ${photoIndex + 1}`}
+                    theme="sad"
+                    isFading={photoFading}
+                  />
+                ) : currentPhoto?.src && !imageErrors[currentPhoto.id] ? (
                   <img
                     src={currentPhoto.src}
                     alt={currentPhoto.alt || `Memory ${photoIndex + 1}`}
@@ -254,7 +286,7 @@ export default function SadMemoriesGallery({ onBack }) {
               {/* 2. Message Box: Wide, rounded frosted-white box directly below image */}
               <div className="sad-glass-message-box">
                 <p className={`sad-glass-message-text ${photoFading ? 'is-fading' : ''}`}>
-                  {currentPhoto?.message || "Some moments stay with us forever... ♡"}
+                  {currentPhoto?.message || ""}
                 </p>
               </div>
             </>
@@ -267,12 +299,29 @@ export default function SadMemoriesGallery({ onBack }) {
           onClick={handleNext}
           disabled={isNextDisabled}
           className={`gallery-nav-arrow arrow-right ${isNextDisabled ? 'is-disabled' : ''}`}
-          aria-label={view === 'cover' ? 'Open Album (Photo 1)' : `Next Photo (${photoIndex + 2} of 5)`}
-          title={view === 'cover' ? 'Open Album (Photo 1)' : photoIndex === photos.length - 1 ? 'End of photos' : `Next Photo (${photoIndex + 2} of 5)`}
+          aria-label={view === 'cover' ? 'Open Album (Photo 1)' : `Next Photo (${photoIndex + 2} of ${photos.length})`}
+          title={view === 'cover' ? 'Open Album (Photo 1)' : photoIndex === photos.length - 1 ? 'End of photos' : `Next Photo (${photoIndex + 2} of ${photos.length})`}
         >
           <ChevronRight size={28} />
         </button>
       </main>
+
+      {/* Bottom-Right: Next Page Button (Visible ONLY on the last image of Sad Gallery, navigating to Happy Gallery) */}
+      {view === 'img' && photoIndex === photos.length - 1 && onNextPage && (
+        <button
+          type="button"
+          onClick={onNextPage}
+          className="corner-nav-btn corner-nav-next"
+          aria-label="Next Page: Navigate to Happy Gallery"
+          title="Proceed to Happy Memories Gallery"
+        >
+          <span className="corner-nav-text">Next Page</span>
+          <ArrowRight size={16} className="corner-nav-icon" />
+        </button>
+      )}
+
+      {/* Dedicated Sad Memories Music Player (Exact Size & Footprint of Main Birthday Music Bar) */}
+      <GalleryMusicPlayer theme="sad" config={BIRTHDAY_CONFIG.sadMusicPlayer} />
     </div>
   );
 }

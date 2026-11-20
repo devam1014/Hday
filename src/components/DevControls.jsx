@@ -13,12 +13,15 @@ import { BIRTHDAY_CONFIG } from '../config';
  */
 export default function DevControls({
   currentStage,
+  onClickAndSee,
   onTestCoverTimer,
   onTestFirecrackerTimer,
   onJumpToCountdown,
   onJumpToFireworksPage,
   onJumpToMainPage,
   onJumpToSadMemories,
+  onJumpToHappyGallery,
+  onJumpToQnA,
   onTriggerCover5sCountdown,
   onTriggerFirecracker5sCountdown,
   onResetToDefaultConfig
@@ -29,17 +32,31 @@ export default function DevControls({
 
   return (
     <aside className="dev-test-panel" aria-label="Development Test Helper">
-      <button
-        type="button"
-        onClick={() => setIsOpen(!isOpen)}
-        className="dev-panel-toggle-btn"
-        title="Toggle testing controls"
-        aria-expanded={isOpen}
-      >
-        <Wrench className="w-4 h-4 text-amber-300 mr-1.5" />
-        <span>Test Helper</span>
-        {isOpen ? <ChevronUp className="w-3.5 h-3.5 ml-1" /> : <ChevronDown className="w-3.5 h-3.5 ml-1" />}
-      </button>
+      <div className="dev-panel-top-row">
+        {currentStage === 'fireworks' && onClickAndSee && (
+          <button
+            type="button"
+            onClick={onClickAndSee}
+            className="dev-panel-toggle-btn dev-click-see-btn"
+            title="Preview 10s countdown to full fireworks celebration"
+          >
+            <Sparkles className="w-4 h-4 text-amber-300 mr-1.5" />
+            <span>Click &amp; See</span>
+          </button>
+        )}
+
+        <button
+          type="button"
+          onClick={() => setIsOpen(!isOpen)}
+          className="dev-panel-toggle-btn"
+          title="Toggle testing controls"
+          aria-expanded={isOpen}
+        >
+          <Wrench className="w-4 h-4 text-amber-300 mr-1.5" />
+          <span>Test Helper</span>
+          {isOpen ? <ChevronUp className="w-3.5 h-3.5 ml-1" /> : <ChevronDown className="w-3.5 h-3.5 ml-1" />}
+        </button>
+      </div>
 
       {isOpen && (
         <div className="dev-panel-content animate-fade-in">
@@ -141,6 +158,28 @@ export default function DevControls({
               >
                 <BookOpen className="w-3.5 h-3.5 mr-1" />
                 <span>4. Sad Image Gallery</span>
+              </button>
+            )}
+
+            {onJumpToHappyGallery && (
+              <button
+                type="button"
+                onClick={onJumpToHappyGallery}
+                className={`dev-action-btn happy-gallery-btn ${currentStage === 'happy-gallery' ? 'is-active' : ''}`}
+              >
+                <Sparkles className="w-3.5 h-3.5 mr-1 text-amber-300" />
+                <span>5. Happy Gallery</span>
+              </button>
+            )}
+
+            {onJumpToQnA && (
+              <button
+                type="button"
+                onClick={onJumpToQnA}
+                className={`dev-action-btn qna-btn ${currentStage === 'qna' ? 'is-active' : ''}`}
+              >
+                <Sparkles className="w-3.5 h-3.5 mr-1 text-rose-300" />
+                <span>6. Q&amp;A Section</span>
               </button>
             )}
 

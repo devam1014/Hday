@@ -1,0 +1,58 @@
+const fs = require('fs');
+
+const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1672 940" width="100%" height="100%">
+  <defs>
+    <mask id="sceneryMask">
+      <rect width="1672" height="940" fill="white"/>
+      <!-- Lower-right lamp & table glow (x: 1200-1672, y: 480-940) -->
+      <radialGradient id="lampHole" cx="1465" cy="670" r="340" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stop-color="black" stop-opacity="1"/>
+        <stop offset="55%" stop-color="black" stop-opacity="1"/>
+        <stop offset="78%" stop-color="black" stop-opacity="0.6"/>
+        <stop offset="100%" stop-color="black" stop-opacity="0"/>
+      </radialGradient>
+      <rect x="1120" y="330" width="552" height="610" fill="url(#lampHole)"/>
+
+      <!-- Lower-left lantern & floor reflection (x: 0-350, y: 550-850) -->
+      <radialGradient id="lanternHole" cx="160" cy="675" r="240" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stop-color="black" stop-opacity="1"/>
+        <stop offset="50%" stop-color="black" stop-opacity="1"/>
+        <stop offset="78%" stop-color="black" stop-opacity="0.5"/>
+        <stop offset="100%" stop-color="black" stop-opacity="0"/>
+      </radialGradient>
+      <circle cx="160" cy="675" r="240" fill="url(#lanternHole)"/>
+
+      <!-- Left hanging bulbs & vine fairy lights (x: 0-380, y: 0-520) -->
+      <radialGradient id="leftBulbs1" cx="85" cy="135" r="230" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stop-color="black" stop-opacity="1"/>
+        <stop offset="50%" stop-color="black" stop-opacity="0.9"/>
+        <stop offset="80%" stop-color="black" stop-opacity="0.4"/>
+        <stop offset="100%" stop-color="black" stop-opacity="0"/>
+      </radialGradient>
+      <circle cx="85" cy="135" r="230" fill="url(#leftBulbs1)"/>
+
+      <radialGradient id="leftBulbs2" cx="105" cy="385" r="210" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stop-color="black" stop-opacity="1"/>
+        <stop offset="50%" stop-color="black" stop-opacity="0.9"/>
+        <stop offset="80%" stop-color="black" stop-opacity="0.4"/>
+        <stop offset="100%" stop-color="black" stop-opacity="0"/>
+      </radialGradient>
+      <circle cx="105" cy="385" r="210" fill="url(#leftBulbs2)"/>
+
+      <radialGradient id="leftBulbs3" cx="265" cy="175" r="180" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stop-color="black" stop-opacity="1"/>
+        <stop offset="45%" stop-color="black" stop-opacity="0.85"/>
+        <stop offset="80%" stop-color="black" stop-opacity="0.3"/>
+        <stop offset="100%" stop-color="black" stop-opacity="0"/>
+      </radialGradient>
+      <circle cx="265" cy="175" r="180" fill="url(#leftBulbs3)"/>
+    </mask>
+  </defs>
+  <rect width="1672" height="940" fill="black" mask="url(#sceneryMask)"/>
+</svg>`;
+
+// URL encode for CSS
+const encoded = 'data:image/svg+xml,' + encodeURIComponent(svg.replace(/\s+/g, ' ').trim());
+console.log('Valid CSS data URI generated. Length:', encoded.length);
+fs.writeFileSync('scratch/scenery-darkening-mask.svg', svg);
+console.log('Saved scratch/scenery-darkening-mask.svg');

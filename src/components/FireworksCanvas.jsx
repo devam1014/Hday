@@ -9,7 +9,7 @@ import React, { useEffect, useRef } from 'react';
  * - Pointer-events: none, transparent canvas
  * - Continuous waves until active is false / unmount
  */
-export default function FireworksCanvas({ active = true }) {
+export default function FireworksCanvas({ active = false }) {
   const canvasRef = useRef(null);
   const animFrameId = useRef(null);
 

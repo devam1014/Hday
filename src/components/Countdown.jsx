@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { parseISTTarget } from '../config';
 
 /**
  * Delicate Golden Botanical Laurel Sprig SVG
@@ -88,15 +89,38 @@ function BotanicalOrnament({ flip = false }) {
 export default function Countdown({ targetDate, onComplete }) {
   const [timeLeft, setTimeLeft] = useState(() => calculateTimeLeft(targetDate));
   const hasTriggeredComplete = useRef(false);
+  const onCompleteRef = useRef(onComplete);
+
+  useEffect(() => {
+    onCompleteRef.current = onComplete;
+  }, [onComplete]);
 
   function calculateTimeLeft(dateInput) {
     if (!dateInput) {
-      return { days: 2, hours: 14, minutes: 37, seconds: 9, isReady: true, isCompleted: false };
+      const sc = BIRTHDAY_CONFIG?.secondCountdown;
+      if (sc && (sc.targetDate || sc.targetTime)) {
+        dateInput = parseISTTarget(sc.targetDate, sc.targetTime);
+      } else {
+        dateInput = BIRTHDAY_CONFIG?.firecrackerTargetDate || BIRTHDAY_CONFIG?.targetDate;
+      }
     }
 
-    const target = new Date(dateInput).getTime();
+    if (!dateInput) {
+      return { days: 0, hours: 0, minutes: 0, seconds: 0, isReady: false, isCompleted: false };
+    }
+
+    // Resolve target in Indian Standard Time (UTC+05:30)
+    let target = null;
+    if (typeof dateInput === 'string' && !dateInput.includes('Z') && !/[+-]\d{2}:\d{2}$/.test(dateInput)) {
+      target = parseISTTarget(dateInput);
+    }
+    if (!target) {
+      target = typeof dateInput === 'number' ? dateInput : new Date(dateInput).getTime();
+    }
+
     if (isNaN(target)) {
-      return { days: 2, hours: 14, minutes: 37, seconds: 9, isReady: true, isCompleted: false };
+      console.warn('[Countdown] Invalid targetDate in src/config.js:', dateInput);
+      return { days: 0, hours: 0, minutes: 0, seconds: 0, isReady: false, isCompleted: false };
     }
 
     const now = Date.now();
@@ -119,9 +143,9 @@ export default function Countdown({ targetDate, onComplete }) {
     const initial = calculateTimeLeft(targetDate);
     setTimeLeft(initial);
 
-    if (initial.isReady && initial.isCompleted && !hasTriggeredComplete.current) {
-      hasTriggeredComplete.current = true;
-      onComplete?.();
+    // If targetDate is already completed prior to mount, do NOT auto-trigger on mount.
+    // Fireworks must only begin when the inside timer actively counts down and reaches zero.
+    if (initial.isCompleted) {
       return;
     }
 
@@ -132,7 +156,7 @@ export default function Countdown({ targetDate, onComplete }) {
           if (updated.isCompleted && !hasTriggeredComplete.current) {
             hasTriggeredComplete.current = true;
             clearInterval(intervalId);
-            onComplete?.();
+            onCompleteRef.current?.();
           }
           return updated;
         }
@@ -156,7 +180,7 @@ export default function Countdown({ targetDate, onComplete }) {
     }, 1000);
 
     return () => clearInterval(intervalId);
-  }, [targetDate, onComplete]);
+  }, [targetDate]);
 
   const pad = (n) => String(Math.max(0, n)).padStart(2, '0');
 

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+body {
+  background: url('../dist/assets/background-CXAx8kt1.png') center/cover no-repeat;
+  margin: 0;
+  padding: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+.card {
+  position: relative;
+  width: 480px;
+  height: 720px;
+  border-radius: 36px;
+  background: rgba(65, 34, 52, 0.28);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+}
+.card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 36px;
+  padding: 2.5px;
+  background: conic-gradient(
+    from -30deg at 50% 50%,
+    rgba(255, 248, 230, 0.98) 0deg,
+    rgba(240, 185, 135, 0.85) 25deg,
+    rgba(255, 252, 240, 1.0) 55deg,
+    rgba(215, 155, 110, 0.55) 85deg,
+    rgba(255, 242, 220, 0.96) 115deg,
+    rgba(165, 110, 80, 0.20) 150deg,
+    rgba(245, 190, 140, 0.80) 185deg,
+    rgba(145, 90, 65, 0.15) 220deg,
+    rgba(255, 238, 205, 0.96) 250deg,
+    rgba(220, 160, 110, 0.58) 280deg,
+    rgba(155, 95, 70, 0.18) 310deg,
+    rgba(240, 185, 135, 0.78) 335deg,
+    rgba(255, 248, 230, 0.98) 360deg
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+  filter: drop-shadow(0 0 2px rgba(255, 220, 175, 0.75)) drop-shadow(0 0 4px rgba(255, 180, 120, 0.35));
+}
+</style>
+</head>
+<body>
+<div class="card"></div>
+</body>
+</html>

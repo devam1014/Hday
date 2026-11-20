@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import { BIRTHDAY_CONFIG } from '../config';
 
 /**
  * BirthdayFireworksCelebration
@@ -197,8 +198,27 @@ export default function BirthdayFireworksCelebration({
         });
       };
 
-      const line1Letters = measureAndLayout('HAPPY', layout.line1Y, layout.spacing1, 0, 750, 160);
-      const line2Letters = measureAndLayout('BIRTHDAY', layout.line2Y, layout.spacing2, 1, 1350, 150);
+      // Configurable post-fireworks text from BIRTHDAY_CONFIG.fireworksMessage
+      let textLine1 = 'HAPPY';
+      let textLine2 = 'BIRTHDAY';
+
+      const cfgMsg = BIRTHDAY_CONFIG?.fireworksMessage;
+      if (typeof cfgMsg === 'string' && cfgMsg.trim()) {
+        const parts = cfgMsg.trim().split(/\s+/);
+        if (parts.length === 1) {
+          textLine1 = parts[0].toUpperCase();
+          textLine2 = '';
+        } else {
+          textLine1 = parts[0].toUpperCase();
+          textLine2 = parts.slice(1).join(' ').toUpperCase();
+        }
+      } else if (cfgMsg && typeof cfgMsg === 'object') {
+        if (cfgMsg.line1 !== undefined) textLine1 = String(cfgMsg.line1).trim().toUpperCase();
+        if (cfgMsg.line2 !== undefined) textLine2 = String(cfgMsg.line2).trim().toUpperCase();
+      }
+
+      const line1Letters = textLine1 ? measureAndLayout(textLine1, layout.line1Y, layout.spacing1, 0, 750, 160) : [];
+      const line2Letters = textLine2 ? measureAndLayout(textLine2, layout.line2Y, layout.spacing2, 1, 1350, 150) : [];
 
       return [...line1Letters, ...line2Letters];
     };

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+body { background: #000; margin: 0; padding: 20px; }
+.box1 {
+  width: 200px; height: 300px;
+  position: relative;
+  background: rgba(255,0,0,0.3);
+}
+.box1::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  padding: 4px;
+  border-radius: 20px;
+  background: #ff0;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: destination-out;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+}
+</style>
+</head>
+<body>
+<div class="box1"></div>
+</body>
+</html>

@@ -1,0 +1,373 @@
+import { createHotContext as __vite__createHotContext } from "/@vite/client";import.meta.hot = __vite__createHotContext("/src/components/SadLightning.jsx");import __vite__cjsImport0_react_jsxDevRuntime from "/node_modules/.vite/deps/react_jsx-dev-runtime.js?v=8a6794f3"; const jsxDEV = __vite__cjsImport0_react_jsxDevRuntime["jsxDEV"];
+import * as RefreshRuntime from "/@react-refresh";
+const inWebWorker = typeof WorkerGlobalScope !== "undefined" && self instanceof WorkerGlobalScope;
+let prevRefreshReg;
+let prevRefreshSig;
+if (import.meta.hot && !inWebWorker) {
+  if (!window.$RefreshReg$) {
+    throw new Error(
+      "@vitejs/plugin-react can't detect preamble. Something is wrong."
+    );
+  }
+  prevRefreshReg = window.$RefreshReg$;
+  prevRefreshSig = window.$RefreshSig$;
+  window.$RefreshReg$ = RefreshRuntime.getRefreshReg("C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/SadLightning.jsx");
+  window.$RefreshSig$ = RefreshRuntime.createSignatureFunctionForTransform;
+}
+var _s = $RefreshSig$();
+import __vite__cjsImport3_react from "/node_modules/.vite/deps/react.js?v=8a6794f3"; const React = __vite__cjsImport3_react.__esModule ? __vite__cjsImport3_react.default : __vite__cjsImport3_react; const useState = __vite__cjsImport3_react["useState"]; const useEffect = __vite__cjsImport3_react["useEffect"]; const useRef = __vite__cjsImport3_react["useRef"];
+const BOLT_VARIANTS = [
+  {
+    id: "left-flank",
+    viewBox: "0 0 400 450",
+    originX: "18%",
+    originY: "2%",
+    scale: 0.95,
+    glowColor: "rgba(165, 195, 255, 0.42)",
+    // Jagged primary stem
+    mainStem: "M 220 0 L 210 45 L 235 90 L 218 135 L 245 180 L 232 230 L 260 280 L 248 340 L 275 400",
+    // Realistic branching forks
+    branches: [
+      "M 210 45 L 185 85 L 195 125 L 175 160",
+      "M 235 90 L 265 130 L 255 170 L 280 205",
+      "M 245 180 L 215 220 L 225 260 L 205 295",
+      "M 260 280 L 290 320 L 282 355"
+    ]
+  },
+  {
+    id: "mid-left-sky",
+    viewBox: "0 0 450 480",
+    originX: "32%",
+    originY: "1%",
+    scale: 1.05,
+    glowColor: "rgba(180, 205, 255, 0.45)",
+    mainStem: "M 300 0 L 315 50 L 290 100 L 325 155 L 305 210 L 340 270 L 320 330 L 350 390 L 335 450",
+    branches: [
+      "M 315 50 L 345 90 L 335 130 L 360 165",
+      "M 290 100 L 260 145 L 272 185 L 245 225",
+      "M 325 155 L 365 200 L 355 240 L 385 280",
+      "M 305 210 L 275 255 L 285 295 L 265 335"
+    ]
+  },
+  {
+    id: "mid-right-sky",
+    viewBox: "0 0 400 460",
+    originX: "68%",
+    originY: "2%",
+    scale: 0.92,
+    glowColor: "rgba(175, 190, 255, 0.4)",
+    mainStem: "M 180 0 L 165 45 L 190 95 L 172 145 L 202 200 L 184 255 L 215 315 L 198 375 L 225 430",
+    branches: [
+      "M 165 45 L 135 85 L 148 125 L 122 165",
+      "M 190 95 L 220 135 L 210 175 L 238 215",
+      "M 172 145 L 145 190 L 158 230 L 138 270",
+      "M 202 200 L 235 245 L 225 285 L 252 325"
+    ]
+  },
+  {
+    id: "right-flank",
+    viewBox: "0 0 420 460",
+    originX: "82%",
+    originY: "1%",
+    scale: 0.88,
+    glowColor: "rgba(190, 180, 255, 0.44)",
+    mainStem: "M 250 0 L 270 40 L 245 85 L 285 135 L 260 185 L 295 240 L 275 295 L 310 355 L 290 415",
+    branches: [
+      "M 270 40 L 300 75 L 290 115 L 320 150",
+      "M 245 85 L 215 125 L 225 165 L 198 205",
+      "M 285 135 L 325 180 L 315 220 L 345 260",
+      "M 260 185 L 230 230 L 240 270 L 218 310"
+    ]
+  }
+];
+export default function SadLightning({ strikeCount = 0 }) {
+  _s();
+  const [activeStrike, setActiveStrike] = useState(null);
+  const timerRef = useRef(null);
+  useEffect(() => {
+    if (strikeCount <= 0) return;
+    const variantIndex = Math.floor(Math.random() * BOLT_VARIANTS.length);
+    const variant2 = BOLT_VARIANTS[variantIndex];
+    const offsetX2 = (Math.random() - 0.5) * 6;
+    const intensity2 = 0.82 + Math.random() * 0.18;
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+    }
+    setActiveStrike({
+      variant: variant2,
+      offsetX: offsetX2,
+      intensity: intensity2,
+      key: strikeCount
+    });
+    timerRef.current = setTimeout(() => {
+      setActiveStrike(null);
+    }, 530);
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, [strikeCount]);
+  if (!activeStrike) return null;
+  const { variant, offsetX, intensity, key } = activeStrike;
+  return /* @__PURE__ */ jsxDEV(
+    "div",
+    {
+      className: "sad-lightning-container is-striking",
+      "aria-hidden": "true",
+      style: {
+        "--lightning-intensity": intensity,
+        "--lightning-glow": variant.glowColor
+      },
+      children: [
+        /* @__PURE__ */ jsxDEV(
+          "div",
+          {
+            className: "sad-lightning-sky-flash",
+            style: {
+              background: `radial-gradient(ellipse 65% 50% at ${variant.originX} ${variant.originY}, rgba(230, 242, 255, ${0.46 * intensity}) 0%, rgba(175, 160, 240, ${0.28 * intensity}) 40%, rgba(45, 35, 75, ${0.12 * intensity}) 70%, transparent 100%)`
+            }
+          },
+          void 0,
+          false,
+          {
+            fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/SadLightning.jsx",
+            lineNumber: 152,
+            columnNumber: 7
+          },
+          this
+        ),
+        /* @__PURE__ */ jsxDEV("div", { className: "sad-lightning-ambient-flash" }, void 0, false, {
+          fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/SadLightning.jsx",
+          lineNumber: 160,
+          columnNumber: 7
+        }, this),
+        /* @__PURE__ */ jsxDEV(
+          "div",
+          {
+            className: "sad-lightning-bolt-wrapper",
+            style: {
+              left: `calc(${variant.originX} + ${offsetX}%)`,
+              top: variant.originY,
+              transform: `scale(${variant.scale})`
+            },
+            children: /* @__PURE__ */ jsxDEV(
+              "svg",
+              {
+                viewBox: variant.viewBox,
+                className: "sad-lightning-bolt-svg",
+                fill: "none",
+                xmlns: "http://www.w3.org/2000/svg",
+                children: [
+                  /* @__PURE__ */ jsxDEV("defs", { children: /* @__PURE__ */ jsxDEV("filter", { id: "lightningGlow", x: "-40%", y: "-40%", width: "180%", height: "180%", children: [
+                    /* @__PURE__ */ jsxDEV("feGaussianBlur", { stdDeviation: "3.5", result: "glow1" }, void 0, false, {
+                      fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/SadLightning.jsx",
+                      lineNumber: 179,
+                      columnNumber: 15
+                    }, this),
+                    /* @__PURE__ */ jsxDEV("feGaussianBlur", { in: "SourceGraphic", stdDeviation: "1.2", result: "glow2" }, void 0, false, {
+                      fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/SadLightning.jsx",
+                      lineNumber: 180,
+                      columnNumber: 15
+                    }, this),
+                    /* @__PURE__ */ jsxDEV("feMerge", { children: [
+                      /* @__PURE__ */ jsxDEV("feMergeNode", { in: "glow1" }, void 0, false, {
+                        fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/SadLightning.jsx",
+                        lineNumber: 182,
+                        columnNumber: 17
+                      }, this),
+                      /* @__PURE__ */ jsxDEV("feMergeNode", { in: "glow2" }, void 0, false, {
+                        fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/SadLightning.jsx",
+                        lineNumber: 183,
+                        columnNumber: 17
+                      }, this),
+                      /* @__PURE__ */ jsxDEV("feMergeNode", { in: "SourceGraphic" }, void 0, false, {
+                        fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/SadLightning.jsx",
+                        lineNumber: 184,
+                        columnNumber: 17
+                      }, this)
+                    ] }, void 0, true, {
+                      fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/SadLightning.jsx",
+                      lineNumber: 181,
+                      columnNumber: 15
+                    }, this)
+                  ] }, void 0, true, {
+                    fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/SadLightning.jsx",
+                    lineNumber: 178,
+                    columnNumber: 13
+                  }, this) }, void 0, false, {
+                    fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/SadLightning.jsx",
+                    lineNumber: 177,
+                    columnNumber: 11
+                  }, this),
+                  /* @__PURE__ */ jsxDEV("g", { filter: "url(#lightningGlow)", opacity: "0.85", children: [
+                    /* @__PURE__ */ jsxDEV(
+                      "path",
+                      {
+                        d: variant.mainStem,
+                        stroke: "rgba(150, 180, 255, 0.7)",
+                        strokeWidth: "5",
+                        strokeLinecap: "round",
+                        strokeLinejoin: "miter"
+                      },
+                      void 0,
+                      false,
+                      {
+                        fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/SadLightning.jsx",
+                        lineNumber: 191,
+                        columnNumber: 13
+                      },
+                      this
+                    ),
+                    variant.branches.map(
+                      (b, i) => /* @__PURE__ */ jsxDEV(
+                        "path",
+                        {
+                          d: b,
+                          stroke: "rgba(150, 180, 255, 0.6)",
+                          strokeWidth: "3",
+                          strokeLinecap: "round",
+                          strokeLinejoin: "miter"
+                        },
+                        i,
+                        false,
+                        {
+                          fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/SadLightning.jsx",
+                          lineNumber: 199,
+                          columnNumber: 13
+                        },
+                        this
+                      )
+                    )
+                  ] }, void 0, true, {
+                    fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/SadLightning.jsx",
+                    lineNumber: 190,
+                    columnNumber: 11
+                  }, this),
+                  /* @__PURE__ */ jsxDEV(
+                    "path",
+                    {
+                      d: variant.mainStem,
+                      stroke: "#b8d8ff",
+                      strokeWidth: "3.2",
+                      strokeLinecap: "round",
+                      strokeLinejoin: "miter"
+                    },
+                    void 0,
+                    false,
+                    {
+                      fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/SadLightning.jsx",
+                      lineNumber: 211,
+                      columnNumber: 11
+                    },
+                    this
+                  ),
+                  variant.branches.map(
+                    (b, i) => /* @__PURE__ */ jsxDEV(
+                      "path",
+                      {
+                        d: b,
+                        stroke: "#b8d8ff",
+                        strokeWidth: "2.0",
+                        strokeLinecap: "round",
+                        strokeLinejoin: "miter"
+                      },
+                      `mid-${i}`,
+                      false,
+                      {
+                        fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/SadLightning.jsx",
+                        lineNumber: 219,
+                        columnNumber: 11
+                      },
+                      this
+                    )
+                  ),
+                  /* @__PURE__ */ jsxDEV(
+                    "path",
+                    {
+                      d: variant.mainStem,
+                      stroke: "#ffffff",
+                      strokeWidth: "1.6",
+                      strokeLinecap: "round",
+                      strokeLinejoin: "miter"
+                    },
+                    void 0,
+                    false,
+                    {
+                      fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/SadLightning.jsx",
+                      lineNumber: 230,
+                      columnNumber: 11
+                    },
+                    this
+                  ),
+                  variant.branches.map(
+                    (b, i) => /* @__PURE__ */ jsxDEV(
+                      "path",
+                      {
+                        d: b,
+                        stroke: "#ffffff",
+                        strokeWidth: "1.0",
+                        strokeLinecap: "round",
+                        strokeLinejoin: "miter"
+                      },
+                      `core-${i}`,
+                      false,
+                      {
+                        fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/SadLightning.jsx",
+                        lineNumber: 238,
+                        columnNumber: 11
+                      },
+                      this
+                    )
+                  )
+                ]
+              },
+              void 0,
+              true,
+              {
+                fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/SadLightning.jsx",
+                lineNumber: 171,
+                columnNumber: 9
+              },
+              this
+            )
+          },
+          void 0,
+          false,
+          {
+            fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/SadLightning.jsx",
+            lineNumber: 163,
+            columnNumber: 7
+          },
+          this
+        )
+      ]
+    },
+    key,
+    true,
+    {
+      fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/SadLightning.jsx",
+      lineNumber: 142,
+      columnNumber: 5
+    },
+    this
+  );
+}
+_s(SadLightning, "jlzdm1KWMShIPDCnTGHFHl5JYRU=");
+_c = SadLightning;
+var _c;
+$RefreshReg$(_c, "SadLightning");
+if (import.meta.hot && !inWebWorker) {
+  window.$RefreshReg$ = prevRefreshReg;
+  window.$RefreshSig$ = prevRefreshSig;
+}
+if (import.meta.hot && !inWebWorker) {
+  RefreshRuntime.__hmr_import(import.meta.url).then((currentExports) => {
+    RefreshRuntime.registerExportsForReactRefresh("C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/SadLightning.jsx", currentExports);
+    import.meta.hot.accept((nextExports) => {
+      if (!nextExports) return;
+      const invalidateMessage = RefreshRuntime.validateRefreshBoundaryAndEnqueueUpdate("C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/SadLightning.jsx", currentExports, nextExports);
+      if (invalidateMessage) import.meta.hot.invalidate(invalidateMessage);
+    });
+  });
+}
+
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJtYXBwaW5ncyI6IkFBb0lNOzs7Ozs7Ozs7Ozs7Ozs7OztBQXBJTixPQUFPQSxTQUFTQyxVQUFVQyxXQUFXQyxjQUFjO0FBZW5ELE1BQU1DLGdCQUFnQjtBQUFBLEVBQ3BCO0FBQUEsSUFDRUMsSUFBSTtBQUFBLElBQ0pDLFNBQVM7QUFBQSxJQUNUQyxTQUFTO0FBQUEsSUFDVEMsU0FBUztBQUFBLElBQ1RDLE9BQU87QUFBQSxJQUNQQyxXQUFXO0FBQUE7QUFBQSxJQUVYQyxVQUFVO0FBQUE7QUFBQSxJQUVWQyxVQUFVO0FBQUEsTUFDUjtBQUFBLE1BQ0E7QUFBQSxNQUNBO0FBQUEsTUFDQTtBQUFBLElBQStCO0FBQUEsRUFFbkM7QUFBQSxFQUNBO0FBQUEsSUFDRVAsSUFBSTtBQUFBLElBQ0pDLFNBQVM7QUFBQSxJQUNUQyxTQUFTO0FBQUEsSUFDVEMsU0FBUztBQUFBLElBQ1RDLE9BQU87QUFBQSxJQUNQQyxXQUFXO0FBQUEsSUFDWEMsVUFBVTtBQUFBLElBQ1ZDLFVBQVU7QUFBQSxNQUNSO0FBQUEsTUFDQTtBQUFBLE1BQ0E7QUFBQSxNQUNBO0FBQUEsSUFBeUM7QUFBQSxFQUU3QztBQUFBLEVBQ0E7QUFBQSxJQUNFUCxJQUFJO0FBQUEsSUFDSkMsU0FBUztBQUFBLElBQ1RDLFNBQVM7QUFBQSxJQUNUQyxTQUFTO0FBQUEsSUFDVEMsT0FBTztBQUFBLElBQ1BDLFdBQVc7QUFBQSxJQUNYQyxVQUFVO0FBQUEsSUFDVkMsVUFBVTtBQUFBLE1BQ1I7QUFBQSxNQUNBO0FBQUEsTUFDQTtBQUFBLE1BQ0E7QUFBQSxJQUF5QztBQUFBLEVBRTdDO0FBQUEsRUFDQTtBQUFBLElBQ0VQLElBQUk7QUFBQSxJQUNKQyxTQUFTO0FBQUEsSUFDVEMsU0FBUztBQUFBLElBQ1RDLFNBQVM7QUFBQSxJQUNUQyxPQUFPO0FBQUEsSUFDUEMsV0FBVztBQUFBLElBQ1hDLFVBQVU7QUFBQSxJQUNWQyxVQUFVO0FBQUEsTUFDUjtBQUFBLE1BQ0E7QUFBQSxNQUNBO0FBQUEsTUFDQTtBQUFBLElBQXlDO0FBQUEsRUFFN0M7QUFBQztBQUdILHdCQUF3QkMsYUFBYSxFQUFFQyxjQUFjLEVBQUUsR0FBRztBQUFBQyxLQUFBO0FBQ3hELFFBQU0sQ0FBQ0MsY0FBY0MsZUFBZSxJQUFJaEIsU0FBUyxJQUFJO0FBQ3JELFFBQU1pQixXQUFXZixPQUFPLElBQUk7QUFFNUJELFlBQVUsTUFBTTtBQUVkLFFBQUlZLGVBQWUsRUFBRztBQUd0QixVQUFNSyxlQUFlQyxLQUFLQyxNQUFNRCxLQUFLRSxPQUFPLElBQUlsQixjQUFjbUIsTUFBTTtBQUNwRSxVQUFNQyxXQUFVcEIsY0FBY2UsWUFBWTtBQUcxQyxVQUFNTSxZQUFXTCxLQUFLRSxPQUFPLElBQUksT0FBTztBQUN4QyxVQUFNSSxhQUFZLE9BQU9OLEtBQUtFLE9BQU8sSUFBSTtBQUV6QyxRQUFJSixTQUFTUyxTQUFTO0FBQ3BCQyxtQkFBYVYsU0FBU1MsT0FBTztBQUFBLElBQy9CO0FBRUFWLG9CQUFnQjtBQUFBLE1BQ2RPO0FBQUFBLE1BQ0FDO0FBQUFBLE1BQ0FDO0FBQUFBLE1BQ0FHLEtBQUtmO0FBQUFBLElBQ1AsQ0FBQztBQUdESSxhQUFTUyxVQUFVRyxXQUFXLE1BQU07QUFDbENiLHNCQUFnQixJQUFJO0FBQUEsSUFDdEIsR0FBRyxHQUFHO0FBRU4sV0FBTyxNQUFNO0FBQ1gsVUFBSUMsU0FBU1MsUUFBU0MsY0FBYVYsU0FBU1MsT0FBTztBQUFBLElBQ3JEO0FBQUEsRUFDRixHQUFHLENBQUNiLFdBQVcsQ0FBQztBQUVoQixNQUFJLENBQUNFLGFBQWMsUUFBTztBQUUxQixRQUFNLEVBQUVRLFNBQVNDLFNBQVNDLFdBQVdHLElBQUksSUFBSWI7QUFFN0MsU0FDRTtBQUFBLElBQUM7QUFBQTtBQUFBLE1BRUMsV0FBVTtBQUFBLE1BQ1YsZUFBWTtBQUFBLE1BQ1osT0FBTztBQUFBLFFBQ0wseUJBQXlCVTtBQUFBQSxRQUN6QixvQkFBb0JGLFFBQVFkO0FBQUFBLE1BQzlCO0FBQUEsTUFHQTtBQUFBO0FBQUEsVUFBQztBQUFBO0FBQUEsWUFDQyxXQUFVO0FBQUEsWUFDVixPQUFPO0FBQUEsY0FDTHFCLFlBQVksc0NBQXNDUCxRQUFRakIsT0FBTyxJQUFJaUIsUUFBUWhCLE9BQU8seUJBQXlCLE9BQU9rQixTQUFTLDZCQUE2QixPQUFPQSxTQUFTLDJCQUEyQixPQUFPQSxTQUFTO0FBQUEsWUFDdk47QUFBQTtBQUFBLFVBSkY7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBLFFBSUk7QUFBQSxRQUlKLHVCQUFDLFNBQUksV0FBVSxpQ0FBZjtBQUFBO0FBQUE7QUFBQTtBQUFBLGVBQTRDO0FBQUEsUUFHNUM7QUFBQSxVQUFDO0FBQUE7QUFBQSxZQUNDLFdBQVU7QUFBQSxZQUNWLE9BQU87QUFBQSxjQUNMTSxNQUFNLFFBQVFSLFFBQVFqQixPQUFPLE1BQU1rQixPQUFPO0FBQUEsY0FDMUNRLEtBQUtULFFBQVFoQjtBQUFBQSxjQUNiMEIsV0FBVyxTQUFTVixRQUFRZixLQUFLO0FBQUEsWUFDbkM7QUFBQSxZQUVBO0FBQUEsY0FBQztBQUFBO0FBQUEsZ0JBQ0MsU0FBU2UsUUFBUWxCO0FBQUFBLGdCQUNqQixXQUFVO0FBQUEsZ0JBQ1YsTUFBSztBQUFBLGdCQUNMLE9BQU07QUFBQSxnQkFFTjtBQUFBLHlDQUFDLFVBQ0MsaUNBQUMsWUFBTyxJQUFHLGlCQUFnQixHQUFFLFFBQU8sR0FBRSxRQUFPLE9BQU0sUUFBTyxRQUFPLFFBQy9EO0FBQUEsMkNBQUMsb0JBQWUsY0FBYSxPQUFNLFFBQU8sV0FBMUM7QUFBQTtBQUFBO0FBQUE7QUFBQSwyQkFBaUQ7QUFBQSxvQkFDakQsdUJBQUMsb0JBQWUsSUFBRyxpQkFBZ0IsY0FBYSxPQUFNLFFBQU8sV0FBN0Q7QUFBQTtBQUFBO0FBQUE7QUFBQSwyQkFBb0U7QUFBQSxvQkFDcEUsdUJBQUMsYUFDQztBQUFBLDZDQUFDLGlCQUFZLElBQUcsV0FBaEI7QUFBQTtBQUFBO0FBQUE7QUFBQSw2QkFBdUI7QUFBQSxzQkFDdkIsdUJBQUMsaUJBQVksSUFBRyxXQUFoQjtBQUFBO0FBQUE7QUFBQTtBQUFBLDZCQUF1QjtBQUFBLHNCQUN2Qix1QkFBQyxpQkFBWSxJQUFHLG1CQUFoQjtBQUFBO0FBQUE7QUFBQTtBQUFBLDZCQUErQjtBQUFBLHlCQUhqQztBQUFBO0FBQUE7QUFBQTtBQUFBLDJCQUlBO0FBQUEsdUJBUEY7QUFBQTtBQUFBO0FBQUE7QUFBQSx5QkFRQSxLQVRGO0FBQUE7QUFBQTtBQUFBO0FBQUEseUJBVUE7QUFBQSxrQkFHQSx1QkFBQyxPQUFFLFFBQU8sdUJBQXNCLFNBQVEsUUFDdEM7QUFBQTtBQUFBLHNCQUFDO0FBQUE7QUFBQSx3QkFDQyxHQUFHa0IsUUFBUWI7QUFBQUEsd0JBQ1gsUUFBTztBQUFBLHdCQUNQLGFBQVk7QUFBQSx3QkFDWixlQUFjO0FBQUEsd0JBQ2QsZ0JBQWU7QUFBQTtBQUFBLHNCQUxqQjtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUEsb0JBS3dCO0FBQUEsb0JBRXZCYSxRQUFRWixTQUFTdUI7QUFBQUEsc0JBQUksQ0FBQ0MsR0FBR0MsTUFDeEI7QUFBQSx3QkFBQztBQUFBO0FBQUEsMEJBRUMsR0FBR0Q7QUFBQUEsMEJBQ0gsUUFBTztBQUFBLDBCQUNQLGFBQVk7QUFBQSwwQkFDWixlQUFjO0FBQUEsMEJBQ2QsZ0JBQWU7QUFBQTtBQUFBLHdCQUxWQztBQUFBQSx3QkFEUDtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBLHNCQU13QjtBQUFBLG9CQUV6QjtBQUFBLHVCQWpCSDtBQUFBO0FBQUE7QUFBQTtBQUFBLHlCQWtCQTtBQUFBLGtCQUdBO0FBQUEsb0JBQUM7QUFBQTtBQUFBLHNCQUNDLEdBQUdiLFFBQVFiO0FBQUFBLHNCQUNYLFFBQU87QUFBQSxzQkFDUCxhQUFZO0FBQUEsc0JBQ1osZUFBYztBQUFBLHNCQUNkLGdCQUFlO0FBQUE7QUFBQSxvQkFMakI7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBLGtCQUt3QjtBQUFBLGtCQUV2QmEsUUFBUVosU0FBU3VCO0FBQUFBLG9CQUFJLENBQUNDLEdBQUdDLE1BQ3hCO0FBQUEsc0JBQUM7QUFBQTtBQUFBLHdCQUVDLEdBQUdEO0FBQUFBLHdCQUNILFFBQU87QUFBQSx3QkFDUCxhQUFZO0FBQUEsd0JBQ1osZUFBYztBQUFBLHdCQUNkLGdCQUFlO0FBQUE7QUFBQSxzQkFMVixPQUFPQyxDQUFDO0FBQUEsc0JBRGY7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQSxvQkFNd0I7QUFBQSxrQkFFekI7QUFBQSxrQkFHRDtBQUFBLG9CQUFDO0FBQUE7QUFBQSxzQkFDQyxHQUFHYixRQUFRYjtBQUFBQSxzQkFDWCxRQUFPO0FBQUEsc0JBQ1AsYUFBWTtBQUFBLHNCQUNaLGVBQWM7QUFBQSxzQkFDZCxnQkFBZTtBQUFBO0FBQUEsb0JBTGpCO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQSxrQkFLd0I7QUFBQSxrQkFFdkJhLFFBQVFaLFNBQVN1QjtBQUFBQSxvQkFBSSxDQUFDQyxHQUFHQyxNQUN4QjtBQUFBLHNCQUFDO0FBQUE7QUFBQSx3QkFFQyxHQUFHRDtBQUFBQSx3QkFDSCxRQUFPO0FBQUEsd0JBQ1AsYUFBWTtBQUFBLHdCQUNaLGVBQWM7QUFBQSx3QkFDZCxnQkFBZTtBQUFBO0FBQUEsc0JBTFYsUUFBUUMsQ0FBQztBQUFBLHNCQURoQjtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBLG9CQU13QjtBQUFBLGtCQUV6QjtBQUFBO0FBQUE7QUFBQSxjQTNFSDtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUEsWUE0RUE7QUFBQTtBQUFBLFVBcEZGO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQSxRQXFGQTtBQUFBO0FBQUE7QUFBQSxJQXpHS1I7QUFBQUEsSUFEUDtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBLEVBMkdBO0FBRUo7QUFBQ2QsR0F2SnVCRixjQUFZO0FBQUEsS0FBWkE7QUFBWSxJQUFBeUI7QUFBQSxhQUFBQSxJQUFBIiwibmFtZXMiOlsiUmVhY3QiLCJ1c2VTdGF0ZSIsInVzZUVmZmVjdCIsInVzZVJlZiIsIkJPTFRfVkFSSUFOVFMiLCJpZCIsInZpZXdCb3giLCJvcmlnaW5YIiwib3JpZ2luWSIsInNjYWxlIiwiZ2xvd0NvbG9yIiwibWFpblN0ZW0iLCJicmFuY2hlcyIsIlNhZExpZ2h0bmluZyIsInN0cmlrZUNvdW50IiwiX3MiLCJhY3RpdmVTdHJpa2UiLCJzZXRBY3RpdmVTdHJpa2UiLCJ0aW1lclJlZiIsInZhcmlhbnRJbmRleCIsIk1hdGgiLCJmbG9vciIsInJhbmRvbSIsImxlbmd0aCIsInZhcmlhbnQiLCJvZmZzZXRYIiwiaW50ZW5zaXR5IiwiY3VycmVudCIsImNsZWFyVGltZW91dCIsImtleSIsInNldFRpbWVvdXQiLCJiYWNrZ3JvdW5kIiwibGVmdCIsInRvcCIsInRyYW5zZm9ybSIsIm1hcCIsImIiLCJpIiwiX2MiXSwiaWdub3JlTGlzdCI6W10sInNvdXJjZXMiOlsiU2FkTGlnaHRuaW5nLmpzeCJdLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgUmVhY3QsIHsgdXNlU3RhdGUsIHVzZUVmZmVjdCwgdXNlUmVmIH0gZnJvbSAncmVhY3QnO1xuXG4vKipcbiAqIFNhZExpZ2h0bmluZyBDb21wb25lbnRcbiAqIFxuICogQ2luZW1hdGljIFRodW5kZXJzdG9ybSBMaWdodG5pbmcgRWZmZWN0OlxuICogLSBUcmlnZ2VycyBvbiBuYXZpZ2F0aW9uIGltYWdlIGNoYW5nZXMuXG4gKiAtIENvb2wtd2hpdGUgYmFja2dyb3VuZCBmbGFzaCB3aXRoIHN1YnRsZSB2aW9sZXQgZWRnZXMuXG4gKiAtIFJlYWxpc3RpYyBicmFuY2hpbmcgamFnZ2VkIGxpZ2h0bmluZyBib2x0IGluIHRoZSBkaXN0YW50IHNreS5cbiAqIC0gU3VidGxlIHNlY29uZGFyeSBhbWJpZW50IGdsb3cgb24gY2xvdWRzIGFuZCBtb3VudGFpbnMuXG4gKiAtIFJhbmRvbWl6ZWQgYm9sdCBicmFuY2hpbmcsIHBvc2l0aW9ucywgYW5kIGludGVuc2l0eS5cbiAqIC0gU21vb3RoIGZhZGUgb3V0IG92ZXIgfjUwMG1zLlxuICovXG5cbi8vIDQgZGlzdGluY3QgcmVhbGlzdGljIGJyYW5jaGluZyBsaWdodG5pbmcgYm9sdCBkZWZpbml0aW9uc1xuY29uc3QgQk9MVF9WQVJJQU5UUyA9IFtcbiAge1xuICAgIGlkOiAnbGVmdC1mbGFuaycsXG4gICAgdmlld0JveDogJzAgMCA0MDAgNDUwJyxcbiAgICBvcmlnaW5YOiAnMTglJyxcbiAgICBvcmlnaW5ZOiAnMiUnLFxuICAgIHNjYWxlOiAwLjk1LFxuICAgIGdsb3dDb2xvcjogJ3JnYmEoMTY1LCAxOTUsIDI1NSwgMC40MiknLFxuICAgIC8vIEphZ2dlZCBwcmltYXJ5IHN0ZW1cbiAgICBtYWluU3RlbTogJ00gMjIwIDAgTCAyMTAgNDUgTCAyMzUgOTAgTCAyMTggMTM1IEwgMjQ1IDE4MCBMIDIzMiAyMzAgTCAyNjAgMjgwIEwgMjQ4IDM0MCBMIDI3NSA0MDAnLFxuICAgIC8vIFJlYWxpc3RpYyBicmFuY2hpbmcgZm9ya3NcbiAgICBicmFuY2hlczogW1xuICAgICAgJ00gMjEwIDQ1IEwgMTg1IDg1IEwgMTk1IDEyNSBMIDE3NSAxNjAnLFxuICAgICAgJ00gMjM1IDkwIEwgMjY1IDEzMCBMIDI1NSAxNzAgTCAyODAgMjA1JyxcbiAgICAgICdNIDI0NSAxODAgTCAyMTUgMjIwIEwgMjI1IDI2MCBMIDIwNSAyOTUnLFxuICAgICAgJ00gMjYwIDI4MCBMIDI5MCAzMjAgTCAyODIgMzU1JyxcbiAgICBdLFxuICB9LFxuICB7XG4gICAgaWQ6ICdtaWQtbGVmdC1za3knLFxuICAgIHZpZXdCb3g6ICcwIDAgNDUwIDQ4MCcsXG4gICAgb3JpZ2luWDogJzMyJScsXG4gICAgb3JpZ2luWTogJzElJyxcbiAgICBzY2FsZTogMS4wNSxcbiAgICBnbG93Q29sb3I6ICdyZ2JhKDE4MCwgMjA1LCAyNTUsIDAuNDUpJyxcbiAgICBtYWluU3RlbTogJ00gMzAwIDAgTCAzMTUgNTAgTCAyOTAgMTAwIEwgMzI1IDE1NSBMIDMwNSAyMTAgTCAzNDAgMjcwIEwgMzIwIDMzMCBMIDM1MCAzOTAgTCAzMzUgNDUwJyxcbiAgICBicmFuY2hlczogW1xuICAgICAgJ00gMzE1IDUwIEwgMzQ1IDkwIEwgMzM1IDEzMCBMIDM2MCAxNjUnLFxuICAgICAgJ00gMjkwIDEwMCBMIDI2MCAxNDUgTCAyNzIgMTg1IEwgMjQ1IDIyNScsXG4gICAgICAnTSAzMjUgMTU1IEwgMzY1IDIwMCBMIDM1NSAyNDAgTCAzODUgMjgwJyxcbiAgICAgICdNIDMwNSAyMTAgTCAyNzUgMjU1IEwgMjg1IDI5NSBMIDI2NSAzMzUnLFxuICAgIF0sXG4gIH0sXG4gIHtcbiAgICBpZDogJ21pZC1yaWdodC1za3knLFxuICAgIHZpZXdCb3g6ICcwIDAgNDAwIDQ2MCcsXG4gICAgb3JpZ2luWDogJzY4JScsXG4gICAgb3JpZ2luWTogJzIlJyxcbiAgICBzY2FsZTogMC45MixcbiAgICBnbG93Q29sb3I6ICdyZ2JhKDE3NSwgMTkwLCAyNTUsIDAuNCknLFxuICAgIG1haW5TdGVtOiAnTSAxODAgMCBMIDE2NSA0NSBMIDE5MCA5NSBMIDE3MiAxNDUgTCAyMDIgMjAwIEwgMTg0IDI1NSBMIDIxNSAzMTUgTCAxOTggMzc1IEwgMjI1IDQzMCcsXG4gICAgYnJhbmNoZXM6IFtcbiAgICAgICdNIDE2NSA0NSBMIDEzNSA4NSBMIDE0OCAxMjUgTCAxMjIgMTY1JyxcbiAgICAgICdNIDE5MCA5NSBMIDIyMCAxMzUgTCAyMTAgMTc1IEwgMjM4IDIxNScsXG4gICAgICAnTSAxNzIgMTQ1IEwgMTQ1IDE5MCBMIDE1OCAyMzAgTCAxMzggMjcwJyxcbiAgICAgICdNIDIwMiAyMDAgTCAyMzUgMjQ1IEwgMjI1IDI4NSBMIDI1MiAzMjUnLFxuICAgIF0sXG4gIH0sXG4gIHtcbiAgICBpZDogJ3JpZ2h0LWZsYW5rJyxcbiAgICB2aWV3Qm94OiAnMCAwIDQyMCA0NjAnLFxuICAgIG9yaWdpblg6ICc4MiUnLFxuICAgIG9yaWdpblk6ICcxJScsXG4gICAgc2NhbGU6IDAuODgsXG4gICAgZ2xvd0NvbG9yOiAncmdiYSgxOTAsIDE4MCwgMjU1LCAwLjQ0KScsXG4gICAgbWFpblN0ZW06ICdNIDI1MCAwIEwgMjcwIDQwIEwgMjQ1IDg1IEwgMjg1IDEzNSBMIDI2MCAxODUgTCAyOTUgMjQwIEwgMjc1IDI5NSBMIDMxMCAzNTUgTCAyOTAgNDE1JyxcbiAgICBicmFuY2hlczogW1xuICAgICAgJ00gMjcwIDQwIEwgMzAwIDc1IEwgMjkwIDExNSBMIDMyMCAxNTAnLFxuICAgICAgJ00gMjQ1IDg1IEwgMjE1IDEyNSBMIDIyNSAxNjUgTCAxOTggMjA1JyxcbiAgICAgICdNIDI4NSAxMzUgTCAzMjUgMTgwIEwgMzE1IDIyMCBMIDM0NSAyNjAnLFxuICAgICAgJ00gMjYwIDE4NSBMIDIzMCAyMzAgTCAyNDAgMjcwIEwgMjE4IDMxMCcsXG4gICAgXSxcbiAgfSxcbl07XG5cbmV4cG9ydCBkZWZhdWx0IGZ1bmN0aW9uIFNhZExpZ2h0bmluZyh7IHN0cmlrZUNvdW50ID0gMCB9KSB7XG4gIGNvbnN0IFthY3RpdmVTdHJpa2UsIHNldEFjdGl2ZVN0cmlrZV0gPSB1c2VTdGF0ZShudWxsKTtcbiAgY29uc3QgdGltZXJSZWYgPSB1c2VSZWYobnVsbCk7XG5cbiAgdXNlRWZmZWN0KCgpID0+IHtcbiAgICAvLyBPbmx5IHN0cmlrZSB3aGVuIHRyaWdnZXIgY291bnRlciBpbmNyZW1lbnRzICg+IDApXG4gICAgaWYgKHN0cmlrZUNvdW50IDw9IDApIHJldHVybjtcblxuICAgIC8vIFBpY2sgcmFuZG9tIGJvbHQgdmFyaWFudFxuICAgIGNvbnN0IHZhcmlhbnRJbmRleCA9IE1hdGguZmxvb3IoTWF0aC5yYW5kb20oKSAqIEJPTFRfVkFSSUFOVFMubGVuZ3RoKTtcbiAgICBjb25zdCB2YXJpYW50ID0gQk9MVF9WQVJJQU5UU1t2YXJpYW50SW5kZXhdO1xuXG4gICAgLy8gU2xpZ2h0IHJhbmRvbSBwb3NpdGlvbiB2YXJpYW5jZSAoKy8tIDQlKSBhbmQgc2NhbGUgKCsvLSAwLjA4KVxuICAgIGNvbnN0IG9mZnNldFggPSAoTWF0aC5yYW5kb20oKSAtIDAuNSkgKiA2O1xuICAgIGNvbnN0IGludGVuc2l0eSA9IDAuODIgKyBNYXRoLnJhbmRvbSgpICogMC4xODtcblxuICAgIGlmICh0aW1lclJlZi5jdXJyZW50KSB7XG4gICAgICBjbGVhclRpbWVvdXQodGltZXJSZWYuY3VycmVudCk7XG4gICAgfVxuXG4gICAgc2V0QWN0aXZlU3RyaWtlKHtcbiAgICAgIHZhcmlhbnQsXG4gICAgICBvZmZzZXRYLFxuICAgICAgaW50ZW5zaXR5LFxuICAgICAga2V5OiBzdHJpa2VDb3VudCxcbiAgICB9KTtcblxuICAgIC8vIEF1dG8tZGlzbWlzcyBhZnRlciBhbmltYXRpb24gY29tcGxldGVzICg1MjBtcylcbiAgICB0aW1lclJlZi5jdXJyZW50ID0gc2V0VGltZW91dCgoKSA9PiB7XG4gICAgICBzZXRBY3RpdmVTdHJpa2UobnVsbCk7XG4gICAgfSwgNTMwKTtcblxuICAgIHJldHVybiAoKSA9PiB7XG4gICAgICBpZiAodGltZXJSZWYuY3VycmVudCkgY2xlYXJUaW1lb3V0KHRpbWVyUmVmLmN1cnJlbnQpO1xuICAgIH07XG4gIH0sIFtzdHJpa2VDb3VudF0pO1xuXG4gIGlmICghYWN0aXZlU3RyaWtlKSByZXR1cm4gbnVsbDtcblxuICBjb25zdCB7IHZhcmlhbnQsIG9mZnNldFgsIGludGVuc2l0eSwga2V5IH0gPSBhY3RpdmVTdHJpa2U7XG5cbiAgcmV0dXJuIChcbiAgICA8ZGl2XG4gICAgICBrZXk9e2tleX1cbiAgICAgIGNsYXNzTmFtZT1cInNhZC1saWdodG5pbmctY29udGFpbmVyIGlzLXN0cmlraW5nXCJcbiAgICAgIGFyaWEtaGlkZGVuPVwidHJ1ZVwiXG4gICAgICBzdHlsZT17e1xuICAgICAgICAnLS1saWdodG5pbmctaW50ZW5zaXR5JzogaW50ZW5zaXR5LFxuICAgICAgICAnLS1saWdodG5pbmctZ2xvdyc6IHZhcmlhbnQuZ2xvd0NvbG9yLFxuICAgICAgfX1cbiAgICA+XG4gICAgICB7LyogMS4gQ29vbC13aGl0ZSAmIFZpb2xldCBBdG1vc3BoZXJpYyBTa3kgRmxhc2ggKi99XG4gICAgICA8ZGl2XG4gICAgICAgIGNsYXNzTmFtZT1cInNhZC1saWdodG5pbmctc2t5LWZsYXNoXCJcbiAgICAgICAgc3R5bGU9e3tcbiAgICAgICAgICBiYWNrZ3JvdW5kOiBgcmFkaWFsLWdyYWRpZW50KGVsbGlwc2UgNjUlIDUwJSBhdCAke3ZhcmlhbnQub3JpZ2luWH0gJHt2YXJpYW50Lm9yaWdpbll9LCByZ2JhKDIzMCwgMjQyLCAyNTUsICR7MC40NiAqIGludGVuc2l0eX0pIDAlLCByZ2JhKDE3NSwgMTYwLCAyNDAsICR7MC4yOCAqIGludGVuc2l0eX0pIDQwJSwgcmdiYSg0NSwgMzUsIDc1LCAkezAuMTIgKiBpbnRlbnNpdHl9KSA3MCUsIHRyYW5zcGFyZW50IDEwMCUpYCxcbiAgICAgICAgfX1cbiAgICAgIC8+XG5cbiAgICAgIHsvKiAyLiBHbG9iYWwgQW1iaWVudCBFbnZpcm9ubWVudGFsIEZsYXNoICovfVxuICAgICAgPGRpdiBjbGFzc05hbWU9XCJzYWQtbGlnaHRuaW5nLWFtYmllbnQtZmxhc2hcIiAvPlxuXG4gICAgICB7LyogMy4gUmVhbGlzdGljIEJyYW5jaGluZyBKYWdnZWQgTGlnaHRuaW5nIEJvbHQgKi99XG4gICAgICA8ZGl2XG4gICAgICAgIGNsYXNzTmFtZT1cInNhZC1saWdodG5pbmctYm9sdC13cmFwcGVyXCJcbiAgICAgICAgc3R5bGU9e3tcbiAgICAgICAgICBsZWZ0OiBgY2FsYygke3ZhcmlhbnQub3JpZ2luWH0gKyAke29mZnNldFh9JSlgLFxuICAgICAgICAgIHRvcDogdmFyaWFudC5vcmlnaW5ZLFxuICAgICAgICAgIHRyYW5zZm9ybTogYHNjYWxlKCR7dmFyaWFudC5zY2FsZX0pYCxcbiAgICAgICAgfX1cbiAgICAgID5cbiAgICAgICAgPHN2Z1xuICAgICAgICAgIHZpZXdCb3g9e3ZhcmlhbnQudmlld0JveH1cbiAgICAgICAgICBjbGFzc05hbWU9XCJzYWQtbGlnaHRuaW5nLWJvbHQtc3ZnXCJcbiAgICAgICAgICBmaWxsPVwibm9uZVwiXG4gICAgICAgICAgeG1sbnM9XCJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2Z1wiXG4gICAgICAgID5cbiAgICAgICAgICA8ZGVmcz5cbiAgICAgICAgICAgIDxmaWx0ZXIgaWQ9XCJsaWdodG5pbmdHbG93XCIgeD1cIi00MCVcIiB5PVwiLTQwJVwiIHdpZHRoPVwiMTgwJVwiIGhlaWdodD1cIjE4MCVcIj5cbiAgICAgICAgICAgICAgPGZlR2F1c3NpYW5CbHVyIHN0ZERldmlhdGlvbj1cIjMuNVwiIHJlc3VsdD1cImdsb3cxXCIgLz5cbiAgICAgICAgICAgICAgPGZlR2F1c3NpYW5CbHVyIGluPVwiU291cmNlR3JhcGhpY1wiIHN0ZERldmlhdGlvbj1cIjEuMlwiIHJlc3VsdD1cImdsb3cyXCIgLz5cbiAgICAgICAgICAgICAgPGZlTWVyZ2U+XG4gICAgICAgICAgICAgICAgPGZlTWVyZ2VOb2RlIGluPVwiZ2xvdzFcIiAvPlxuICAgICAgICAgICAgICAgIDxmZU1lcmdlTm9kZSBpbj1cImdsb3cyXCIgLz5cbiAgICAgICAgICAgICAgICA8ZmVNZXJnZU5vZGUgaW49XCJTb3VyY2VHcmFwaGljXCIgLz5cbiAgICAgICAgICAgICAgPC9mZU1lcmdlPlxuICAgICAgICAgICAgPC9maWx0ZXI+XG4gICAgICAgICAgPC9kZWZzPlxuXG4gICAgICAgICAgey8qIERpZmZ1c2UgVmlvbGV0L0JsdWUgT3V0ZXIgQXVyYSAqL31cbiAgICAgICAgICA8ZyBmaWx0ZXI9XCJ1cmwoI2xpZ2h0bmluZ0dsb3cpXCIgb3BhY2l0eT1cIjAuODVcIj5cbiAgICAgICAgICAgIDxwYXRoXG4gICAgICAgICAgICAgIGQ9e3ZhcmlhbnQubWFpblN0ZW19XG4gICAgICAgICAgICAgIHN0cm9rZT1cInJnYmEoMTUwLCAxODAsIDI1NSwgMC43KVwiXG4gICAgICAgICAgICAgIHN0cm9rZVdpZHRoPVwiNVwiXG4gICAgICAgICAgICAgIHN0cm9rZUxpbmVjYXA9XCJyb3VuZFwiXG4gICAgICAgICAgICAgIHN0cm9rZUxpbmVqb2luPVwibWl0ZXJcIlxuICAgICAgICAgICAgLz5cbiAgICAgICAgICAgIHt2YXJpYW50LmJyYW5jaGVzLm1hcCgoYiwgaSkgPT4gKFxuICAgICAgICAgICAgICA8cGF0aFxuICAgICAgICAgICAgICAgIGtleT17aX1cbiAgICAgICAgICAgICAgICBkPXtifVxuICAgICAgICAgICAgICAgIHN0cm9rZT1cInJnYmEoMTUwLCAxODAsIDI1NSwgMC42KVwiXG4gICAgICAgICAgICAgICAgc3Ryb2tlV2lkdGg9XCIzXCJcbiAgICAgICAgICAgICAgICBzdHJva2VMaW5lY2FwPVwicm91bmRcIlxuICAgICAgICAgICAgICAgIHN0cm9rZUxpbmVqb2luPVwibWl0ZXJcIlxuICAgICAgICAgICAgICAvPlxuICAgICAgICAgICAgKSl9XG4gICAgICAgICAgPC9nPlxuXG4gICAgICAgICAgey8qIFZpYnJhbnQgRWxlY3RyaWMgTWlkLWdsb3cgKi99XG4gICAgICAgICAgPHBhdGhcbiAgICAgICAgICAgIGQ9e3ZhcmlhbnQubWFpblN0ZW19XG4gICAgICAgICAgICBzdHJva2U9XCIjYjhkOGZmXCJcbiAgICAgICAgICAgIHN0cm9rZVdpZHRoPVwiMy4yXCJcbiAgICAgICAgICAgIHN0cm9rZUxpbmVjYXA9XCJyb3VuZFwiXG4gICAgICAgICAgICBzdHJva2VMaW5lam9pbj1cIm1pdGVyXCJcbiAgICAgICAgICAvPlxuICAgICAgICAgIHt2YXJpYW50LmJyYW5jaGVzLm1hcCgoYiwgaSkgPT4gKFxuICAgICAgICAgICAgPHBhdGhcbiAgICAgICAgICAgICAga2V5PXtgbWlkLSR7aX1gfVxuICAgICAgICAgICAgICBkPXtifVxuICAgICAgICAgICAgICBzdHJva2U9XCIjYjhkOGZmXCJcbiAgICAgICAgICAgICAgc3Ryb2tlV2lkdGg9XCIyLjBcIlxuICAgICAgICAgICAgICBzdHJva2VMaW5lY2FwPVwicm91bmRcIlxuICAgICAgICAgICAgICBzdHJva2VMaW5lam9pbj1cIm1pdGVyXCJcbiAgICAgICAgICAgIC8+XG4gICAgICAgICAgKSl9XG5cbiAgICAgICAgICB7LyogQmxhemluZyBDb3JlIEJlYW0gKi99XG4gICAgICAgICAgPHBhdGhcbiAgICAgICAgICAgIGQ9e3ZhcmlhbnQubWFpblN0ZW19XG4gICAgICAgICAgICBzdHJva2U9XCIjZmZmZmZmXCJcbiAgICAgICAgICAgIHN0cm9rZVdpZHRoPVwiMS42XCJcbiAgICAgICAgICAgIHN0cm9rZUxpbmVjYXA9XCJyb3VuZFwiXG4gICAgICAgICAgICBzdHJva2VMaW5lam9pbj1cIm1pdGVyXCJcbiAgICAgICAgICAvPlxuICAgICAgICAgIHt2YXJpYW50LmJyYW5jaGVzLm1hcCgoYiwgaSkgPT4gKFxuICAgICAgICAgICAgPHBhdGhcbiAgICAgICAgICAgICAga2V5PXtgY29yZS0ke2l9YH1cbiAgICAgICAgICAgICAgZD17Yn1cbiAgICAgICAgICAgICAgc3Ryb2tlPVwiI2ZmZmZmZlwiXG4gICAgICAgICAgICAgIHN0cm9rZVdpZHRoPVwiMS4wXCJcbiAgICAgICAgICAgICAgc3Ryb2tlTGluZWNhcD1cInJvdW5kXCJcbiAgICAgICAgICAgICAgc3Ryb2tlTGluZWpvaW49XCJtaXRlclwiXG4gICAgICAgICAgICAvPlxuICAgICAgICAgICkpfVxuICAgICAgICA8L3N2Zz5cbiAgICAgIDwvZGl2PlxuICAgIDwvZGl2PlxuICApO1xufVxuIl0sImZpbGUiOiJDOi9Vc2Vycy9kZXZhbS9PbmVEcml2ZS9EZXNrdG9wL0hhcHBwaWVzdC1CaXJ0aGFkeS1NaWlvb28vc3JjL2NvbXBvbmVudHMvU2FkTGlnaHRuaW5nLmpzeCJ9

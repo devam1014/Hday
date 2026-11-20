@@ -314,10 +314,14 @@ button:focus-visible {
   }
 }
 
+/* ==============================================================================
+   REDESIGNED GLOSSY ORB HEART BUTTON (With Golden Orbit Ring & Concentric Ripples)
+   Matches Reference: media_1794939937844_099ddf68.jpg
+   ============================================================================== */
 .wall-heart-button {
   position: relative;
-  width: 52px;
-  height: 52px;
+  width: 72px;
+  height: 72px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -330,8 +334,8 @@ button:focus-visible {
   user-select: none;
   -webkit-user-select: none;
   cursor: pointer;
-  animation: heartPopIn 0.65s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-  transition: transform 0.25s ease, filter 0.25s ease;
+  animation: heartOrbEntrance 0.65s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), filter 0.3s ease;
   touch-action: manipulation;
 }
 
@@ -342,25 +346,15 @@ button:focus-visible {
   border: none !important;
   box-shadow: none !important;
   background: transparent !important;
-  -webkit-tap-highlight-color: transparent !important;
 }
 
-/* Subtle circular focus indicator strictly matching the button's round shape */
-.wall-heart-button:focus-visible .heart-circle-core {
-  box-shadow:
-    0 6px 18px rgba(225, 29, 72, 0.6),
-    0 0 25px rgba(244, 63, 94, 0.55),
-    0 0 0 3px rgba(251, 191, 36, 0.85),
-    inset 0 2px 4px rgba(255, 255, 255, 0.4);
-}
-
-@keyframes heartPopIn {
+@keyframes heartOrbEntrance {
   0% {
     transform: scale(0);
     opacity: 0;
   }
   70% {
-    transform: scale(1.18);
+    transform: scale(1.15);
     opacity: 1;
   }
   100% {
@@ -369,70 +363,366 @@ button:focus-visible {
   }
 }
 
-.wall-heart-button:hover {
-  transform: scale(1.12);
-  filter: drop-shadow(0 0 20px rgba(244, 63, 94, 0.95));
+/* Hover state: slight lift and intensified glow */
+.wall-heart-button:hover:not(:disabled) {
+  transform: scale(1.08);
+  filter: drop-shadow(0 0 25px rgba(244, 63, 94, 0.95)) drop-shadow(0 0 35px rgba(251, 191, 36, 0.85));
 }
 
-.wall-heart-button:active {
-  transform: scale(0.95);
+.wall-heart-button:active:not(:disabled) {
+  transform: scale(0.96);
 }
 
-/* First-click celebratory burst pulse */
-.wall-heart-button.heart-first-tap {
-  animation: heartFirstTap 0.65s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+/* 1. Concentric Translucent Expanding Ripple Rings Behind Button */
+.heart-expanding-rings {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 1;
 }
 
-@keyframes heartFirstTap {
-  0% { transform: scale(1); filter: brightness(1); }
+.ring-pulse {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid rgba(244, 63, 94, 0.35);
+  box-shadow: 0 0 10px rgba(244, 63, 94, 0.2), inset 0 0 10px rgba(244, 63, 94, 0.15);
+  animation: ringsBreathing 3.6s infinite ease-in-out;
+}
+
+.ring-pulse.ring-1 {
+  width: 96px;
+  height: 96px;
+  border-color: rgba(244, 63, 94, 0.42);
+  animation-delay: 0s;
+}
+
+.ring-pulse.ring-2 {
+  width: 132px;
+  height: 132px;
+  border-color: rgba(244, 63, 94, 0.28);
+  animation-delay: 0.6s;
+}
+
+.ring-pulse.ring-3 {
+  width: 172px;
+  height: 172px;
+  border-color: rgba(244, 63, 94, 0.16);
+  animation-delay: 1.2s;
+}
+
+@keyframes ringsBreathing {
+  0%, 100% {
+    transform: scale(0.96);
+    opacity: 0.35;
+  }
+  50% {
+    transform: scale(1.04);
+    opacity: 0.85;
+  }
+}
+
+/* 2. Soft Pink-Red Ambient Outer Glow */
+.heart-outer-glow {
+  position: absolute;
+  inset: -12px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(244, 63, 94, 0.6) 0%, rgba(225, 29, 72, 0.3) 45%, transparent 75%);
+  animation: outerGlowPulse 2.8s infinite ease-in-out;
+  pointer-events: none;
+  z-index: 2;
+}
+
+@keyframes outerGlowPulse {
+  0%, 100% {
+    transform: scale(0.94);
+    opacity: 0.55;
+  }
+  50% {
+    transform: scale(1.12);
+    opacity: 0.9;
+  }
+}
+
+/* 3. Glowing Golden Orbit Ring Passing Around the Orb */
+.heart-orbit-wrapper {
+  position: absolute;
+  width: 120px;
+  height: 60px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.heart-orbit-svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  filter: drop-shadow(0 0 6px rgba(251, 191, 36, 0.95)) drop-shadow(0 0 14px rgba(245, 158, 11, 0.8));
+  animation: orbitShimmer 3s infinite ease-in-out;
+}
+
+@keyframes orbitShimmer {
+  0%, 100% {
+    filter: drop-shadow(0 0 6px rgba(251, 191, 36, 0.95)) drop-shadow(0 0 12px rgba(245, 158, 11, 0.75));
+    opacity: 0.92;
+  }
+  50% {
+    filter: drop-shadow(0 0 10px rgba(254, 240, 138, 1)) drop-shadow(0 0 20px rgba(251, 191, 36, 0.95));
+    opacity: 1;
+  }
+}
+
+/* 4-Point Golden Star Sparkle Glint at Orbit Intersection */
+.orbit-glint-star {
+  position: absolute;
+  top: 1px;
+  right: 17px;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 0 8px #fef08a) drop-shadow(0 0 16px #fbbf24);
+  animation: starTwinkleGlint 2.2s infinite ease-in-out;
+  pointer-events: none;
+}
+
+@keyframes starTwinkleGlint {
+  0%, 100% {
+    transform: scale(0.85) rotate(0deg);
+    opacity: 0.75;
+  }
+  50% {
+    transform: scale(1.25) rotate(15deg);
+    opacity: 1;
+  }
+}
+
+/* Micro Warm Floating Particles along Orbit */
+.orbit-micro-particle {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  background: #fef08a;
+  box-shadow: 0 0 6px #fbbf24, 0 0 12px rgba(251, 191, 36, 0.8);
+}
+
+.orbit-micro-particle.mp1 {
+  width: 4px;
+  height: 4px;
+  bottom: 8px;
+  left: 10px;
+  animation: particleFloat 2.6s infinite ease-in-out;
+}
+
+.orbit-micro-particle.mp2 {
+  width: 3px;
+  height: 3px;
+  top: 10px;
+  left: 20px;
+  animation: particleFloat 3.2s infinite ease-in-out 0.8s;
+}
+
+.orbit-micro-particle.mp3 {
+  width: 3.5px;
+  height: 3.5px;
+  bottom: 12px;
+  right: 18px;
+  animation: particleFloat 2.8s infinite ease-in-out 1.5s;
+}
+
+@keyframes particleFloat {
+  0%, 100% {
+    transform: translate(0, 0) scale(0.8);
+    opacity: 0.4;
+  }
+  50% {
+    transform: translate(-3px, -4px) scale(1.2);
+    opacity: 0.95;
+  }
+}
+
+/* 4. Glossy Pink & Rose-Red Glass Orb Core */
+.heart-orb-core {
+  position: relative;
+  width: 66px;
+  height: 66px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #ff527b 0%, #e11d48 42%, #be123c 75%, #881337 100%);
+  border: 2.5px solid rgba(254, 240, 138, 0.95);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.5),
+    0 0 18px rgba(251, 191, 36, 0.9),
+    0 0 32px rgba(244, 63, 94, 0.75),
+    inset 0 0 12px rgba(255, 180, 205, 0.55),
+    inset 0 2px 4px rgba(255, 255, 255, 0.6);
+  z-index: 4;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* Curved Glossy Glass Crescent Glare (Upper Edge) */
+.heart-orb-glass-glare {
+  position: absolute;
+  top: 3px;
+  left: 10px;
+  right: 10px;
+  height: 25px;
+  border-radius: 50% 50% 45% 45% / 60% 60% 30% 30%;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.82) 0%, rgba(255, 255, 255, 0.3) 40%, transparent 85%);
+  pointer-events: none;
+  z-index: 6;
+}
+
+/* Clean, Bright Ivory-White Heart in Center */
+.white-heart-icon {
+  width: 32px;
+  height: 32px;
+  color: #ffffff;
+  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.9)) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.35));
+  animation: heartOrbPulse 2.4s infinite ease-in-out;
+  position: relative;
+  z-index: 5;
+}
+
+@keyframes heartOrbPulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  15% {
+    transform: scale(1.12);
+  }
+  30% {
+    transform: scale(1);
+  }
   45% {
-    transform: scale(1.36);
-    filter: brightness(1.9) drop-shadow(0 0 28px rgba(251, 191, 36, 0.95)) drop-shadow(0 0 38px rgba(244, 63, 94, 0.9));
+    transform: scale(1.06);
+  }
+}
+
+/* 5. Interactive Click Effects */
+/* Click Expanding Ripple */
+.heart-click-ripple {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 2px solid #fef08a;
+  box-shadow: 0 0 20px #fbbf24, 0 0 40px rgba(244, 63, 94, 0.8);
+  pointer-events: none;
+  z-index: 10;
+  animation: clickRippleExpand 0.65s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes clickRippleExpand {
+  0% {
+    transform: translate(-50%, -50%) scale(0.8);
+    opacity: 1;
   }
   100% {
-    transform: scale(1.05);
-    filter: brightness(1.15) drop-shadow(0 0 18px rgba(244, 63, 94, 0.85));
+    transform: translate(-50%, -50%) scale(2.6);
+    opacity: 0;
   }
 }
 
-/* While formation is taking place: warm celebratory radiance */
+/* Click Burst Micro-Hearts */
+.heart-burst-particle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  color: var(--color, #fbbf24);
+  font-size: var(--size, 10px);
+  pointer-events: none;
+  z-index: 12;
+  line-height: 1;
+  filter: drop-shadow(0 0 6px currentColor);
+  animation: burstParticleFly 0.75s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes burstParticleFly {
+  0% {
+    transform: translate(-50%, -50%) rotate(var(--angle)) translateY(0) scale(0.6);
+    opacity: 1;
+  }
+  70% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(var(--angle)) translateY(calc(-1 * var(--dist))) scale(1.2);
+    opacity: 0;
+  }
+}
+
+/* Click Tactile State & Luminous Bloom */
+.wall-heart-button.is-clicked {
+  animation: clickBloom 0.55s ease-out forwards;
+}
+
+@keyframes clickBloom {
+  0% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+  30% {
+    transform: scale(1.22);
+    filter: brightness(1.6) drop-shadow(0 0 35px rgba(251, 191, 36, 1)) drop-shadow(0 0 50px rgba(244, 63, 94, 0.95));
+  }
+  100% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+}
+
+/* Celebration Stages Integration */
 .wall-heart-button.heart-celebrating {
-  animation: heartCelebrating 2.2s infinite ease-in-out;
+  animation: heartOrbCelebrating 2.4s infinite ease-in-out;
   cursor: default;
 }
 
-@keyframes heartCelebrating {
+@keyframes heartOrbCelebrating {
   0%, 100% {
     transform: scale(1);
-    filter: drop-shadow(0 0 16px rgba(244, 63, 94, 0.75)) drop-shadow(0 0 22px rgba(251, 191, 36, 0.55));
+    filter: drop-shadow(0 0 20px rgba(244, 63, 94, 0.8)) drop-shadow(0 0 28px rgba(251, 191, 36, 0.6));
   }
   50% {
-    transform: scale(1.08);
-    filter: drop-shadow(0 0 25px rgba(244, 63, 94, 0.95)) drop-shadow(0 0 32px rgba(251, 191, 36, 0.85));
+    transform: scale(1.07);
+    filter: drop-shadow(0 0 32px rgba(244, 63, 94, 1)) drop-shadow(0 0 42px rgba(251, 191, 36, 0.9));
   }
 }
 
-/* Holding state: rhythmic inviting heartbeat glow ready for second click */
 .wall-heart-button.heart-holding-ready {
-  animation: heartHoldingReady 1.6s infinite cubic-bezier(0.4, 0, 0.2, 1);
+  animation: heartOrbHoldingReady 1.6s infinite cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
 }
 
-@keyframes heartHoldingReady {
+@keyframes heartOrbHoldingReady {
   0%, 100% {
     transform: scale(1);
-    filter: drop-shadow(0 0 16px rgba(244, 63, 94, 0.75)) drop-shadow(0 0 24px rgba(251, 191, 36, 0.6));
+    filter: drop-shadow(0 0 20px rgba(244, 63, 94, 0.85)) drop-shadow(0 0 30px rgba(251, 191, 36, 0.7));
   }
   16% {
-    transform: scale(1.22);
-    filter: drop-shadow(0 0 32px rgba(244, 63, 94, 1)) drop-shadow(0 0 42px rgba(251, 191, 36, 0.95));
+    transform: scale(1.2);
+    filter: drop-shadow(0 0 38px rgba(244, 63, 94, 1)) drop-shadow(0 0 50px rgba(251, 191, 36, 1));
   }
   30% {
-    transform: scale(1.06);
+    transform: scale(1.05);
   }
   44% {
-    transform: scale(1.16);
-    filter: drop-shadow(0 0 28px rgba(244, 63, 94, 0.95)) drop-shadow(0 0 36px rgba(251, 191, 36, 0.85));
+    transform: scale(1.14);
+    filter: drop-shadow(0 0 34px rgba(244, 63, 94, 0.95)) drop-shadow(0 0 44px rgba(251, 191, 36, 0.9));
   }
 }
 
@@ -462,67 +752,38 @@ button:focus-visible {
   }
 }
 
-/* Glowing Pink / Rose-Gold Outer Halo */
-.heart-outer-halo {
-  position: absolute;
-  inset: -8px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(244, 63, 94, 0.55) 0%, transparent 70%);
-  animation: haloPulse 2.4s infinite ease-in-out;
-  pointer-events: none;
+@media (max-width: 640px) {
+  .wall-heart-button {
+    width: 62px;
+    height: 62px;
+  }
+  .heart-orb-core {
+    width: 58px;
+    height: 58px;
+  }
+  .white-heart-icon {
+    width: 28px;
+    height: 28px;
+  }
+  .heart-orbit-wrapper {
+    width: 104px;
+    height: 52px;
+  }
+  .ring-pulse.ring-1 { width: 82px; height: 82px; }
+  .ring-pulse.ring-2 { width: 112px; height: 112px; }
+  .ring-pulse.ring-3 { width: 145px; height: 145px; }
 }
 
-@keyframes haloPulse {
-  0%, 100% { transform: scale(0.92); opacity: 0.45; }
-  50% { transform: scale(1.3); opacity: 0.85; }
-}
-
-/* Tiny orbiting sparkles */
-.tiny-sparkle {
-  position: absolute;
-  color: var(--color-gold-light);
-  font-size: 0.8rem;
-  pointer-events: none;
-  animation: sparkleTwinkle 2s infinite ease-in-out;
-}
-
-.tiny-sparkle.sp1 { top: -6px; right: -4px; animation-delay: 0.4s; }
-.tiny-sparkle.sp2 { bottom: -4px; left: -2px; animation-delay: 1.2s; }
-
-@keyframes sparkleTwinkle {
-  0%, 100% { opacity: 0.2; transform: scale(0.7); }
-  50% { opacity: 1; transform: scale(1.2); filter: drop-shadow(0 0 6px #fbbf24); }
-}
-
-/* Circular Button Core */
-.heart-circle-core {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #fb7185 0%, #f43f5e 45%, #e11d48 100%);
-  border: 2px solid rgba(254, 243, 199, 0.9);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow:
-    0 6px 18px rgba(225, 29, 72, 0.6),
-    0 0 25px rgba(244, 63, 94, 0.55),
-    inset 0 2px 4px rgba(255, 255, 255, 0.4);
-}
-
-.white-heart-icon {
-  width: 24px;
-  height: 24px;
-  color: #ffffff;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.35));
-  animation: heartbeatPulse 1.6s infinite ease-in-out;
-}
-
-@keyframes heartbeatPulse {
-  0%, 100% { transform: scale(1); }
-  15% { transform: scale(1.15); }
-  30% { transform: scale(1); }
-  45% { transform: scale(1.08); }
+@media (prefers-reduced-motion: reduce) {
+  .wall-heart-button,
+  .heart-outer-glow,
+  .ring-pulse,
+  .heart-orbit-svg,
+  .orbit-glint-star,
+  .orbit-micro-particle,
+  .white-heart-icon {
+    animation: none !important;
+  }
 }
 
 /* ==============================================================================
@@ -564,6 +825,27 @@ button:focus-visible {
   object-fit: cover;
   object-position: center bottom;
   display: block;
+}
+
+/* Cinematic Scenery Darkening Overlay:
+ * Applies ~22% darkening to scenery (sky, distant landscape, mountains, terrace)
+ * while preserving 100% original brightness and warm golden glow on all visible light sources:
+ * - Lower-right lamp & surrounding ambient glow (completely outside the darkening effect)
+ * - Lower-left lantern & ground reflection
+ * - Left hanging bulbs & vine fairy lights
+ * Scales and aligns responsively in lockstep with the background image (center bottom / cover).
+ */
+.main-background-container::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  background-image: url('/scenery-darkening-mask.svg');
+  background-position: center bottom;
+  background-size: cover;
+  background-repeat: no-repeat;
 }
 
 /* Main Content Two-Column Grid */
@@ -724,6 +1006,7 @@ button:focus-visible {
   flex-direction: column;
   gap: 1.05rem;
   padding-right: 0.85rem;
+  padding-bottom: 1.5rem;
 
   /* Visually hidden scrollbar cross-browser */
   scrollbar-width: none; /* Firefox */
@@ -843,6 +1126,7 @@ button:focus-visible {
   border: 1px solid rgba(224, 195, 140, 0.42);
   border-radius: 1.15rem;
   padding: 0.55rem;
+  cursor: pointer;
   box-shadow:
     0 18px 40px rgba(0, 0, 0, 0.35),
     0 0 25px rgba(212, 175, 55, 0.1),
@@ -884,42 +1168,66 @@ button:focus-visible {
   width: 100%;
 }
 
+/* ==============================================================================
+   MINIMAL NEON "CLIP FOR YOU" BUTTON (Option 5 Reference Design)
+   - 100% pure HTML & CSS (zero images, zero external icons, zero SVG assets)
+   - Refined horizontal pill-shaped button
+   - Dark plum/purple frosted glass with subtle transparency
+   - Thin, luminous glowing neon-pink outline & soft pink-purple outer glow
+   - Smooth, fully rounded corners (pill shape)
+   - Left circular neon play icon with clean CSS triangle
+   - Thin vertical divider
+   - Elegant italic serif typography ("Clip for You") with warm ivory/pink text glow
+   - Right glowing double-chevron (»)
+   ============================================================================== */
+
 .minimal-link-box {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   width: 100%;
-  padding: 0.88rem 1.25rem;
-  background: rgba(255, 252, 246, 0.94);
+  box-sizing: border-box;
+  padding: 0 1.25rem 0 0.95rem;
+  height: 50px;
+  background: linear-gradient(135deg, rgba(38, 14, 35, 0.78) 0%, rgba(20, 8, 22, 0.84) 100%);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-  border: 1px solid rgba(224, 195, 140, 0.45);
-  border-radius: 0.95rem;
+  border: 1.5px solid rgba(255, 105, 180, 0.88);
+  border-radius: 9999px;
   box-shadow:
-    0 12px 30px rgba(0, 0, 0, 0.3),
-    0 0 20px rgba(212, 175, 55, 0.08),
-    inset 0 1px 2px rgba(255, 255, 255, 0.7);
+    0 0 10px rgba(255, 99, 177, 0.45),
+    0 0 24px rgba(233, 30, 130, 0.28),
+    0 10px 28px rgba(0, 0, 0, 0.42),
+    inset 0 0 10px rgba(255, 105, 180, 0.12);
   text-decoration: none;
   cursor: pointer;
   outline: none;
-  transition: all 0.28s ease;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease, background 0.25s ease;
 }
 
 .minimal-link-box:hover {
-  background: #ffffff;
-  border-color: rgba(212, 175, 55, 0.85);
+  border-color: #ff85c4;
+  background: linear-gradient(135deg, rgba(48, 18, 44, 0.84) 0%, rgba(26, 10, 28, 0.90) 100%);
   transform: translateY(-2px);
   box-shadow:
-    0 16px 36px rgba(0, 0, 0, 0.35),
-    0 0 25px rgba(212, 175, 55, 0.2);
+    0 0 14px rgba(255, 105, 180, 0.65),
+    0 0 32px rgba(233, 30, 130, 0.42),
+    0 14px 34px rgba(0, 0, 0, 0.48),
+    inset 0 0 14px rgba(255, 105, 180, 0.22);
 }
 
 .minimal-link-box:active {
-  transform: translateY(0);
+  transform: translateY(0) scale(0.985);
+  box-shadow:
+    0 0 8px rgba(255, 105, 180, 0.5),
+    0 0 18px rgba(233, 30, 130, 0.3),
+    0 4px 14px rgba(0, 0, 0, 0.4);
 }
 
 .minimal-link-box:focus-visible {
-  outline: 2px solid var(--color-gold-400);
+  outline: 2px solid #ff69b4;
   outline-offset: 3px;
 }
 
@@ -927,18 +1235,119 @@ button:focus-visible {
   cursor: default;
 }
 
+/* Left Circular Neon Play Icon */
+.minimal-link-play-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255, 255, 255, 0.92);
+  box-shadow:
+    0 0 8px rgba(255, 105, 180, 0.75),
+    inset 0 0 5px rgba(255, 105, 180, 0.45);
+  background: rgba(255, 255, 255, 0.04);
+  flex-shrink: 0;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.minimal-link-box:hover .minimal-link-play-icon {
+  border-color: #ffffff;
+  box-shadow:
+    0 0 12px rgba(255, 120, 195, 0.95),
+    inset 0 0 7px rgba(255, 105, 180, 0.65);
+}
+
+/* Pure CSS Triangle */
+.minimal-link-play-triangle {
+  display: block;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 5px 0 5px 9px;
+  border-color: transparent transparent transparent #ffffff;
+  margin-left: 2px;
+  filter: drop-shadow(0 0 3px rgba(255, 140, 195, 0.7));
+  transition: filter 0.25s ease;
+}
+
+.minimal-link-box:hover .minimal-link-play-triangle {
+  filter: drop-shadow(0 0 5px rgba(255, 160, 210, 0.95));
+}
+
+/* Thin Vertical Divider */
+.minimal-link-divider {
+  display: block;
+  width: 1px;
+  height: 24px;
+  background: linear-gradient(to bottom, transparent, rgba(255, 185, 220, 0.65) 20%, rgba(255, 185, 220, 0.65) 80%, transparent);
+  box-shadow: 0 0 4px rgba(255, 105, 180, 0.45);
+  margin: 0 14px;
+  flex-shrink: 0;
+}
+
+/* "Clip for You" Italic Serif Typography */
 .minimal-link-text {
-  font-family: var(--font-serif-display), serif;
-  font-size: clamp(0.84rem, 1vw, 0.94rem);
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  color: #241c18;
-  text-transform: uppercase;
-  transition: color 0.25s ease;
+  font-family: 'Playfair Display', 'Cormorant Garamond', Georgia, serif;
+  font-style: italic;
+  font-size: clamp(1.08rem, 1.25vw, 1.22rem);
+  font-weight: 500;
+  color: #fffaf5;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  white-space: nowrap;
+  flex: 1;
+  text-align: center;
+  text-shadow:
+    0 0 4px rgba(255, 255, 255, 0.8),
+    0 0 10px rgba(255, 105, 180, 0.55),
+    0 0 20px rgba(233, 30, 99, 0.35);
+  transition: color 0.25s ease, text-shadow 0.25s ease;
 }
 
 .minimal-link-box:hover .minimal-link-text {
-  color: #a07828;
+  color: #ffffff;
+  text-shadow:
+    0 0 6px rgba(255, 255, 255, 0.95),
+    0 0 14px rgba(255, 120, 195, 0.8),
+    0 0 24px rgba(233, 30, 99, 0.5);
+}
+
+/* Right Double-Chevron (») */
+.minimal-link-chevron {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Georgia, serif;
+  font-size: 1.35rem;
+  line-height: 1;
+  font-weight: 600;
+  color: #ffffff;
+  text-shadow:
+    0 0 4px rgba(255, 255, 255, 0.8),
+    0 0 9px rgba(255, 105, 180, 0.7),
+    0 0 16px rgba(233, 30, 99, 0.45);
+  margin-left: 12px;
+  user-select: none;
+  flex-shrink: 0;
+  transition: transform 0.25s ease, text-shadow 0.25s ease;
+}
+
+.minimal-link-box:hover .minimal-link-chevron {
+  transform: translateX(2px);
+  text-shadow:
+    0 0 6px rgba(255, 255, 255, 0.95),
+    0 0 14px rgba(255, 120, 195, 0.9),
+    0 0 22px rgba(233, 30, 99, 0.6);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .minimal-link-box,
+  .minimal-link-box:hover,
+  .minimal-link-box:active,
+  .minimal-link-chevron {
+    transform: none !important;
+    transition: none !important;
+  }
 }
 
 /* ================= MOBILE RESPONSIVENESS ================= */
@@ -976,13 +1385,65 @@ button:focus-visible {
 
 
 /* ==============================================================================
-   DEV TEST HELPER (Discreet testing floating toolbar)
+   TOP-RIGHT CONTROLS CLUSTER (SHARED FLEX CONTAINER)
+   Clean horizontal row holding See This View, Click & See, and Test Helper
+   with guaranteed spacing, zero overlapping, and responsive wrapping.
    ============================================================================== */
-.dev-test-panel {
+.top-right-controls-cluster {
   position: fixed;
   top: 1rem;
   right: 1rem;
   z-index: 120;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+  max-width: calc(100vw - 2rem);
+  pointer-events: none;
+}
+
+.top-right-controls-cluster > * {
+  pointer-events: auto;
+}
+
+/* ==============================================================================
+   DEV TEST HELPER (Discreet testing floating toolbar)
+   ============================================================================== */
+.dev-test-panel {
+  position: relative;
+  z-index: 120;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-end;
+  flex-shrink: 0;
+}
+
+/* Standalone fallback if rendered without cluster wrapper */
+:not(.top-right-controls-cluster) > .dev-test-panel {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+}
+
+.dev-panel-top-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: nowrap;
+}
+
+.dev-click-see-btn {
+  background: rgba(45, 18, 55, 0.88);
+  border-color: rgba(245, 158, 11, 0.6);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4), 0 0 10px rgba(245, 158, 11, 0.25);
+  cursor: pointer;
+}
+
+.dev-click-see-btn:hover {
+  background: rgba(65, 24, 75, 0.95);
+  border-color: #ffd880;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.5), 0 0 14px rgba(255, 216, 128, 0.45);
 }
 
 .dev-panel-toggle-btn {
@@ -1648,6 +2109,631 @@ button:focus-visible {
 }
 
 /* ==============================================================================
+   HAPPY MEMORIES DIGITAL SCRAPBOOK GALLERY
+   Warm, cheerful, nostalgic, joyful aesthetic matching reference design:
+   - SCREEN 1 (Cover): happy-frame ONLY for cover, title, subtitle & bottom Back/Next
+   - SCREEN 2 (Photos): Large transparent frosted-glass card, clean photo (NO frame),
+     photo counter (e.g. 1 / 5), centered message, side arrows, bottom Back/Next
+   - Flourished champagne-gold heading with horizontal lines and hearts
+   ============================================================================== */
+.happy-gallery-root {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background-color: #1a0e1c;
+}
+
+.happy-gallery-background-wrapper {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.happy-gallery-background-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+  display: block;
+}
+
+/* Fullscreen Mode: Preserve 100% of the Happy Gallery background image without cropping
+ * - Uses object-fit: contain to ensure complete edge-to-edge visibility at original 2:1 aspect ratio
+ * - Retains object-fit: cover in normal browser mode to preserve existing appearance
+ * - Supported via CSS pseudo-classes (:fullscreen, :-webkit-full-screen, :-moz-full-screen, :-ms-fullscreen),
+ *   the active .is-fullscreen state class, and @media all and (display-mode: fullscreen).
+ */
+:fullscreen .happy-gallery-root,
+:-webkit-full-screen .happy-gallery-root,
+:-moz-full-screen .happy-gallery-root,
+:-ms-fullscreen .happy-gallery-root,
+.happy-gallery-root.is-fullscreen {
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  min-height: 100vh;
+}
+
+:fullscreen .happy-gallery-background-wrapper,
+:-webkit-full-screen .happy-gallery-background-wrapper,
+:-moz-full-screen .happy-gallery-background-wrapper,
+:-ms-fullscreen .happy-gallery-background-wrapper,
+.happy-gallery-root.is-fullscreen .happy-gallery-background-wrapper {
+  background: radial-gradient(circle at 50% 50%, #241427 0%, #150b18 65%, #0c060e 100%);
+}
+
+:fullscreen .happy-gallery-background-img,
+:-webkit-full-screen .happy-gallery-background-img,
+:-moz-full-screen .happy-gallery-background-img,
+:-ms-fullscreen .happy-gallery-background-img,
+.happy-gallery-root.is-fullscreen .happy-gallery-background-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center center;
+}
+
+@media all and (display-mode: fullscreen) {
+  .happy-gallery-root {
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    min-height: 100vh;
+  }
+
+  .happy-gallery-background-wrapper {
+    background: radial-gradient(circle at 50% 50%, #241427 0%, #150b18 65%, #0c060e 100%);
+  }
+
+  .happy-gallery-background-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center center;
+  }
+}
+
+.happy-gallery-warm-glow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 50%, rgba(255, 200, 120, 0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* Synchronized Happy Gallery Content Wrapper:
+ * Holds header, glass card, photo, counter, message, and bottom buttons as one cohesive layout.
+ * Shifts exactly 72px (40% of previous 180px shift) to the right on desktop, while staying cleanly centered on mobile.
+ */
+.happy-gallery-content-wrapper {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.28s ease;
+}
+
+@media (min-width: 1024px) {
+  .happy-gallery-content-wrapper {
+    transform: translateX(72px);
+  }
+}
+
+/* Top Header Flourish: "Happy Gallery" with delicate lines & heart accents */
+.happy-gallery-top-header {
+  position: relative;
+  z-index: 50;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-top: clamp(16px, 3vh, 28px);
+  padding-bottom: clamp(6px, 1.2vh, 12px);
+}
+
+.happy-header-flourish {
+  display: inline-flex;
+  align-items: center;
+  gap: clamp(8px, 1.5vw, 14px);
+}
+
+.flourish-line {
+  width: clamp(35px, 6vw, 65px);
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 228, 168, 0.75), rgba(255, 240, 195, 0.9));
+}
+
+.flourish-line-right {
+  background: linear-gradient(90deg, rgba(255, 240, 195, 0.9), rgba(255, 228, 168, 0.75), transparent);
+}
+
+.flourish-heart {
+  color: #fbd38d;
+  font-size: clamp(0.75rem, 1.2vw, 0.92rem);
+  text-shadow: 0 0 8px rgba(255, 215, 120, 0.5);
+  line-height: 1;
+}
+
+.happy-gallery-heading {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(1.35rem, 2.5vw, 1.85rem);
+  font-weight: 600;
+  color: #f7e4b5;
+  letter-spacing: 0.04em;
+  margin: 0;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6), 0 0 12px rgba(255, 215, 120, 0.25);
+}
+
+/* Main Interactive Stage with 3D Page-Flip Architecture */
+.happy-gallery-main-stage {
+  position: relative;
+  z-index: 20;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0 clamp(12px, 2vw, 24px) clamp(16px, 2.5vh, 24px);
+  transform: translateY(clamp(-34px, -4.2vh, -22px));
+  box-sizing: border-box;
+  min-height: 0;
+}
+
+.happy-stage-perspective-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  transition: opacity 300ms ease, transform 320ms cubic-bezier(0.4, 0, 0.2, 1);
+  transform-style: preserve-3d;
+  width: 100%;
+  max-width: 900px;
+}
+
+.happy-stage-perspective-wrapper.phase-idle {
+  opacity: 1;
+  transform: perspective(1600px) rotateY(0deg) scale(1);
+}
+
+.happy-stage-perspective-wrapper.turn-forward.phase-out {
+  opacity: 0;
+  transform: perspective(1600px) rotateY(-70deg) scale(0.95);
+  transform-origin: left center;
+}
+
+.happy-stage-perspective-wrapper.turn-forward.phase-in {
+  opacity: 1;
+  transform: perspective(1600px) rotateY(0deg) scale(1);
+  transform-origin: left center;
+}
+
+.happy-stage-perspective-wrapper.turn-backward.phase-out {
+  opacity: 0;
+  transform: perspective(1600px) rotateY(50deg) scale(0.95);
+  transform-origin: left center;
+}
+
+.happy-stage-perspective-wrapper.turn-backward.phase-in {
+  opacity: 1;
+  transform: perspective(1600px) rotateY(0deg) scale(1);
+  transform-origin: left center;
+}
+
+/* ==============================================================================
+   SCREEN 1: ALBUM COVER (LEFT SIDE OF REFERENCE)
+   ============================================================================== */
+.happy-cover-layout {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(10px, 1.8vh, 16px);
+  width: 100%;
+}
+
+.happy-cover-frame-box {
+  position: relative;
+  width: min(72vw, 440px);
+  aspect-ratio: 1 / 1;
+  max-height: min(60vh, 440px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 16px 40px rgba(0, 0, 0, 0.6)) drop-shadow(0 4px 14px rgba(255, 200, 110, 0.22));
+}
+
+.happy-cover-card-content {
+  position: absolute;
+  left: 15.0%;
+  top: 15.0%;
+  width: 70.0%;
+  height: 63.4%;
+  overflow: hidden;
+  z-index: 1;
+  border-radius: 4px;
+  background: linear-gradient(145deg, #381530 0%, #632646 45%, #923a48 75%, #b85b42 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: clamp(0.9rem, 2vw, 1.6rem);
+  box-sizing: border-box;
+  box-shadow: inset 0 0 24px rgba(0, 0, 0, 0.45);
+}
+
+.happy-cover-sparkle-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0.18rem 0.65rem;
+  border-radius: 9999px;
+  background: rgba(255, 235, 175, 0.15);
+  border: 1px solid rgba(255, 225, 150, 0.45);
+  color: #ffe8a5;
+  font-family: system-ui, sans-serif;
+  font-size: clamp(0.58rem, 0.85vw, 0.66rem);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  margin-bottom: 0.35rem;
+}
+
+.happy-cover-card-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(1.2rem, 2.6vw, 1.65rem);
+  color: #fff6db;
+  margin: 0 0 0.2rem;
+  font-weight: 700;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+.happy-cover-card-edition {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-style: italic;
+  font-size: clamp(0.68rem, 1.1vw, 0.82rem);
+  color: #fce1be;
+  margin: 0 0 0.35rem;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+}
+
+.happy-cover-card-divider {
+  width: 44px;
+  height: 1.5px;
+  background: linear-gradient(90deg, transparent, #ffe39b, transparent);
+  margin: 0.2rem 0 0.4rem;
+}
+
+.happy-cover-card-msg {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(0.66rem, 1.05vw, 0.78rem);
+  line-height: 1.35;
+  color: #fff0d4;
+  margin: 0;
+  max-width: 90%;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+}
+
+.happy-cover-art-frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  z-index: 2;
+  pointer-events: none;
+  display: block;
+}
+
+.happy-cover-art-label {
+  position: absolute;
+  left: 17%;
+  right: 17%;
+  top: 79.5%;
+  bottom: 5.5%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3;
+  pointer-events: none;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-style: italic;
+  font-size: clamp(0.72rem, 1.15vw, 0.88rem);
+  color: #3b2010;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.happy-cover-subtitle-text {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-style: italic;
+  font-size: clamp(0.82rem, 1.35vw, 1.02rem);
+  color: #fce1be;
+  margin: 0;
+  text-align: center;
+  letter-spacing: 0.02em;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6), 0 0 10px rgba(255, 215, 120, 0.2);
+}
+
+.happy-cover-bottom-nav,
+.happy-photo-bottom-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(14px, 2.5vw, 24px);
+  margin-top: 4px;
+}
+
+.happy-bottom-pill-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 108px;
+  padding: 8px 22px;
+  border-radius: 9999px;
+  background: rgba(36, 18, 36, 0.65);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1.5px solid rgba(255, 228, 168, 0.75);
+  color: #fff4d6;
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 0.88rem;
+  font-weight: 500;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4), 0 0 12px rgba(255, 215, 120, 0.22);
+  transition: all 0.22s ease;
+  outline: none;
+}
+
+.happy-bottom-pill-btn:hover:not(:disabled) {
+  background: rgba(65, 30, 65, 0.85);
+  border-color: #ffd777;
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.5), 0 0 20px rgba(255, 215, 120, 0.45);
+}
+
+.happy-bottom-pill-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.happy-bottom-pill-btn:disabled,
+.happy-bottom-pill-btn.is-disabled {
+  opacity: 0.28;
+  cursor: not-allowed;
+  pointer-events: none;
+  border-color: rgba(220, 190, 140, 0.3);
+  box-shadow: none;
+}
+
+/* ==============================================================================
+   SCREEN 2: INDIVIDUAL PHOTO VIEW (RIGHT SIDE OF REFERENCE)
+   ============================================================================== */
+.happy-photo-view-layout {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(12px, 2vh, 18px);
+  width: 100%;
+}
+
+/* Large Transparent Frosted-Glass Card (NO happy-frame!) */
+.happy-individual-glass-card {
+  position: relative;
+  width: min(90vw, 560px);
+  height: min(68vh, 520px);
+  max-height: min(72vh, 560px);
+  box-sizing: border-box;
+  padding: clamp(16px, 2.4vw, 24px) clamp(16px, 2.4vw, 24px) clamp(12px, 1.8vw, 18px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: clamp(8px, 1.4vh, 14px);
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1.5px solid rgba(255, 228, 168, 0.75);
+  border-radius: clamp(18px, 2.4vw, 24px);
+  box-shadow:
+    0 18px 45px rgba(0, 0, 0, 0.45),
+    0 0 14px rgba(255, 215, 120, 0.32),
+    inset 0 1px 1.5px rgba(255, 248, 225, 0.65),
+    inset 0 0 16px rgba(255, 200, 110, 0.12);
+}
+
+/* Photo Counter in Top-Right Corner (e.g. 1 / 5) */
+.happy-card-photo-counter {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  background: rgba(30, 15, 30, 0.65);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 228, 168, 0.6);
+  color: #fff2c4;
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: clamp(0.68rem, 0.95vw, 0.78rem);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  padding: 0.18rem 0.65rem;
+  border-radius: 9999px;
+  z-index: 5;
+  pointer-events: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+}
+
+/* Clean Photograph Display Container (Adapts dynamically to ANY aspect ratio) */
+.happy-photo-presentation-box {
+  position: relative;
+  width: 100%;
+  flex: 1 1 auto;
+  min-height: 0;
+  border-radius: clamp(10px, 1.4vw, 14px);
+  overflow: hidden;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Original HD Photograph: Never cropped, never stretched, preserves natural ratio */
+.happy-photo-element {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  object-position: center center;
+  display: block;
+  margin: 0 auto;
+  border-radius: clamp(8px, 1.2vw, 12px);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
+  image-rendering: auto;
+  transition: opacity 140ms ease;
+}
+
+.happy-photo-element.is-fading {
+  opacity: 0;
+}
+
+/* Fallback placeholder when photo is awaiting file in /happy/ */
+.happy-photo-placeholder-box {
+  width: 100%;
+  height: 100%;
+  max-height: 340px;
+  border-radius: clamp(8px, 1.2vw, 12px);
+  background: linear-gradient(180deg, #3d1b38 0%, #75304c 45%, #a64e44 75%, #cc7144 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 1rem;
+  transition: opacity 140ms ease;
+}
+
+.happy-photo-placeholder-box.is-fading {
+  opacity: 0;
+}
+
+.placeholder-sun-symbol {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fffbe0 20%, #fbd364 70%, rgba(251, 211, 100, 0) 100%);
+  box-shadow: 0 0 16px rgba(255, 215, 100, 0.7);
+  margin-bottom: 8px;
+}
+
+.placeholder-slot-tag {
+  display: inline-block;
+  padding: 0.16rem 0.55rem;
+  border-radius: 9999px;
+  background: rgba(255, 240, 195, 0.18);
+  border: 1px solid rgba(255, 225, 160, 0.45);
+  color: #fff2c4;
+  font-family: system-ui, sans-serif;
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+  margin-bottom: 0.35rem;
+}
+
+.placeholder-instruction {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-style: italic;
+  font-size: clamp(0.72rem, 1.2vw, 0.88rem);
+  color: #ffeec8;
+  margin: 0;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+}
+
+/* Centered Message directly beneath the photograph */
+.happy-card-caption-section {
+  width: 100%;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 8px;
+  box-sizing: border-box;
+  min-height: clamp(38px, 5.5vh, 46px);
+}
+
+.happy-card-caption-text {
+  font-family: 'Playfair Display', 'Cormorant Garamond', Georgia, serif;
+  font-style: italic;
+  font-size: clamp(0.78rem, 1.2vw, 0.94rem);
+  color: #fff3dc;
+  text-align: center;
+  line-height: 1.38;
+  letter-spacing: 0.015em;
+  margin: 0;
+  max-width: 100%;
+  text-wrap: balance;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: opacity 140ms ease;
+}
+
+.happy-card-caption-text.is-fading {
+  opacity: 0;
+}
+
+/* Responsive rules for Happy Gallery */
+@media (max-width: 768px) {
+  .happy-gallery-top-header {
+    padding-top: 14px;
+  }
+
+  .flourish-line {
+    width: 25px;
+  }
+
+  .happy-gallery-main-stage {
+    transform: translateY(clamp(-26px, -3.5vh, -16px));
+  }
+
+  .happy-cover-frame-box {
+    width: min(84vw, 360px);
+    max-height: 52vh;
+  }
+
+  .happy-individual-glass-card {
+    width: min(92vw, 400px);
+    height: min(65vh, 460px);
+    padding: 12px 12px 10px;
+    gap: 8px;
+  }
+
+  .happy-bottom-pill-btn {
+    min-width: 92px;
+    padding: 7px 16px;
+    font-size: 0.8rem;
+  }
+}
+
+/* ==============================================================================
    CINEMATIC SAD GALLERY ATMOSPHERIC ANIMATIONS
    1. Rain Animation (Multi-depth canvas)
    2. Floating Dust Particles (Grey, charcoal, muted red, purple, glowing)
@@ -2155,7 +3241,178 @@ button:focus-visible {
   transition: background-color 5000s ease-in-out 0s;
 }
 
-/* Error feedback notice positioned neatly below the box */
+/* --------------------------------------------------------------------------
+   INCORRECT PASSWORD NOTIFICATION CARD (Matches Reference Image)
+   Positioned directly below the password box, centered horizontally
+   -------------------------------------------------------------------------- */
+.overlay-password-error-card {
+  position: absolute;
+  top: 76.5%;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(8px, 1.2vw, 16px);
+  z-index: 28;
+  pointer-events: none;
+  animation: errorCardEntrance 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes errorCardEntrance {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, 12px) scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+}
+
+/* Glowing Pink/Red Glass Capsule */
+.error-card-capsule {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(7px, 1vw, 11px) clamp(22px, 3.2vw, 42px);
+  border-radius: 9999px;
+  background: linear-gradient(135deg, rgba(225, 29, 72, 0.90) 0%, rgba(159, 18, 57, 0.94) 50%, rgba(136, 19, 55, 0.96) 100%);
+  border: 1.5px solid rgba(255, 110, 145, 0.92);
+  backdrop-filter: blur(18px) saturate(180%);
+  -webkit-backdrop-filter: blur(18px) saturate(180%);
+  box-shadow:
+    0 10px 28px rgba(0, 0, 0, 0.55),
+    0 0 24px rgba(244, 63, 94, 0.7),
+    0 0 45px rgba(225, 29, 72, 0.38),
+    inset 0 1px 2px rgba(255, 220, 230, 0.7);
+  box-sizing: border-box;
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* Glossy top glass glare */
+.error-capsule-glass-glare {
+  position: absolute;
+  top: 0;
+  left: 12%;
+  right: 12%;
+  height: 48%;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.35) 0%, rgba(255, 255, 255, 0.08) 60%, transparent 100%);
+  border-radius: 9999px 9999px 0 0;
+  pointer-events: none;
+}
+
+/* Row 1: Header (Circular White X Icon + "Incorrect Password!") */
+.error-card-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(7px, 1vw, 11px);
+}
+
+.error-circle-icon {
+  width: clamp(18px, 1.6vw, 22px);
+  height: clamp(18px, 1.6vw, 22px);
+  border-radius: 50%;
+  border: 1.5px solid #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.8), inset 0 0 4px rgba(255, 255, 255, 0.4);
+  flex-shrink: 0;
+}
+
+.error-card-title {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-style: italic;
+  font-weight: 700;
+  font-size: clamp(15px, 1.4vw, 21px);
+  color: #ffffff;
+  letter-spacing: 0.02em;
+  line-height: 1.15;
+  text-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.8),
+    0 0 12px rgba(255, 180, 205, 0.85);
+}
+
+/* Row 2: Subtitle flanked by subtle flourish lines */
+.error-card-sub-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(8px, 1vw, 14px);
+  margin-top: 3px;
+  width: 100%;
+}
+
+.error-sub-flourish-line {
+  flex: 1;
+  max-width: clamp(20px, 3.5vw, 50px);
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 220, 230, 0.8), transparent);
+}
+
+.error-card-subtitle {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-style: italic;
+  font-weight: 500;
+  font-size: clamp(11.5px, 0.95vw, 14.5px);
+  color: #ffe4e6;
+  letter-spacing: 0.03em;
+  line-height: 1.1;
+  text-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.7),
+    0 0 8px rgba(244, 63, 94, 0.6);
+}
+
+/* Radiant glowing tick rays on left and right */
+.error-card-ticks {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  position: relative;
+  width: 18px;
+  height: 28px;
+}
+
+.tick-ray {
+  display: block;
+  height: 2.5px;
+  border-radius: 9999px;
+  background: #ff4d79;
+  box-shadow: 0 0 8px rgba(255, 77, 121, 0.95), 0 0 16px rgba(244, 63, 94, 0.75);
+  transform-origin: center;
+}
+
+.ticks-left .ray-top { width: 13px; transform: rotate(-25deg); align-self: flex-end; }
+.ticks-left .ray-mid { width: 16px; transform: rotate(0deg);   align-self: flex-end; }
+.ticks-left .ray-bot { width: 13px; transform: rotate(25deg);  align-self: flex-end; }
+
+.ticks-right .ray-top { width: 13px; transform: rotate(25deg);  align-self: flex-start; }
+.ticks-right .ray-mid { width: 16px; transform: rotate(0deg);   align-self: flex-start; }
+.ticks-right .ray-bot { width: 13px; transform: rotate(-25deg); align-self: flex-start; }
+
+@media (max-width: 640px) {
+  .overlay-password-error-card {
+    top: 77%;
+    gap: 6px;
+  }
+  .error-card-capsule {
+    padding: 6px 18px;
+  }
+  .error-card-ticks {
+    width: 14px;
+  }
+  .ticks-left .ray-top, .ticks-left .ray-bot,
+  .ticks-right .ray-top, .ticks-right .ray-bot { width: 10px; }
+  .ticks-left .ray-mid, .ticks-right .ray-mid { width: 12px; }
+}
+
+/* Fallback simple feedback */
 .overlay-password-feedback {
   position: absolute;
   left: 23.29%;
@@ -2441,3 +3698,3476 @@ button:focus-visible {
     transform: scale(1) translateY(0);
   }
 }
+
+/* ==========================================================================
+   APPROVED WARM CHAMPAGNE FROSTED-GLASS VIDEO MODAL (WATCH OUR MEMORIES)
+   ========================================================================== */
+.video-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  -webkit-backdrop-filter: blur(1.5px);
+  backdrop-filter: blur(1.5px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.24s ease;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+.video-modal-backdrop.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.video-modal-backdrop.is-closing {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Outer Glass Card: Neutral Transparent Frosted Glass + Thin Champagne-Gold Border
+ * - Neutral, nearly colourless low-opacity white layer letting sunset scenery show naturally through.
+ * - Zero pink, purple, burgundy or plum colour tint; zero solid dark fill.
+ * - Preserves subtle frosted-glass blur (14px).
+ * - Thin, smooth champagne-gold border (1.5px solid) with softly rounded corners (38px).
+ * - Restrained champagne-gold edge glow immediately hugging the border.
+ * - External video controls positioned in a separate row below the 9:16 portrait video.
+ */
+.video-modal-card {
+  position: relative;
+  box-sizing: border-box;
+  width: min(94vw, 550px);
+  height: min(92vh, 800px);
+  max-width: min(94vw, 550px);
+  max-height: min(92vh, 800px);
+  background: rgba(255, 255, 255, 0.08);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  border: 1.5px solid rgba(255, 228, 168, 0.82);
+  border-radius: 38px;
+  box-shadow:
+    /* Deep card elevation drop-shadow */
+    0 22px 55px rgba(0, 0, 0, 0.38),
+    /* Bright concentrated champagne-gold highlight directly along the edge */
+    0 0 3px rgba(255, 240, 190, 0.75),
+    /* Soft champagne-gold glow spreading gently outward from the border */
+    0 0 10px rgba(255, 205, 115, 0.40),
+    /* Delicate warm ambient radiance */
+    0 0 24px rgba(245, 175, 85, 0.18),
+    /* Subtle inner edge illumination */
+    inset 0 1px 1.5px rgba(255, 248, 225, 0.65),
+    inset 0 0 12px rgba(255, 200, 110, 0.10);
+  padding: 20px 24px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  z-index: 10000;
+  transform: scale(0.96);
+  opacity: 0;
+  transition: transform 0.24s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.24s ease;
+}
+
+.video-modal-card.is-open {
+  transform: scale(1);
+  opacity: 1;
+}
+
+.video-modal-card.is-closing {
+  transform: scale(0.96);
+  opacity: 0;
+}
+
+/* Top-Right Circular Close (x) Button */
+.video-modal-close-btn {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.14);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 228, 168, 0.75);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 30;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+  transition: background 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+  padding: 0;
+}
+
+.video-modal-close-btn:hover {
+  background: rgba(255, 225, 150, 0.35);
+  border-color: #ffffff;
+  transform: scale(1.08);
+}
+
+.video-modal-close-btn:active {
+  transform: scale(0.95);
+}
+
+.video-close-icon {
+  width: 18px;
+  height: 18px;
+  stroke: #ffffff;
+  stroke-width: 2.2;
+}
+
+/* Strict 9:16 Video Player Container (Smooth rounded clipping, zero square backing) */
+.video-player-container {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  height: 100%;
+  width: auto;
+  aspect-ratio: 9 / 16;
+  max-width: 100%;
+  margin: 0 auto;
+  border-radius: 22px;
+  overflow: hidden;
+  -webkit-mask-image: -webkit-radial-gradient(white, black);
+  mask-image: radial-gradient(white, black);
+  transform: translateZ(0);
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+}
+
+/* Sharp, Native 9:16 Video Element: NEVER cover, ALWAYS contain, perfectly rounded */
+.video-player-media {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  border-radius: inherit;
+  background: transparent !important;
+}
+
+.video-player-media.is-hidden {
+  display: none !important;
+}
+
+/* Central Play Button */
+.video-central-play-btn {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  z-index: 15;
+  padding: 0;
+  transition: opacity 0.25s ease, transform 0.2s ease;
+}
+
+.video-central-play-btn.is-hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.video-central-play-btn.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.video-central-play-circle {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.45);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border: 1.5px solid rgba(255, 255, 255, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.video-central-play-btn:hover .video-central-play-circle {
+  transform: scale(1.1);
+  background: rgba(0, 0, 0, 0.65);
+  border-color: rgba(255, 255, 255, 0.7);
+}
+
+.video-central-play-icon {
+  width: 22px;
+  height: 22px;
+  margin-left: 3px;
+}
+
+/* Separate Compact Control Row Immediately BELOW the Video (Option 5 Layout) */
+.video-external-controls-bar {
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 4px 6px;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  z-index: 20;
+}
+
+.video-external-controls-bar.is-disabled {
+  opacity: 0.42;
+  pointer-events: none;
+}
+
+.video-ctrl-btn {
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  cursor: pointer;
+  padding: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: opacity 0.15s ease, background 0.15s ease, transform 0.15s ease;
+}
+
+.video-ctrl-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.08);
+}
+
+.video-ctrl-icon {
+  width: 17px;
+  height: 17px;
+  stroke: #ffffff;
+}
+
+.video-ctrl-time {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.85);
+  display: flex;
+  gap: 3px;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.video-ctrl-scrubber-track {
+  flex: 1;
+  min-width: 60px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 2px;
+  position: relative;
+  cursor: pointer;
+  transition: height 0.15s ease;
+}
+
+.video-ctrl-scrubber-track:hover {
+  height: 6px;
+}
+
+.video-ctrl-scrubber-buffered {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 2px;
+}
+
+.video-ctrl-scrubber-progress {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background: #ffffff;
+  border-radius: 2px;
+}
+
+.video-ctrl-scrubber-thumb {
+  position: absolute;
+  right: -5px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+}
+
+.video-ctrl-volume-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.video-ctrl-volume-slider {
+  width: 44px;
+  height: 3px;
+  accent-color: #ffffff;
+  cursor: pointer;
+}
+
+/* Responsive adjustments for mobile and compact viewports */
+@media (max-width: 580px), (max-height: 700px) {
+  .video-modal-card {
+    border-radius: 28px;
+    padding: 14px 16px 10px;
+    width: min(95vw, 420px);
+    height: min(94vh, 660px);
+    max-height: min(94vh, 660px);
+    gap: 8px;
+  }
+  .video-player-container {
+    border-radius: 18px;
+  }
+  .video-external-controls-bar {
+    max-width: 100%;
+    gap: 6px;
+    padding: 2px 2px;
+  }
+  .video-ctrl-volume-slider {
+    width: 32px;
+  }
+  .video-modal-close-btn {
+    top: 10px;
+    right: 10px;
+    width: 32px;
+    height: 32px;
+  }
+  .video-close-icon {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+/* ==========================================================================
+   TRANSPARENT FROSTED-GLASS IMAGE VIEWER MODAL (CLICK-TO-OPEN IMAGE CARD)
+   ========================================================================== */
+.image-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.22);
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.24s ease;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+.image-modal-backdrop.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.image-modal-backdrop.is-closing {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Square / Near-Square Transparent Frosted Glass Card
+ * - Enlarged by ~28% (desktop dimensions: min(94vw, 90vh, 790px))
+ * - Uses exact same glass material, transparency, champagne-gold border, and glow as video viewer
+ * - Adapts cleanly to ANY aspect ratio image (portrait, landscape, square) via object-fit: contain
+ */
+.image-modal-card {
+  position: relative;
+  box-sizing: border-box;
+  width: min(94vw, 90vh, 790px);
+  height: min(94vw, 90vh, 790px);
+  aspect-ratio: 1 / 1;
+  background: rgba(255, 255, 255, 0.08);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  border: 1.5px solid rgba(255, 228, 168, 0.82);
+  border-radius: 42px;
+  box-shadow:
+    0 26px 65px rgba(0, 0, 0, 0.42),
+    0 0 4px rgba(255, 240, 190, 0.75),
+    0 0 14px rgba(255, 205, 115, 0.40),
+    0 0 30px rgba(245, 175, 85, 0.18),
+    inset 0 1px 2px rgba(255, 248, 225, 0.65),
+    inset 0 0 15px rgba(255, 200, 110, 0.10);
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  transform: scale(0.96);
+  opacity: 0;
+  transition: transform 0.24s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.24s ease;
+}
+
+.image-modal-card.is-open {
+  transform: scale(1);
+  opacity: 1;
+}
+
+.image-modal-card.is-closing {
+  transform: scale(0.96);
+  opacity: 0;
+}
+
+/* Circular Close Button (Scaled up proportionally) */
+.image-modal-close-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.14);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  border: 1.5px solid rgba(255, 228, 168, 0.75);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 30;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.35);
+  transition: background 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+  padding: 0;
+}
+
+.image-modal-close-btn:hover {
+  background: rgba(255, 225, 150, 0.35);
+  border-color: #ffffff;
+  transform: scale(1.08);
+}
+
+.image-modal-close-btn:active {
+  transform: scale(0.95);
+}
+
+.image-close-icon {
+  width: 22px;
+  height: 22px;
+  stroke: #ffffff;
+  stroke-width: 2.2;
+}
+
+/* Inner Stage & Image Handling */
+.image-viewer-stage {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 28px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  touch-action: none;
+}
+
+.image-viewer-stage.is-zoomable {
+  cursor: zoom-in;
+}
+
+.image-viewer-stage.is-grabbable {
+  cursor: grab;
+}
+
+.image-viewer-stage.is-grabbing {
+  cursor: grabbing;
+}
+
+.image-viewer-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  user-select: none;
+  -webkit-user-drag: none;
+  pointer-events: none;
+  transform-origin: center center;
+}
+
+/* Floating Zoom Bar (Comfortably enlarged and spaced) */
+.image-viewer-zoom-bar {
+  position: absolute;
+  bottom: 22px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(20, 12, 22, 0.68);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  border: 1.5px solid rgba(255, 228, 168, 0.6);
+  border-radius: 9999px;
+  padding: 6px 14px;
+  z-index: 25;
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.48);
+}
+
+.image-zoom-btn {
+  background: transparent;
+  border: none;
+  color: #fff2c4;
+  cursor: pointer;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: transform 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+
+.image-zoom-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.20);
+  color: #ffffff;
+  transform: scale(1.12);
+}
+
+.image-zoom-btn:active:not(:disabled) {
+  transform: scale(0.92);
+}
+
+.image-zoom-btn.is-disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.image-zoom-level-badge {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: #ffffff;
+  letter-spacing: 0.04em;
+  min-width: 46px;
+  text-align: center;
+  user-select: none;
+}
+
+.image-zoom-btn.btn-reset {
+  margin-left: 4px;
+  border-left: 1px solid rgba(255, 228, 168, 0.28);
+  padding-left: 8px;
+  border-radius: 0;
+}
+
+/* Responsive adjustments for image modal */
+@media (max-width: 580px), (max-height: 700px) {
+  .image-modal-card {
+    border-radius: 30px;
+    padding: 18px;
+    width: min(96vw, 88vh, 520px);
+    height: min(96vw, 88vh, 520px);
+  }
+  .image-viewer-stage {
+    border-radius: 20px;
+  }
+  .image-modal-close-btn {
+    top: 12px;
+    right: 12px;
+    width: 38px;
+    height: 38px;
+  }
+  .image-close-icon {
+    width: 18px;
+    height: 18px;
+  }
+  .image-viewer-zoom-bar {
+    bottom: 14px;
+    padding: 4px 10px;
+    gap: 6px;
+  }
+  .image-zoom-btn {
+    padding: 4px;
+  }
+  .image-zoom-level-badge {
+    font-size: 11px;
+    min-width: 36px;
+  }
+}
+
+
+/* ==============================================================================
+   SMOOTH CINEMATIC SECTION TRANSITIONS (650–850ms)
+   - Natural cubic-bezier(0.22, 1, 0.36, 1) vertical slide and subtle fade
+   - Two-phase gentle exit and entrance (~770ms total)
+   - Prevents sudden jumps, flickering, or skipping multiple sections
+   ============================================================================== */
+/* Phase 1: Outgoing section dissolves smoothly */
+.main-content-layout.transition-exiting.direction-down {
+  transform: translateY(-20px);
+  opacity: 0;
+  transition: transform 0.22s cubic-bezier(0.4, 0, 1, 1), opacity 0.22s ease-in;
+}
+
+.main-content-layout.transition-exiting.direction-up {
+  transform: translateY(20px);
+  opacity: 0;
+  transition: transform 0.22s cubic-bezier(0.4, 0, 1, 1), opacity 0.22s ease-in;
+}
+
+/* Phase 2: Incoming section glides in gracefully */
+@keyframes sectionGlideInDown {
+  0% {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes sectionGlideInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(-28px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.main-content-layout.transition-entering.direction-down {
+  animation: sectionGlideInDown 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.main-content-layout.transition-entering.direction-up {
+  animation: sectionGlideInUp 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.main-content-layout.transition-idle {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .main-content-layout.transition-entering.direction-down,
+  .main-content-layout.transition-entering.direction-up {
+    animation: none !important;
+  }
+  .main-content-layout.transition-exiting.direction-down,
+  .main-content-layout.transition-exiting.direction-up {
+    transition: none !important;
+  }
+}
+
+/* ==============================================================================
+   RIGHT-SIDE SECTION INDICATOR (12 SECTIONS)
+   - 1 single thin vertical golden line
+   - Exactly 12 small circular dots
+   - Active section dot has warm golden glow
+   - Completed sections slightly brighter, upcoming sections soft
+   - Minimal, non-intrusive, zero pointer-event blockage
+   ============================================================================== */
+.section-indicator-container {
+  position: fixed;
+  right: clamp(12px, 1.6vw, 22px);
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 40;
+  pointer-events: none;
+  user-select: none;
+  height: clamp(220px, 46vh, 360px);
+}
+
+.section-indicator-line {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 1px;
+  transform: translateX(-50%);
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 225, 160, 0.04) 0%,
+    rgba(255, 220, 150, 0.35) 15%,
+    rgba(255, 220, 150, 0.45) 50%,
+    rgba(255, 220, 150, 0.35) 85%,
+    rgba(255, 225, 160, 0.04) 100%
+  );
+  box-shadow: 0 0 6px rgba(255, 215, 130, 0.2);
+}
+
+.section-indicator-dots-group {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  height: 100%;
+  padding: 4px 0;
+}
+
+.section-indicator-dot {
+  display: block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  transition: all 0.38s cubic-bezier(0.25, 1, 0.5, 1);
+  position: relative;
+}
+
+/* Active Section Dot: Warm golden glow */
+.section-indicator-dot.is-active {
+  width: 9px;
+  height: 9px;
+  background: #fff6e0;
+  box-shadow:
+    0 0 4px #ffe49e,
+    0 0 10px rgba(255, 215, 115, 0.95),
+    0 0 20px rgba(255, 185, 60, 0.7),
+    0 0 32px rgba(240, 155, 40, 0.4);
+  transform: scale(1.15);
+}
+
+/* Completed Sections: Slightly brighter with gentle ambient presence */
+.section-indicator-dot.is-completed {
+  background: rgba(255, 230, 175, 0.72);
+  box-shadow: 0 0 4px rgba(255, 215, 130, 0.45);
+}
+
+/* Upcoming Sections: Softly muted */
+.section-indicator-dot.is-upcoming {
+  background: rgba(255, 225, 165, 0.24);
+  box-shadow: none;
+}
+
+/* ==============================================================================
+   MUSIC PLAYER — NEW APPROVED HORIZONTAL GLASS DESIGN
+   Layout:
+   [ Dedicated to You | Animated Equalizer | Previous | Play/Pause | Next | Volume | Playlist Dropdown ]
+   - Transparent frosted glass allowing sunset colors to show through naturally
+   - Thin, subtle, elegant golden border with smooth rounded corners
+   - ONLY displays "Dedicated to You" in main bar (never song/artist/filename)
+   - Multi-colour equalizer (24 bars) across turquoise, electric cyan, vivid blue, soft violet, and champagne gold
+   - Fully animated while playing; calm static equalizer when paused; inactive when not started
+   - Completely removed: heart icon, vinyl/disk design, glowing outer aura, wave underline
+   ============================================================================== */
+.music-player-wrapper {
+  position: fixed;
+  bottom: clamp(14px, 2.2vh, 24px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Horizontal Frosted-Glass Pill (Exact border-radius: 30px) */
+.music-player-pill {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: clamp(8px, 1.2vw, 16px);
+  padding: 7px 18px;
+  height: 48px;
+  background: linear-gradient(135deg, rgba(50, 18, 42, 0.78) 0%, rgba(28, 10, 24, 0.88) 100%);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1.5px solid rgba(255, 215, 140, 0.85);
+  border-radius: 30px !important;
+  box-shadow:
+    0 10px 28px rgba(0, 0, 0, 0.55),
+    0 0 22px rgba(255, 180, 80, 0.38),
+    inset 0 1px 1px rgba(255, 245, 210, 0.42);
+  color: #fffdfa;
+  transition: all 0.3s ease;
+  user-select: none;
+}
+
+.music-player-pill:hover {
+  background: linear-gradient(135deg, rgba(62, 22, 52, 0.86) 0%, rgba(36, 12, 30, 0.94) 100%);
+  border-color: rgba(255, 230, 160, 0.95);
+  box-shadow:
+    0 12px 32px rgba(0, 0, 0, 0.6),
+    0 0 28px rgba(255, 190, 90, 0.5),
+    inset 0 1px 2px rgba(255, 250, 220, 0.5);
+}
+
+/* Subtle flowing pink and gold light along lower interior */
+.music-player-pill::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 24px;
+  right: 24px;
+  height: 8px;
+  background: radial-gradient(ellipse at bottom, rgba(244, 114, 182, 0.42) 0%, rgba(251, 191, 36, 0.3) 45%, transparent 75%);
+  border-radius: 0 0 30px 30px;
+  pointer-events: none;
+  filter: blur(3px);
+}
+
+/* 1. Label Section: ONLY "Dedicated to You" */
+.music-player-label-section {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  outline: none;
+}
+
+.music-player-label-text {
+  font-family: var(--font-serif-display), Georgia, serif;
+  font-size: 0.86rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: #fff6e0;
+  white-space: nowrap;
+  line-height: 1;
+  text-shadow:
+    0 1px 4px rgba(0, 0, 0, 0.7),
+    0 0 10px rgba(255, 215, 120, 0.35);
+}
+
+/* 2. Animated Spectrum Equalizer (24 Vertical Bars) */
+.music-spectrum-equalizer {
+  display: flex;
+  align-items: flex-end;
+  gap: 2.5px;
+  height: 18px;
+  padding-bottom: 1px;
+  cursor: pointer;
+}
+
+.spectrum-bar {
+  display: block;
+  width: 2.5px;
+  border-radius: 1px;
+  min-height: 3px;
+  transition: height 0.25s ease;
+}
+
+/* Multi-colour palette across 36 bars (Main Birthday):
+   Cyan -> Sky Blue -> Sapphire/Violet -> Magenta/Pink -> Sunset Orange -> Champagne Gold */
+.spectrum-bar.bar-1  { background: linear-gradient(to top, rgba(0, 245, 212, 0.35), #00f5d4); }
+.spectrum-bar.bar-2  { background: linear-gradient(to top, rgba(0, 229, 201, 0.35), #00e5c9); }
+.spectrum-bar.bar-3  { background: linear-gradient(to top, rgba(0, 229, 201, 0.35), #00e5c9); }
+.spectrum-bar.bar-4  { background: linear-gradient(to top, rgba(0, 212, 255, 0.35), #00d4ff); }
+.spectrum-bar.bar-5  { background: linear-gradient(to top, rgba(0, 212, 255, 0.35), #00c7ff); }
+.spectrum-bar.bar-6  { background: linear-gradient(to top, rgba(0, 180, 216, 0.35), #00b4d8); }
+
+.spectrum-bar.bar-7  { background: linear-gradient(to top, rgba(0, 150, 199, 0.35), #0096c7); }
+.spectrum-bar.bar-8  { background: linear-gradient(to top, rgba(0, 119, 182, 0.35), #0077b6); }
+.spectrum-bar.bar-9  { background: linear-gradient(to top, rgba(59, 130, 246, 0.35), #3b82f6); }
+.spectrum-bar.bar-10 { background: linear-gradient(to top, rgba(59, 130, 246, 0.35), #4f87f8); }
+.spectrum-bar.bar-11 { background: linear-gradient(to top, rgba(67, 97, 238, 0.35), #4361ee); }
+.spectrum-bar.bar-12 { background: linear-gradient(to top, rgba(63, 55, 201, 0.35), #3f37c9); }
+
+.spectrum-bar.bar-13 { background: linear-gradient(to top, rgba(114, 9, 183, 0.35), #7209b7); }
+.spectrum-bar.bar-14 { background: linear-gradient(to top, rgba(139, 92, 246, 0.35), #8b5cf6); }
+.spectrum-bar.bar-15 { background: linear-gradient(to top, rgba(168, 85, 247, 0.35), #a855f7); }
+.spectrum-bar.bar-16 { background: linear-gradient(to top, rgba(181, 23, 158, 0.35), #b5179e); }
+.spectrum-bar.bar-17 { background: linear-gradient(to top, rgba(217, 70, 239, 0.35), #d946ef); }
+.spectrum-bar.bar-18 { background: linear-gradient(to top, rgba(236, 72, 153, 0.35), #ec4899); }
+
+.spectrum-bar.bar-19 { background: linear-gradient(to top, rgba(247, 37, 133, 0.35), #f72585); }
+.spectrum-bar.bar-20 { background: linear-gradient(to top, rgba(244, 63, 94, 0.35), #f43f5e); }
+.spectrum-bar.bar-21 { background: linear-gradient(to top, rgba(255, 0, 84, 0.35), #ff0054); }
+.spectrum-bar.bar-22 { background: linear-gradient(to top, rgba(255, 84, 0, 0.35), #ff5400); }
+.spectrum-bar.bar-23 { background: linear-gradient(to top, rgba(255, 109, 0, 0.35), #ff6d00); }
+.spectrum-bar.bar-24 { background: linear-gradient(to top, rgba(255, 133, 0, 0.35), #ff8500); }
+
+.spectrum-bar.bar-25 { background: linear-gradient(to top, rgba(249, 115, 22, 0.35), #f97316); }
+.spectrum-bar.bar-26 { background: linear-gradient(to top, rgba(251, 146, 60, 0.35), #fb923c); }
+.spectrum-bar.bar-27 { background: linear-gradient(to top, rgba(255, 158, 0, 0.35), #ff9e00); }
+.spectrum-bar.bar-28 { background: linear-gradient(to top, rgba(255, 170, 0, 0.35), #ffaa00); }
+.spectrum-bar.bar-29 { background: linear-gradient(to top, rgba(255, 183, 3, 0.35), #ffb703); }
+.spectrum-bar.bar-30 { background: linear-gradient(to top, rgba(245, 158, 11, 0.35), #f59e0b); }
+
+.spectrum-bar.bar-31 { background: linear-gradient(to top, rgba(251, 191, 36, 0.35), #fbbf24); }
+.spectrum-bar.bar-32 { background: linear-gradient(to top, rgba(253, 224, 71, 0.35), #fde047); }
+.spectrum-bar.bar-33 { background: linear-gradient(to top, rgba(250, 204, 21, 0.35), #facc15); }
+.spectrum-bar.bar-34 { background: linear-gradient(to top, rgba(255, 208, 0, 0.35), #ffd000); }
+.spectrum-bar.bar-35 { background: linear-gradient(to top, rgba(255, 215, 130, 0.35), #ffd782); }
+.spectrum-bar.bar-36 { background: linear-gradient(to top, rgba(255, 226, 150, 0.35), #ffe296); }
+
+/* Continuous Rhythmic CSS Animation when Playing */
+@keyframes spectrumWave {
+  0%   { height: 3px; }
+  25%  { height: 14px; }
+  50%  { height: 6px; }
+  75%  { height: 17px; }
+  100% { height: 4px; }
+}
+
+.music-spectrum-equalizer.is-playing .bar-1  { animation: spectrumWave 0.95s ease-in-out infinite alternate; animation-delay: 0.00s; }
+.music-spectrum-equalizer.is-playing .bar-2  { animation: spectrumWave 1.15s ease-in-out infinite alternate; animation-delay: 0.18s; }
+.music-spectrum-equalizer.is-playing .bar-3  { animation: spectrumWave 0.78s ease-in-out infinite alternate; animation-delay: 0.32s; }
+.music-spectrum-equalizer.is-playing .bar-4  { animation: spectrumWave 1.05s ease-in-out infinite alternate; animation-delay: 0.12s; }
+.music-spectrum-equalizer.is-playing .bar-5  { animation: spectrumWave 0.88s ease-in-out infinite alternate; animation-delay: 0.25s; }
+.music-spectrum-equalizer.is-playing .bar-6  { animation: spectrumWave 1.22s ease-in-out infinite alternate; animation-delay: 0.05s; }
+.music-spectrum-equalizer.is-playing .bar-7  { animation: spectrumWave 0.82s ease-in-out infinite alternate; animation-delay: 0.40s; }
+.music-spectrum-equalizer.is-playing .bar-8  { animation: spectrumWave 1.10s ease-in-out infinite alternate; animation-delay: 0.15s; }
+.music-spectrum-equalizer.is-playing .bar-9  { animation: spectrumWave 0.75s ease-in-out infinite alternate; animation-delay: 0.30s; }
+.music-spectrum-equalizer.is-playing .bar-10 { animation: spectrumWave 1.25s ease-in-out infinite alternate; animation-delay: 0.08s; }
+.music-spectrum-equalizer.is-playing .bar-11 { animation: spectrumWave 0.90s ease-in-out infinite alternate; animation-delay: 0.22s; }
+.music-spectrum-equalizer.is-playing .bar-12 { animation: spectrumWave 1.18s ease-in-out infinite alternate; animation-delay: 0.35s; }
+.music-spectrum-equalizer.is-playing .bar-13 { animation: spectrumWave 0.72s ease-in-out infinite alternate; animation-delay: 0.10s; }
+.music-spectrum-equalizer.is-playing .bar-14 { animation: spectrumWave 1.02s ease-in-out infinite alternate; animation-delay: 0.28s; }
+.music-spectrum-equalizer.is-playing .bar-15 { animation: spectrumWave 0.85s ease-in-out infinite alternate; animation-delay: 0.45s; }
+.music-spectrum-equalizer.is-playing .bar-16 { animation: spectrumWave 1.20s ease-in-out infinite alternate; animation-delay: 0.14s; }
+.music-spectrum-equalizer.is-playing .bar-17 { animation: spectrumWave 0.78s ease-in-out infinite alternate; animation-delay: 0.38s; }
+.music-spectrum-equalizer.is-playing .bar-18 { animation: spectrumWave 1.12s ease-in-out infinite alternate; animation-delay: 0.02s; }
+.music-spectrum-equalizer.is-playing .bar-19 { animation: spectrumWave 0.92s ease-in-out infinite alternate; animation-delay: 0.26s; }
+.music-spectrum-equalizer.is-playing .bar-20 { animation: spectrumWave 1.28s ease-in-out infinite alternate; animation-delay: 0.18s; }
+.music-spectrum-equalizer.is-playing .bar-21 { animation: spectrumWave 0.80s ease-in-out infinite alternate; animation-delay: 0.42s; }
+.music-spectrum-equalizer.is-playing .bar-22 { animation: spectrumWave 1.08s ease-in-out infinite alternate; animation-delay: 0.11s; }
+.music-spectrum-equalizer.is-playing .bar-23 { animation: spectrumWave 0.84s ease-in-out infinite alternate; animation-delay: 0.33s; }
+.music-spectrum-equalizer.is-playing .bar-24 { animation: spectrumWave 1.16s ease-in-out infinite alternate; animation-delay: 0.06s; }
+.music-spectrum-equalizer.is-playing .bar-25 { animation: spectrumWave 0.94s ease-in-out infinite alternate; animation-delay: 0.21s; }
+.music-spectrum-equalizer.is-playing .bar-26 { animation: spectrumWave 1.14s ease-in-out infinite alternate; animation-delay: 0.39s; }
+.music-spectrum-equalizer.is-playing .bar-27 { animation: spectrumWave 0.76s ease-in-out infinite alternate; animation-delay: 0.09s; }
+.music-spectrum-equalizer.is-playing .bar-28 { animation: spectrumWave 1.26s ease-in-out infinite alternate; animation-delay: 0.27s; }
+.music-spectrum-equalizer.is-playing .bar-29 { animation: spectrumWave 0.88s ease-in-out infinite alternate; animation-delay: 0.16s; }
+.music-spectrum-equalizer.is-playing .bar-30 { animation: spectrumWave 1.06s ease-in-out infinite alternate; animation-delay: 0.34s; }
+.music-spectrum-equalizer.is-playing .bar-31 { animation: spectrumWave 0.82s ease-in-out infinite alternate; animation-delay: 0.03s; }
+.music-spectrum-equalizer.is-playing .bar-32 { animation: spectrumWave 1.21s ease-in-out infinite alternate; animation-delay: 0.29s; }
+.music-spectrum-equalizer.is-playing .bar-33 { animation: spectrumWave 0.79s ease-in-out infinite alternate; animation-delay: 0.13s; }
+.music-spectrum-equalizer.is-playing .bar-34 { animation: spectrumWave 1.11s ease-in-out infinite alternate; animation-delay: 0.37s; }
+.music-spectrum-equalizer.is-playing .bar-35 { animation: spectrumWave 0.86s ease-in-out infinite alternate; animation-delay: 0.19s; }
+.music-spectrum-equalizer.is-playing .bar-36 { animation: spectrumWave 1.04s ease-in-out infinite alternate; animation-delay: 0.07s; }
+
+/* Calm Static Equalizer when Paused */
+.music-spectrum-equalizer.is-paused .spectrum-bar { animation: none; }
+.music-spectrum-equalizer.is-paused .bar-1  { height: 4px; }
+.music-spectrum-equalizer.is-paused .bar-2  { height: 7px; }
+.music-spectrum-equalizer.is-paused .bar-3  { height: 10px; }
+.music-spectrum-equalizer.is-paused .bar-4  { height: 6px; }
+.music-spectrum-equalizer.is-paused .bar-5  { height: 9px; }
+.music-spectrum-equalizer.is-paused .bar-6  { height: 12px; }
+.music-spectrum-equalizer.is-paused .bar-7  { height: 8px; }
+.music-spectrum-equalizer.is-paused .bar-8  { height: 5px; }
+.music-spectrum-equalizer.is-paused .bar-9  { height: 11px; }
+.music-spectrum-equalizer.is-paused .bar-10 { height: 14px; }
+.music-spectrum-equalizer.is-paused .bar-11 { height: 9px; }
+.music-spectrum-equalizer.is-paused .bar-12 { height: 6px; }
+.music-spectrum-equalizer.is-paused .bar-13 { height: 12px; }
+.music-spectrum-equalizer.is-paused .bar-14 { height: 15px; }
+.music-spectrum-equalizer.is-paused .bar-15 { height: 10px; }
+.music-spectrum-equalizer.is-paused .bar-16 { height: 7px; }
+.music-spectrum-equalizer.is-paused .bar-17 { height: 13px; }
+.music-spectrum-equalizer.is-paused .bar-18 { height: 16px; }
+.music-spectrum-equalizer.is-paused .bar-19 { height: 11px; }
+.music-spectrum-equalizer.is-paused .bar-20 { height: 8px; }
+.music-spectrum-equalizer.is-paused .bar-21 { height: 12px; }
+.music-spectrum-equalizer.is-paused .bar-22 { height: 9px; }
+.music-spectrum-equalizer.is-paused .bar-23 { height: 6px; }
+.music-spectrum-equalizer.is-paused .bar-24 { height: 4px; }
+.music-spectrum-equalizer.is-paused .bar-25 { height: 8px; }
+.music-spectrum-equalizer.is-paused .bar-26 { height: 12px; }
+.music-spectrum-equalizer.is-paused .bar-27 { height: 7px; }
+.music-spectrum-equalizer.is-paused .bar-28 { height: 14px; }
+.music-spectrum-equalizer.is-paused .bar-29 { height: 10px; }
+.music-spectrum-equalizer.is-paused .bar-30 { height: 6px; }
+.music-spectrum-equalizer.is-paused .bar-31 { height: 11px; }
+.music-spectrum-equalizer.is-paused .bar-32 { height: 8px; }
+.music-spectrum-equalizer.is-paused .bar-33 { height: 5px; }
+.music-spectrum-equalizer.is-paused .bar-34 { height: 9px; }
+.music-spectrum-equalizer.is-paused .bar-35 { height: 6px; }
+.music-spectrum-equalizer.is-paused .bar-36 { height: 3px; }
+
+/* Inactive State when not started */
+.music-spectrum-equalizer.is-inactive .spectrum-bar {
+  height: 3px;
+  animation: none;
+}
+
+/* 3. Center Controls: Previous, Play/Pause, Next */
+.music-player-controls {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  margin-left: 2px;
+}
+
+.music-ctrl-btn {
+  background: transparent;
+  border: none;
+  color: rgba(255, 240, 215, 0.85);
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.music-ctrl-btn:hover:not(:disabled) {
+  color: #fff9e6;
+  background: rgba(255, 225, 160, 0.16);
+  transform: scale(1.08);
+}
+
+.music-ctrl-btn:active:not(:disabled) {
+  transform: scale(0.96);
+}
+
+.music-ctrl-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.music-play-btn {
+  width: 32px;
+  height: 32px;
+  background: rgba(255, 220, 150, 0.16);
+  border: 1px solid rgba(255, 225, 160, 0.4);
+  color: #fffdfa;
+  box-shadow: 0 0 10px rgba(255, 210, 100, 0.2);
+}
+
+.music-play-btn:hover:not(:disabled) {
+  background: rgba(255, 225, 160, 0.28);
+  border-color: rgba(255, 240, 190, 0.7);
+  box-shadow: 0 0 14px rgba(255, 215, 110, 0.38);
+}
+
+/* 4. Actions: Volume & Playlist Dropdown Trigger */
+.music-player-actions {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  position: relative;
+}
+
+.music-playlist-btn.is-active {
+  background: rgba(255, 220, 150, 0.2);
+  color: #ffe6a6;
+  box-shadow: 0 0 8px rgba(255, 215, 110, 0.28);
+}
+
+/* Volume Vertical Slider Popup */
+.music-volume-container {
+  position: relative;
+}
+
+.music-volume-popup {
+  position: absolute;
+  bottom: calc(100% + 12px);
+  left: 50%;
+  transform: translateX(-50%) translateY(6px);
+  background: rgba(40, 18, 42, 0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 225, 165, 0.45);
+  border-radius: 20px;
+  padding: 10px 8px;
+  box-shadow:
+    0 10px 24px rgba(0, 0, 0, 0.65),
+    0 0 14px rgba(255, 200, 100, 0.25);
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.22s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 110px;
+  z-index: 100;
+}
+
+/* Invisible bridge so mouse hover is preserved while moving from button to popup */
+.music-volume-popup::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: -12px;
+  right: -12px;
+  height: 20px;
+  background: transparent;
+  pointer-events: auto;
+}
+
+.music-volume-popup.is-visible,
+.music-volume-container:hover .music-volume-popup {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(-50%) translateY(0);
+}
+
+.music-volume-slider {
+  writing-mode: vertical-lr;
+  direction: rtl;
+  width: 14px;
+  height: 85px;
+  accent-color: #ffd880;
+  cursor: pointer;
+  pointer-events: auto;
+  touch-action: none;
+}
+
+/* 5. Playlist Dropdown Menu (Scrollable, highlighted current track) */
+.music-playlist-dropdown {
+  position: absolute;
+  bottom: calc(100% + 12px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: clamp(270px, 86vw, 360px);
+  max-height: 280px;
+  background: rgba(36, 16, 36, 0.92);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+  border: 1px solid rgba(255, 228, 168, 0.55);
+  border-radius: 18px;
+  padding: 12px 10px;
+  box-shadow:
+    0 18px 45px rgba(0, 0, 0, 0.7),
+    0 0 24px rgba(255, 195, 95, 0.25),
+    inset 0 1px 1.5px rgba(255, 248, 225, 0.35);
+  z-index: 60;
+  animation: playlistDropIn 0.24s cubic-bezier(0.2, 0.9, 0.3, 1) both;
+  display: flex;
+  flex-direction: column;
+}
+
+@keyframes playlistDropIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(10px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+}
+
+.music-playlist-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 10px 8px 10px;
+  border-bottom: 1px solid rgba(255, 225, 165, 0.18);
+  margin-bottom: 6px;
+}
+
+.playlist-header-title {
+  font-family: var(--font-serif-display), serif;
+  font-size: 0.84rem;
+  letter-spacing: 0.04em;
+  color: #ffe6a6;
+  font-weight: 600;
+}
+
+.playlist-header-count {
+  font-size: 0.72rem;
+  color: rgba(255, 240, 210, 0.65);
+}
+
+.music-playlist-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  max-height: 210px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 220, 150, 0.4) transparent;
+}
+
+.music-playlist-list::-webkit-scrollbar {
+  width: 4px;
+}
+
+.music-playlist-list::-webkit-scrollbar-thumb {
+  background: rgba(255, 220, 150, 0.35);
+  border-radius: 4px;
+}
+
+.music-playlist-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  outline: none;
+}
+
+.music-playlist-item:hover {
+  background: rgba(255, 225, 165, 0.14);
+}
+
+.music-playlist-item.is-selected {
+  background: rgba(255, 225, 165, 0.22);
+  border: 1px solid rgba(255, 230, 175, 0.4);
+}
+
+.music-item-index {
+  font-size: 0.75rem;
+  color: rgba(255, 235, 195, 0.65);
+  min-width: 18px;
+  text-align: center;
+}
+
+.music-playlist-item.is-selected .music-item-index {
+  color: #ffe8b0;
+  font-weight: bold;
+}
+
+.eq-dot-indicator {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  background: #ffe8b0;
+  border-radius: 50%;
+  box-shadow: 0 0 6px #ffe49e;
+}
+
+.music-item-title {
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.9);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+  text-align: left;
+}
+
+.music-playlist-item.is-selected .music-item-title {
+  color: #fffdf8;
+  font-weight: 600;
+}
+
+.music-item-badge {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: rgba(255, 220, 150, 0.22);
+  color: #ffecc0;
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 225, 165, 0.35);
+}
+
+/* Reduced Motion Preference */
+@media (prefers-reduced-motion: reduce) {
+  .music-spectrum-equalizer.is-playing .spectrum-bar {
+    animation: none !important;
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 680px) {
+  .music-player-pill {
+    padding: 6px 14px;
+    height: 44px;
+    gap: 8px;
+  }
+  .music-player-label-text {
+    font-size: 0.78rem;
+  }
+  .music-spectrum-equalizer {
+    gap: 1.5px;
+    height: 15px;
+  }
+  .spectrum-bar {
+    width: 2px;
+  }
+}
+
+/* ==============================================================================
+   CORNER NAVIGATION BUTTONS (NEXT PAGE & PREVIOUS SECTION)
+   Refined champagne-gold frosted glass aesthetic matching sunset background
+   ============================================================================== */
+.corner-nav-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 9px 18px;
+  border-radius: 9999px;
+  background: rgba(22, 14, 28, 0.72);
+  border: 1px solid rgba(240, 208, 140, 0.45);
+  color: #fff6e0;
+  font-family: 'Cinzel', 'Playfair Display', 'Cormorant Garamond', Georgia, serif;
+  font-size: 0.88rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35), 0 0 14px rgba(235, 195, 115, 0.18);
+  transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+  user-select: none;
+  text-decoration: none;
+}
+
+.corner-nav-btn:hover {
+  background: rgba(36, 22, 46, 0.85);
+  border-color: rgba(255, 224, 150, 0.85);
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45), 0 0 20px rgba(255, 215, 120, 0.38);
+}
+
+.corner-nav-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4), 0 0 10px rgba(255, 215, 120, 0.25);
+}
+
+.corner-nav-icon {
+  flex-shrink: 0;
+  color: #ffd88a;
+  transition: transform 0.25s ease;
+}
+
+.corner-nav-next:hover .corner-nav-icon {
+  transform: translateX(3px);
+}
+
+.corner-nav-prev:hover .corner-nav-icon {
+  transform: translateX(-3px);
+}
+
+.corner-nav-text {
+  font-style: italic;
+  white-space: nowrap;
+}
+
+/* Anchored positions */
+.corner-nav-next {
+  position: fixed;
+  bottom: 26px;
+  right: 28px;
+  z-index: 60;
+  animation: cornerNavEntranceNext 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* Float safely above the music capsule inside Happy Gallery, aligned with gallery navigation */
+.happy-gallery-root .corner-nav-next {
+  position: fixed;
+  bottom: clamp(76px, 9.8vh, 98px);
+  right: clamp(24px, 3.5vw, 44px);
+  z-index: 75;
+}
+
+/* Float above the music capsule inside Sad Gallery */
+.sad-gallery-root .corner-nav-next {
+  bottom: clamp(145px, 17vh, 180px);
+  right: clamp(18px, 3vw, 36px);
+  z-index: 75;
+}
+
+.corner-nav-prev {
+  position: fixed;
+  top: 24px;
+  left: 28px;
+  z-index: 60;
+  animation: cornerNavEntrancePrev 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* Entrance Animations */
+@keyframes cornerNavEntranceNext {
+  0% {
+    opacity: 0;
+    transform: translate(10px, 10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(0, 0);
+  }
+}
+
+@keyframes cornerNavEntrancePrev {
+  0% {
+    opacity: 0;
+    transform: translate(-10px, -10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(0, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .corner-nav-next,
+  .corner-nav-prev {
+    animation: none !important;
+  }
+}
+
+@media (max-width: 680px) {
+  .corner-nav-btn {
+    padding: 7px 14px;
+    font-size: 0.78rem;
+  }
+  .corner-nav-next {
+    bottom: 18px;
+    right: 18px;
+  }
+  .corner-nav-prev {
+    top: 18px;
+    left: 18px;
+  }
+}
+
+/* ==============================================================================
+   SAD & HAPPY GALLERY DEDICATED MUSIC PLAYERS
+   EXACT COMPACT FOOTPRINT MATCHING MAIN BIRTHDAY MUSIC PLAYER:
+   - Identical Height: 48px desktop / 44px mobile
+   - Identical Capsule Pill Shape with border-radius: 9999px
+   - Identical Positioning: fixed at bottom: clamp(14px, 2.2vh, 24px)
+   - Identical 32px Play/Pause Button Scale
+   - Identical 0.86rem Title Typography Scale
+   - Identical 18px Equalizer Height (24 bars)
+   - Preserves Custom Themes:
+     * Sad Memories: Dark navy glass with electric-blue neon lighting
+     * Happy Memories: Warm plum glass with champagne-gold neon lighting
+   ============================================================================== */
+
+.gallery-music-wrapper {
+  position: fixed;
+  bottom: clamp(14px, 2.2vh, 24px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: auto;
+}
+
+/* Compact Pill matching .music-player-pill with EXACT border-radius: 30px */
+.gallery-music-capsule {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: clamp(8px, 1.2vw, 16px);
+  padding: 7px 18px;
+  height: 48px;
+  border-radius: 30px !important;
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  box-sizing: border-box;
+  transition: all 0.3s ease;
+  user-select: none;
+}
+
+/* ------------------------------------------------------------------------------
+   THEME 1: SAD MEMORIES (Midnight Navy & Electric Blue Neon)
+   ------------------------------------------------------------------------------ */
+.gallery-music-capsule.sad-theme {
+  background: linear-gradient(135deg, rgba(8, 20, 44, 0.82) 0%, rgba(5, 12, 28, 0.92) 100%);
+  border: 1.5px solid rgba(56, 189, 248, 0.85);
+  border-radius: 30px !important;
+  box-shadow:
+    0 10px 28px rgba(0, 0, 0, 0.55),
+    0 0 22px rgba(56, 189, 248, 0.4),
+    inset 0 1px 1px rgba(186, 230, 253, 0.42);
+  color: #f0f9ff;
+}
+
+.gallery-music-capsule.sad-theme:hover {
+  background: linear-gradient(135deg, rgba(12, 28, 58, 0.9) 0%, rgba(8, 16, 36, 0.96) 100%);
+  border-color: rgba(56, 189, 248, 0.98);
+  box-shadow:
+    0 12px 32px rgba(0, 0, 0, 0.6),
+    0 0 28px rgba(56, 189, 248, 0.55),
+    inset 0 1px 2px rgba(186, 230, 253, 0.5);
+}
+
+/* Subtle flowing electric blue light along lower interior */
+.gallery-music-capsule.sad-theme::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 24px;
+  right: 24px;
+  height: 8px;
+  background: radial-gradient(ellipse at bottom, rgba(56, 189, 248, 0.55) 0%, rgba(14, 165, 233, 0.3) 45%, transparent 75%);
+  border-radius: 0 0 30px 30px;
+  pointer-events: none;
+  filter: blur(3px);
+}
+
+/* ------------------------------------------------------------------------------
+   THEME 2: HAPPY MEMORIES (Warm Plum & Champagne Gold Neon with Floral Accents)
+   ------------------------------------------------------------------------------ */
+.gallery-music-capsule.happy-theme {
+  background: linear-gradient(135deg, rgba(65, 22, 40, 0.82) 0%, rgba(38, 14, 28, 0.9) 100%);
+  border: 1.5px solid rgba(251, 191, 36, 0.85);
+  border-radius: 30px !important;
+  box-shadow:
+    0 10px 28px rgba(0, 0, 0, 0.55),
+    0 0 22px rgba(245, 158, 11, 0.4),
+    inset 0 1px 1px rgba(254, 243, 199, 0.42);
+  color: #fffbeb;
+}
+
+.gallery-music-capsule.happy-theme:hover {
+  background: linear-gradient(135deg, rgba(78, 28, 48, 0.9) 0%, rgba(48, 18, 34, 0.96) 100%);
+  border-color: rgba(251, 191, 36, 0.98);
+  box-shadow:
+    0 12px 32px rgba(0, 0, 0, 0.6),
+    0 0 28px rgba(245, 158, 11, 0.55),
+    inset 0 1px 2px rgba(254, 243, 199, 0.5);
+}
+
+/* Subtle flowing golden light along lower interior */
+.gallery-music-capsule.happy-theme::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 24px;
+  right: 24px;
+  height: 8px;
+  background: radial-gradient(ellipse at bottom, rgba(251, 191, 36, 0.5) 0%, rgba(244, 114, 182, 0.3) 45%, transparent 75%);
+  border-radius: 0 0 30px 30px;
+  pointer-events: none;
+  filter: blur(3px);
+}
+
+/* Subtle Cherry Blossom Petal Accents in Outer Corners */
+.gmp-floral-accent {
+  position: absolute;
+  pointer-events: none;
+  z-index: 2;
+  filter: drop-shadow(0 0 6px rgba(244, 114, 182, 0.55));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gmp-floral-accent.floral-tl {
+  top: -6px;
+  left: -8px;
+  transform: rotate(-12deg);
+}
+
+.gmp-floral-accent.floral-br {
+  bottom: -6px;
+  right: -8px;
+  transform: rotate(12deg);
+}
+
+/* ------------------------------------------------------------------------------
+   TITLE BLOCK & INFINITY SYMBOL
+   ------------------------------------------------------------------------------ */
+.gmp-title-block {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  min-width: 110px;
+  max-width: 175px;
+  cursor: pointer;
+  outline: none;
+  overflow: hidden;
+}
+
+.gmp-title-header {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  line-height: 1;
+}
+
+.gmp-now-playing-title {
+  font-family: var(--font-sans-body), system-ui, -apple-system, sans-serif;
+  font-size: 0.64rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 170px;
+  line-height: 1.2;
+  margin-top: 2px;
+}
+
+.sad-theme .gmp-now-playing-title {
+  color: rgba(186, 230, 253, 0.95);
+  text-shadow: 0 0 6px rgba(56, 189, 248, 0.45);
+}
+
+.happy-theme .gmp-now-playing-title {
+  color: rgba(254, 240, 138, 0.95);
+  text-shadow: 0 0 6px rgba(251, 191, 36, 0.45);
+}
+
+.gmp-title-text {
+  font-family: var(--font-serif-display), Georgia, serif;
+  font-style: italic;
+  font-size: 0.86rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  line-height: 1;
+}
+
+.sad-theme .gmp-title-text {
+  color: #f0f9ff;
+  text-shadow: 0 0 10px rgba(56, 189, 248, 0.5);
+}
+
+.happy-theme .gmp-title-text {
+  color: #fffbeb;
+  text-shadow: 0 0 10px rgba(251, 191, 36, 0.5);
+}
+
+.gmp-infinity-symbol {
+  font-family: Georgia, serif;
+  font-size: 1.05rem;
+  font-style: normal;
+  line-height: 1;
+  font-weight: 700;
+  display: inline-block;
+  transform: translateY(-0.5px);
+}
+
+.sad-theme .gmp-infinity-symbol {
+  color: #38bdf8;
+  text-shadow: 0 0 8px rgba(56, 189, 248, 0.8), 0 0 16px rgba(56, 189, 248, 0.5);
+}
+
+.happy-theme .gmp-infinity-symbol {
+  color: #fbbf24;
+  text-shadow: 0 0 8px rgba(251, 191, 36, 0.8), 0 0 16px rgba(245, 158, 11, 0.5);
+}
+
+/* ------------------------------------------------------------------------------
+   SPECTRUM EQUALIZERS (36 Bars)
+   ------------------------------------------------------------------------------ */
+.gmp-equalizer {
+  display: flex;
+  align-items: flex-end;
+  gap: 2.5px;
+  height: 18px;
+  padding-bottom: 1px;
+  cursor: pointer;
+}
+
+/* 1. Happy Gallery: Full Vibrant Rainbow Spectrum */
+.happy-theme .gmp-equalizer .spectrum-bar.bar-1  { background: linear-gradient(to top, rgba(6, 182, 212, 0.35), #06b6d4); }
+.happy-theme .gmp-equalizer .spectrum-bar.bar-2  { background: linear-gradient(to top, rgba(14, 165, 233, 0.35), #0ea5e9); }
+.happy-theme .gmp-equalizer .spectrum-bar.bar-3  { background: linear-gradient(to top, rgba(56, 189, 248, 0.35), #38bdf8); }
+.happy-theme .gmp-equalizer .spectrum-bar.bar-4  { background: linear-gradient(to top, rgba(59, 130, 246, 0.35), #3b82f6); }
+.happy-theme .gmp-equalizer .spectrum-bar.bar-5  { background: linear-gradient(to top, rgba(37, 99, 235, 0.35), #2563eb); }
+.happy-theme .gmp-equalizer .spectrum-bar.bar-6  { background: linear-gradient(to top, rgba(79, 70, 229, 0.35), #4f46e5); }
+.happy-theme .gmp-equalizer .spectrum-bar.bar-7  { background: linear-gradient(to top, rgba(99, 102, 241, 0.35), #6366f1); }
+.happy-theme .gmp-equalizer .spectrum-bar.bar-8  { background: linear-gradient(to top, rgba(129, 140, 248, 0.35), #818cf8); }
+.happy-theme .gmp-equalizer .spectrum-bar.bar-9  { background: linear-gradient(to top, rgba(139, 92, 246, 0.35), #8b5cf6); }
+.happy-theme .gmp-equalizer .spectrum-bar.bar-10 { background: linear-gradient(to top, rgba(168, 85, 247, 0.35), #a855f7); }
+.happy-theme .gmp-equalizer .spectrum-bar.bar-11 { background: linear-gradient(to top, rgba(192, 38, 211, 0.35), #c026d3); }
+.happy-theme .gmp-equalizer .spectrum-bar.bar-12 { background: linear-gradient(to top, rgba(217, 70, 239, 0.35), #d946ef); }
+.happy-theme .gmp-equalizer .spectrum-bar.bar-13 { background: linear-gradient(to top, rgba(232, 121, 249, 0.35), #e879f9); }
+.happy-theme .gmp-equalizer .spectrum-bar.bar-14 { background: linear-gradient(to top, rgba(236, 72, 153, 0.35), #ec4899); }
+.happy-theme .gmp-equalizer .spectrum-bar.bar-15 { background: linear-gradient(to top, rgba(244, 63, 94, 0.35), #f43f5e); }
+.happy-theme .gmp-equalizer .spectrum-bar.bar-16 { background: linear-gradient(to top, rgba(244, 63, 94, 0.35), #f43f5e); }
+.happy-theme .gmp-equalizer .spectrum-bar.bar-17 { background: linear-gradient(to top, rgba(239, 68, 68, 0.35), #ef4444); }
+.happy-theme .gmp-equalizer .spectrum-bar.bar-18 { background: linear-gradient(to top, rgba(249, 115, 22, 0.35), #f97316); }
+.happy-theme .gmp-equalizer .spectrum-bar.bar-19 { background: linear-gradient(to top, rgba(249, 115, 22, 0.35), #f97316); }
+.happy-theme .gmp-equalizer .spectrum-bar.bar-20 { background: linear-gradient(to top, rgba(234, 88, 12, 0.35), #ea580c); }
+.happy-theme .gmp-equalizer .spectrum-bar.bar-21 { background: linear-gradient(to top, rgba(245, 158, 11, 0.35), #f59e0b); }
+.happy-theme .gmp-equalizer .spectrum-bar.bar-22 { background: linear-gradient(to top, rgba(245, 158, 11, 0.35), #f59e0b); }
+.happy-theme .gmp-equalizer .spectrum-bar.bar-23 { background: linear-gradient(to top, rgba(251, 191, 36, 0.35), #fbbf24); }
+.happy-theme .gmp-equalizer .spectrum-bar.bar-24 { background: linear-gradient(to top, rgba(251, 191, 36, 0.35), #fbbf24); }
+.happy-theme .gmp-equalizer .spectrum-bar.bar-25 { background: linear-gradient(to top, rgba(253, 224, 71, 0.35), #fde047); }
+.happy-theme .gmp-equalizer .spectrum-bar.bar-26 { background: linear-gradient(to top, rgba(250, 204, 21, 0.35), #facc15); }
+.happy-theme .gmp-equalizer .spectrum-bar.bar-27 { background: linear-gradient(to top, rgba(234, 179, 8, 0.35), #eab308); }
+.happy-theme .gmp-equalizer .spectrum-bar.bar-28 { background: linear-gradient(to top, rgba(202, 138, 4, 0.35), #ca8a04); }
+.happy-theme .gmp-equalizer .spectrum-bar.bar-29 { background: linear-gradient(to top, rgba(163, 230, 53, 0.35), #a3e635); }
+.happy-theme .gmp-equalizer .spectrum-bar.bar-30 { background: linear-gradient(to top, rgba(132, 204, 22, 0.35), #84cc16); }
+.happy-theme .gmp-equalizer .spectrum-bar.bar-31 { background: linear-gradient(to top, rgba(101, 163, 13, 0.35), #65a30d); }
+.happy-theme .gmp-equalizer .spectrum-bar.bar-32 { background: linear-gradient(to top, rgba(34, 197, 94, 0.35), #22c55e); }
+.happy-theme .gmp-equalizer .spectrum-bar.bar-33 { background: linear-gradient(to top, rgba(16, 185, 129, 0.35), #10b981); }
+.happy-theme .gmp-equalizer .spectrum-bar.bar-34 { background: linear-gradient(to top, rgba(20, 184, 166, 0.35), #14b8a6); }
+.happy-theme .gmp-equalizer .spectrum-bar.bar-35 { background: linear-gradient(to top, rgba(6, 182, 212, 0.35), #06b6d4); }
+.happy-theme .gmp-equalizer .spectrum-bar.bar-36 { background: linear-gradient(to top, rgba(56, 189, 248, 0.35), #38bdf8); }
+
+/* 2. Sad Gallery: Cool Dark Atmosphere Spectrum */
+.sad-theme .gmp-equalizer .spectrum-bar.bar-1  { background: linear-gradient(to top, rgba(56, 189, 248, 0.35), #38bdf8); }
+.sad-theme .gmp-equalizer .spectrum-bar.bar-2  { background: linear-gradient(to top, rgba(56, 189, 248, 0.35), #38bdf8); }
+.sad-theme .gmp-equalizer .spectrum-bar.bar-3  { background: linear-gradient(to top, rgba(14, 165, 233, 0.35), #0ea5e9); }
+.sad-theme .gmp-equalizer .spectrum-bar.bar-4  { background: linear-gradient(to top, rgba(2, 132, 199, 0.35), #0284c7); }
+.sad-theme .gmp-equalizer .spectrum-bar.bar-5  { background: linear-gradient(to top, rgba(3, 105, 161, 0.35), #0369a1); }
+.sad-theme .gmp-equalizer .spectrum-bar.bar-6  { background: linear-gradient(to top, rgba(7, 89, 133, 0.35), #075985); }
+.sad-theme .gmp-equalizer .spectrum-bar.bar-7  { background: linear-gradient(to top, rgba(59, 130, 246, 0.35), #3b82f6); }
+.sad-theme .gmp-equalizer .spectrum-bar.bar-8  { background: linear-gradient(to top, rgba(37, 99, 235, 0.35), #2563eb); }
+.sad-theme .gmp-equalizer .spectrum-bar.bar-9  { background: linear-gradient(to top, rgba(29, 78, 216, 0.35), #1d4ed8); }
+.sad-theme .gmp-equalizer .spectrum-bar.bar-10 { background: linear-gradient(to top, rgba(30, 64, 175, 0.35), #1e40af); }
+.sad-theme .gmp-equalizer .spectrum-bar.bar-11 { background: linear-gradient(to top, rgba(79, 70, 229, 0.35), #4f46e5); }
+.sad-theme .gmp-equalizer .spectrum-bar.bar-12 { background: linear-gradient(to top, rgba(67, 56, 202, 0.35), #4338ca); }
+.sad-theme .gmp-equalizer .spectrum-bar.bar-13 { background: linear-gradient(to top, rgba(55, 48, 163, 0.35), #3730a3); }
+.sad-theme .gmp-equalizer .spectrum-bar.bar-14 { background: linear-gradient(to top, rgba(99, 102, 241, 0.35), #6366f1); }
+.sad-theme .gmp-equalizer .spectrum-bar.bar-15 { background: linear-gradient(to top, rgba(129, 140, 248, 0.35), #818cf8); }
+.sad-theme .gmp-equalizer .spectrum-bar.bar-16 { background: linear-gradient(to top, rgba(139, 92, 246, 0.35), #8b5cf6); }
+.sad-theme .gmp-equalizer .spectrum-bar.bar-17 { background: linear-gradient(to top, rgba(124, 58, 237, 0.35), #7c3aed); }
+.sad-theme .gmp-equalizer .spectrum-bar.bar-18 { background: linear-gradient(to top, rgba(109, 40, 217, 0.35), #6d28d9); }
+.sad-theme .gmp-equalizer .spectrum-bar.bar-19 { background: linear-gradient(to top, rgba(147, 51, 234, 0.35), #9333ea); }
+.sad-theme .gmp-equalizer .spectrum-bar.bar-20 { background: linear-gradient(to top, rgba(168, 85, 247, 0.35), #a855f7); }
+.sad-theme .gmp-equalizer .spectrum-bar.bar-21 { background: linear-gradient(to top, rgba(192, 132, 252, 0.35), #c084fc); }
+.sad-theme .gmp-equalizer .spectrum-bar.bar-22 { background: linear-gradient(to top, rgba(192, 38, 211, 0.35), #c026d3); }
+.sad-theme .gmp-equalizer .spectrum-bar.bar-23 { background: linear-gradient(to top, rgba(217, 70, 239, 0.35), #d946ef); }
+.sad-theme .gmp-equalizer .spectrum-bar.bar-24 { background: linear-gradient(to top, rgba(232, 121, 249, 0.35), #e879f9); }
+.sad-theme .gmp-equalizer .spectrum-bar.bar-25 { background: linear-gradient(to top, rgba(236, 72, 153, 0.35), #ec4899); }
+.sad-theme .gmp-equalizer .spectrum-bar.bar-26 { background: linear-gradient(to top, rgba(244, 114, 182, 0.35), #f472b6); }
+.sad-theme .gmp-equalizer .spectrum-bar.bar-27 { background: linear-gradient(to top, rgba(192, 132, 252, 0.35), #c084fc); }
+.sad-theme .gmp-equalizer .spectrum-bar.bar-28 { background: linear-gradient(to top, rgba(168, 85, 247, 0.35), #a855f7); }
+.sad-theme .gmp-equalizer .spectrum-bar.bar-29 { background: linear-gradient(to top, rgba(139, 92, 246, 0.35), #8b5cf6); }
+.sad-theme .gmp-equalizer .spectrum-bar.bar-30 { background: linear-gradient(to top, rgba(99, 102, 241, 0.35), #6366f1); }
+.sad-theme .gmp-equalizer .spectrum-bar.bar-31 { background: linear-gradient(to top, rgba(59, 130, 246, 0.35), #3b82f6); }
+.sad-theme .gmp-equalizer .spectrum-bar.bar-32 { background: linear-gradient(to top, rgba(14, 165, 233, 0.35), #0ea5e9); }
+.sad-theme .gmp-equalizer .spectrum-bar.bar-33 { background: linear-gradient(to top, rgba(56, 189, 248, 0.35), #38bdf8); }
+.sad-theme .gmp-equalizer .spectrum-bar.bar-34 { background: linear-gradient(to top, rgba(125, 211, 252, 0.35), #7dd3fc); }
+.sad-theme .gmp-equalizer .spectrum-bar.bar-35 { background: linear-gradient(to top, rgba(186, 230, 253, 0.35), #bae6fd); }
+.sad-theme .gmp-equalizer .spectrum-bar.bar-36 { background: linear-gradient(to top, rgba(224, 242, 254, 0.35), #e0f2fe); }
+
+/* Continuous Rhythmic Wave Animations for GMP Equalizer */
+.gmp-equalizer.is-playing .bar-1  { animation: spectrumWave 0.95s ease-in-out infinite alternate; animation-delay: 0.00s; }
+.gmp-equalizer.is-playing .bar-2  { animation: spectrumWave 1.15s ease-in-out infinite alternate; animation-delay: 0.18s; }
+.gmp-equalizer.is-playing .bar-3  { animation: spectrumWave 0.78s ease-in-out infinite alternate; animation-delay: 0.32s; }
+.gmp-equalizer.is-playing .bar-4  { animation: spectrumWave 1.05s ease-in-out infinite alternate; animation-delay: 0.12s; }
+.gmp-equalizer.is-playing .bar-5  { animation: spectrumWave 0.88s ease-in-out infinite alternate; animation-delay: 0.25s; }
+.gmp-equalizer.is-playing .bar-6  { animation: spectrumWave 1.22s ease-in-out infinite alternate; animation-delay: 0.05s; }
+.gmp-equalizer.is-playing .bar-7  { animation: spectrumWave 0.82s ease-in-out infinite alternate; animation-delay: 0.40s; }
+.gmp-equalizer.is-playing .bar-8  { animation: spectrumWave 1.10s ease-in-out infinite alternate; animation-delay: 0.15s; }
+.gmp-equalizer.is-playing .bar-9  { animation: spectrumWave 0.75s ease-in-out infinite alternate; animation-delay: 0.30s; }
+.gmp-equalizer.is-playing .bar-10 { animation: spectrumWave 1.25s ease-in-out infinite alternate; animation-delay: 0.08s; }
+.gmp-equalizer.is-playing .bar-11 { animation: spectrumWave 0.90s ease-in-out infinite alternate; animation-delay: 0.22s; }
+.gmp-equalizer.is-playing .bar-12 { animation: spectrumWave 1.18s ease-in-out infinite alternate; animation-delay: 0.35s; }
+.gmp-equalizer.is-playing .bar-13 { animation: spectrumWave 0.72s ease-in-out infinite alternate; animation-delay: 0.10s; }
+.gmp-equalizer.is-playing .bar-14 { animation: spectrumWave 1.02s ease-in-out infinite alternate; animation-delay: 0.28s; }
+.gmp-equalizer.is-playing .bar-15 { animation: spectrumWave 0.85s ease-in-out infinite alternate; animation-delay: 0.45s; }
+.gmp-equalizer.is-playing .bar-16 { animation: spectrumWave 1.20s ease-in-out infinite alternate; animation-delay: 0.14s; }
+.gmp-equalizer.is-playing .bar-17 { animation: spectrumWave 0.78s ease-in-out infinite alternate; animation-delay: 0.38s; }
+.gmp-equalizer.is-playing .bar-18 { animation: spectrumWave 1.12s ease-in-out infinite alternate; animation-delay: 0.02s; }
+.gmp-equalizer.is-playing .bar-19 { animation: spectrumWave 0.92s ease-in-out infinite alternate; animation-delay: 0.26s; }
+.gmp-equalizer.is-playing .bar-20 { animation: spectrumWave 1.28s ease-in-out infinite alternate; animation-delay: 0.18s; }
+.gmp-equalizer.is-playing .bar-21 { animation: spectrumWave 0.80s ease-in-out infinite alternate; animation-delay: 0.42s; }
+.gmp-equalizer.is-playing .bar-22 { animation: spectrumWave 1.08s ease-in-out infinite alternate; animation-delay: 0.11s; }
+.gmp-equalizer.is-playing .bar-23 { animation: spectrumWave 0.84s ease-in-out infinite alternate; animation-delay: 0.33s; }
+.gmp-equalizer.is-playing .bar-24 { animation: spectrumWave 1.16s ease-in-out infinite alternate; animation-delay: 0.06s; }
+.gmp-equalizer.is-playing .bar-25 { animation: spectrumWave 0.94s ease-in-out infinite alternate; animation-delay: 0.21s; }
+.gmp-equalizer.is-playing .bar-26 { animation: spectrumWave 1.14s ease-in-out infinite alternate; animation-delay: 0.39s; }
+.gmp-equalizer.is-playing .bar-27 { animation: spectrumWave 0.76s ease-in-out infinite alternate; animation-delay: 0.09s; }
+.gmp-equalizer.is-playing .bar-28 { animation: spectrumWave 1.26s ease-in-out infinite alternate; animation-delay: 0.27s; }
+.gmp-equalizer.is-playing .bar-29 { animation: spectrumWave 0.88s ease-in-out infinite alternate; animation-delay: 0.16s; }
+.gmp-equalizer.is-playing .bar-30 { animation: spectrumWave 1.06s ease-in-out infinite alternate; animation-delay: 0.34s; }
+.gmp-equalizer.is-playing .bar-31 { animation: spectrumWave 0.82s ease-in-out infinite alternate; animation-delay: 0.03s; }
+.gmp-equalizer.is-playing .bar-32 { animation: spectrumWave 1.21s ease-in-out infinite alternate; animation-delay: 0.29s; }
+.gmp-equalizer.is-playing .bar-33 { animation: spectrumWave 0.79s ease-in-out infinite alternate; animation-delay: 0.13s; }
+.gmp-equalizer.is-playing .bar-34 { animation: spectrumWave 1.11s ease-in-out infinite alternate; animation-delay: 0.37s; }
+.gmp-equalizer.is-playing .bar-35 { animation: spectrumWave 0.86s ease-in-out infinite alternate; animation-delay: 0.19s; }
+.gmp-equalizer.is-playing .bar-36 { animation: spectrumWave 1.04s ease-in-out infinite alternate; animation-delay: 0.07s; }
+
+/* Static state when paused */
+.gmp-equalizer.is-paused .spectrum-bar { animation: none; }
+.gmp-equalizer.is-paused .bar-1  { height: 4px; }
+.gmp-equalizer.is-paused .bar-2  { height: 7px; }
+.gmp-equalizer.is-paused .bar-3  { height: 10px; }
+.gmp-equalizer.is-paused .bar-4  { height: 6px; }
+.gmp-equalizer.is-paused .bar-5  { height: 9px; }
+.gmp-equalizer.is-paused .bar-6  { height: 12px; }
+.gmp-equalizer.is-paused .bar-7  { height: 8px; }
+.gmp-equalizer.is-paused .bar-8  { height: 5px; }
+.gmp-equalizer.is-paused .bar-9  { height: 11px; }
+.gmp-equalizer.is-paused .bar-10 { height: 14px; }
+.gmp-equalizer.is-paused .bar-11 { height: 9px; }
+.gmp-equalizer.is-paused .bar-12 { height: 6px; }
+.gmp-equalizer.is-paused .bar-13 { height: 12px; }
+.gmp-equalizer.is-paused .bar-14 { height: 15px; }
+.gmp-equalizer.is-paused .bar-15 { height: 10px; }
+.gmp-equalizer.is-paused .bar-16 { height: 7px; }
+.gmp-equalizer.is-paused .bar-17 { height: 13px; }
+.gmp-equalizer.is-paused .bar-18 { height: 16px; }
+.gmp-equalizer.is-paused .bar-19 { height: 11px; }
+.gmp-equalizer.is-paused .bar-20 { height: 8px; }
+.gmp-equalizer.is-paused .bar-21 { height: 12px; }
+.gmp-equalizer.is-paused .bar-22 { height: 9px; }
+.gmp-equalizer.is-paused .bar-23 { height: 6px; }
+.gmp-equalizer.is-paused .bar-24 { height: 4px; }
+.gmp-equalizer.is-paused .bar-25 { height: 8px; }
+.gmp-equalizer.is-paused .bar-26 { height: 12px; }
+.gmp-equalizer.is-paused .bar-27 { height: 7px; }
+.gmp-equalizer.is-paused .bar-28 { height: 14px; }
+.gmp-equalizer.is-paused .bar-29 { height: 10px; }
+.gmp-equalizer.is-paused .bar-30 { height: 6px; }
+.gmp-equalizer.is-paused .bar-31 { height: 11px; }
+.gmp-equalizer.is-paused .bar-32 { height: 8px; }
+.gmp-equalizer.is-paused .bar-33 { height: 5px; }
+.gmp-equalizer.is-paused .bar-34 { height: 9px; }
+.gmp-equalizer.is-paused .bar-35 { height: 6px; }
+.gmp-equalizer.is-paused .bar-36 { height: 3px; }
+
+/* ------------------------------------------------------------------------------
+   CONTROLS & BUTTONS
+   ------------------------------------------------------------------------------ */
+.gmp-controls-group {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  margin-left: 2px;
+}
+
+.gmp-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.sad-theme .gmp-btn-prev,
+.sad-theme .gmp-btn-next {
+  color: #7dd3fc;
+}
+.sad-theme .gmp-btn-prev:hover:not(:disabled),
+.sad-theme .gmp-btn-next:hover:not(:disabled) {
+  color: #bae6fd;
+  background: rgba(56, 189, 248, 0.16);
+  transform: scale(1.08);
+}
+
+.happy-theme .gmp-btn-prev,
+.happy-theme .gmp-btn-next {
+  color: #fde68a;
+}
+.happy-theme .gmp-btn-prev:hover:not(:disabled),
+.happy-theme .gmp-btn-next:hover:not(:disabled) {
+  color: #fef3c7;
+  background: rgba(251, 191, 36, 0.16);
+  transform: scale(1.08);
+}
+
+/* Large Circular Play/Pause Button (32px diameter — Matches .music-play-btn) */
+.gmp-btn-play {
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.sad-theme .gmp-btn-play {
+  background: rgba(8, 28, 58, 0.78);
+  border: 1.5px solid rgba(56, 189, 248, 0.85);
+  color: #f0f9ff;
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.45);
+}
+
+.sad-theme .gmp-btn-play:hover:not(:disabled) {
+  background: rgba(14, 45, 88, 0.9);
+  border-color: rgba(56, 189, 248, 0.98);
+  box-shadow: 0 0 14px rgba(56, 189, 248, 0.75);
+}
+
+.happy-theme .gmp-btn-play {
+  background: rgba(58, 24, 38, 0.78);
+  border: 1.5px solid rgba(251, 191, 36, 0.85);
+  color: #fffbeb;
+  box-shadow: 0 0 10px rgba(251, 191, 36, 0.45);
+}
+
+.happy-theme .gmp-btn-play:hover:not(:disabled) {
+  background: rgba(80, 32, 52, 0.9);
+  border-color: rgba(251, 191, 36, 0.98);
+  box-shadow: 0 0 14px rgba(251, 191, 36, 0.75);
+}
+
+/* Thin Vertical Hairline Divider */
+.gmp-vertical-divider {
+  width: 1px;
+  height: 18px;
+  background: rgba(255, 255, 255, 0.22);
+  margin: 0 3px;
+}
+
+/* Actions Group */
+.gmp-actions-group {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  position: relative;
+}
+
+.sad-theme .gmp-btn-vol,
+.sad-theme .gmp-btn-playlist {
+  color: #7dd3fc;
+}
+.sad-theme .gmp-btn-vol:hover,
+.sad-theme .gmp-btn-playlist:hover,
+.sad-theme .gmp-btn-playlist.is-active {
+  color: #bae6fd;
+  background: rgba(56, 189, 248, 0.16);
+  box-shadow: 0 0 8px rgba(56, 189, 248, 0.3);
+}
+
+.happy-theme .gmp-btn-vol,
+.happy-theme .gmp-btn-playlist {
+  color: #fde68a;
+}
+.happy-theme .gmp-btn-vol:hover,
+.happy-theme .gmp-btn-playlist:hover,
+.happy-theme .gmp-btn-playlist.is-active {
+  color: #fef3c7;
+  background: rgba(251, 191, 36, 0.16);
+  box-shadow: 0 0 8px rgba(251, 191, 36, 0.3);
+}
+
+/* Vertical Volume Slider Popup */
+.sad-theme .gmp-volume-popup {
+  background: rgba(8, 20, 42, 0.95);
+  border: 1px solid rgba(56, 189, 248, 0.5);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6), 0 0 12px rgba(56, 189, 248, 0.3);
+}
+
+.happy-theme .gmp-volume-popup {
+  background: rgba(46, 20, 36, 0.95);
+  border: 1px solid rgba(251, 191, 36, 0.5);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6), 0 0 12px rgba(251, 191, 36, 0.3);
+}
+
+.sad-theme .gmp-volume-slider {
+  accent-color: #38bdf8;
+}
+
+.happy-theme .gmp-volume-slider {
+  accent-color: #fbbf24;
+}
+
+/* Playlist Dropdown */
+.sad-theme .gmp-playlist-dropdown {
+  background: rgba(8, 20, 42, 0.95);
+  border: 1px solid rgba(56, 189, 248, 0.5);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.7), 0 0 18px rgba(56, 189, 248, 0.3);
+}
+
+.happy-theme .gmp-playlist-dropdown {
+  background: rgba(46, 20, 36, 0.95);
+  border: 1px solid rgba(251, 191, 36, 0.5);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.7), 0 0 18px rgba(251, 191, 36, 0.3);
+}
+
+.sad-theme .gmp-playlist-header {
+  border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+}
+
+.happy-theme .gmp-playlist-header {
+  border-bottom: 1px solid rgba(251, 191, 36, 0.2);
+}
+
+.sad-theme .gmp-playlist-item:hover {
+  background: rgba(56, 189, 248, 0.15);
+}
+.sad-theme .gmp-playlist-item.is-selected {
+  background: rgba(56, 189, 248, 0.22);
+  border: 1px solid rgba(56, 189, 248, 0.45);
+}
+
+.happy-theme .gmp-playlist-item:hover {
+  background: rgba(251, 191, 36, 0.15);
+}
+.happy-theme .gmp-playlist-item.is-selected {
+  background: rgba(251, 191, 36, 0.22);
+  border: 1px solid rgba(251, 191, 36, 0.45);
+}
+
+/* ------------------------------------------------------------------------------
+   EMPTY IMAGE FALLBACK CARDS (Clean Frosted Glass, No Broken-Image Icon)
+   ------------------------------------------------------------------------------ */
+.minimal-image-empty-card {
+  width: 100%;
+  height: 100%;
+  min-height: 240px;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.image-viewer-empty-placeholder {
+  width: 280px;
+  height: 380px;
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+}
+
+/* ------------------------------------------------------------------------------
+   RESPONSIVE DESIGN (TABLET & MOBILE) — MATCHES MAIN BIRTHDAY RESPONSIVENESS
+   ------------------------------------------------------------------------------ */
+@media (max-width: 680px) {
+  .gallery-music-capsule {
+    padding: 6px 14px;
+    height: 44px;
+    gap: 7px;
+    border-radius: 30px !important;
+  }
+
+  .gmp-title-text {
+    font-size: 0.78rem;
+  }
+
+  .gmp-infinity-symbol {
+    font-size: 0.85rem;
+  }
+
+  .gmp-equalizer {
+    gap: 1.5px;
+    height: 15px;
+  }
+
+  .gmp-equalizer .spectrum-bar {
+    width: 2px;
+  }
+
+  .gmp-btn-play {
+    width: 28px !important;
+    height: 28px !important;
+  }
+}
+
+
+
+
+/* ==============================================================================
+   MOBILE-ONLY INFORMATION SCREEN
+   - Displayed exclusively when visitors open on mobile phones
+   - Uses mobile-cover.png preserving aspect ratio
+   - Translucent frosted glass instructions card with glowing rose/gold accents
+   ============================================================================== */
+.mobile-info-screen-container {
+  position: fixed;
+  inset: 0;
+  z-index: 999999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow-y: auto;
+  padding: 24px 18px;
+  font-family: var(--font-serif-display), 'Cinzel', Georgia, serif;
+  color: #fffaf0;
+  box-sizing: border-box;
+}
+
+.mobile-info-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  pointer-events: none;
+}
+
+.mobile-info-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(circle at 50% 30%, rgba(18, 6, 28, 0.48) 0%, rgba(12, 4, 20, 0.82) 75%, rgba(6, 2, 12, 0.94) 100%);
+  pointer-events: none;
+}
+
+.mobile-info-content-card {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.mobile-info-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: rgba(255, 215, 180, 0.12);
+  border: 1px solid rgba(255, 215, 180, 0.35);
+  color: #fed7aa;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.mobile-info-badge-icon {
+  color: #fbbf24;
+}
+
+.mobile-info-title {
+  font-family: var(--font-serif-display), 'Cinzel', Georgia, serif;
+  font-size: clamp(1.35rem, 5.4vw, 1.7rem);
+  line-height: 1.28;
+  font-weight: 700;
+  color: #fffdfa;
+  margin: 0 0 12px 0;
+  letter-spacing: 0.02em;
+  text-shadow:
+    0 2px 10px rgba(0, 0, 0, 0.85),
+    0 0 25px rgba(255, 182, 193, 0.45);
+}
+
+.mobile-info-subtitle {
+  font-family: var(--font-serif), Georgia, serif;
+  font-style: italic;
+  font-size: clamp(0.92rem, 3.5vw, 1.05rem);
+  line-height: 1.5;
+  color: rgba(255, 235, 225, 0.92);
+  margin: 0 0 22px 0;
+  padding: 0 10px;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.7);
+}
+
+.mobile-info-glass-panel {
+  width: 100%;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.06) 100%);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1.5px solid rgba(255, 220, 180, 0.45);
+  border-radius: 22px;
+  box-shadow:
+    0 16px 40px rgba(0, 0, 0, 0.6),
+    inset 0 1px 2px rgba(255, 255, 255, 0.35),
+    0 0 30px rgba(244, 114, 182, 0.2);
+  padding: 16px 18px;
+  margin-bottom: 20px;
+  text-align: left;
+  box-sizing: border-box;
+}
+
+.mobile-info-instructions-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.mobile-info-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(255, 220, 190, 0.15);
+}
+
+.mobile-info-item:last-child {
+  border-bottom: none;
+  padding-bottom: 4px;
+}
+
+.mobile-info-item:first-child {
+  padding-top: 4px;
+}
+
+.mobile-info-item-badge {
+  position: relative;
+  flex-shrink: 0;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, rgba(244, 114, 182, 0.3) 0%, rgba(251, 191, 36, 0.22) 100%);
+  border: 1px solid rgba(255, 215, 170, 0.55);
+  box-shadow:
+    0 4px 14px rgba(0, 0, 0, 0.4),
+    0 0 14px rgba(251, 191, 36, 0.3);
+}
+
+.mobile-info-icon-glow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff6e5;
+  filter: drop-shadow(0 0 6px rgba(255, 220, 150, 0.7));
+}
+
+.mobile-info-step-number {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  background: #fbbf24;
+  color: #1c0a18;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 0.68rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+}
+
+.mobile-info-item-text {
+  flex: 1;
+}
+
+.mobile-info-item-title {
+  font-family: var(--font-serif-display), 'Cinzel', Georgia, serif;
+  font-size: 0.98rem;
+  font-weight: 600;
+  color: #fff9f0;
+  margin: 0 0 3px 0;
+  letter-spacing: 0.02em;
+}
+
+.mobile-info-item-desc {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 0.82rem;
+  color: rgba(255, 235, 225, 0.88);
+  margin: 0;
+  line-height: 1.38;
+}
+
+.mobile-info-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #fed7aa;
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: 0.92rem;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+}
+
+.mobile-footer-heart {
+  color: #f472b6;
+  font-size: 0.85rem;
+}
+
+.mobile-info-bypass-btn {
+  margin-top: 16px;
+  background: transparent;
+  border: none;
+  color: rgba(255, 215, 180, 0.65);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 0.76rem;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 6px 12px;
+  transition: color 0.2s ease;
+}
+
+.mobile-info-bypass-btn:hover {
+  color: #fff;
+}
+
+/* ==============================================================================
+   GALLERY VIDEO PLAYER (Sad & Happy Galleries Mixed Media)
+   - Zero native browser controls
+   - Preserves original aspect ratio
+   - Only 2 custom controls: Play/Pause and Volume
+   ============================================================================== */
+.gallery-video-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 240px;
+  max-height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 14px;
+  background: rgba(5, 5, 10, 0.6);
+  cursor: pointer;
+  user-select: none;
+}
+
+.gallery-video-element {
+  width: 100%;
+  height: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.gallery-video-center-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.gallery-video-center-play-btn {
+  pointer-events: auto;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+  transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.2s ease;
+  cursor: pointer;
+}
+
+.sad-video-theme .gallery-video-center-play-btn {
+  background: rgba(14, 30, 60, 0.82);
+  border-color: rgba(56, 189, 248, 0.85);
+  box-shadow: 0 0 24px rgba(56, 189, 248, 0.5), 0 8px 24px rgba(0, 0, 0, 0.7);
+  color: #38bdf8;
+}
+
+.happy-video-theme .gallery-video-center-play-btn {
+  background: rgba(48, 18, 38, 0.82);
+  border-color: rgba(251, 191, 36, 0.85);
+  box-shadow: 0 0 24px rgba(251, 191, 36, 0.5), 0 8px 24px rgba(0, 0, 0, 0.7);
+  color: #fbbf24;
+}
+
+.gallery-video-center-play-btn:hover {
+  transform: scale(1.08);
+}
+
+.gallery-video-play-icon {
+  margin-left: 4px;
+}
+
+/* Floating Custom Controls Bar (Only 2 Controls: Play/Pause and Volume) */
+.gallery-video-controls-bar {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 16px;
+  border-radius: 30px;
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  z-index: 10;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.gallery-video-controls-bar.is-hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-50%) translateY(8px);
+}
+
+.gallery-video-controls-bar.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(-50%) translateY(0);
+}
+
+.sad-video-theme .gallery-video-controls-bar {
+  background: linear-gradient(135deg, rgba(10, 24, 48, 0.88) 0%, rgba(6, 14, 30, 0.94) 100%);
+  border: 1px solid rgba(56, 189, 248, 0.65);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6), 0 0 16px rgba(56, 189, 248, 0.35);
+  color: #e0f2fe;
+}
+
+.happy-video-theme .gallery-video-controls-bar {
+  background: linear-gradient(135deg, rgba(48, 18, 38, 0.88) 0%, rgba(28, 10, 24, 0.94) 100%);
+  border: 1px solid rgba(251, 191, 36, 0.65);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6), 0 0 16px rgba(251, 191, 36, 0.35);
+  color: #fffaf0;
+}
+
+.gallery-video-ctrl-btn {
+  background: transparent;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border-radius: 50%;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.gallery-video-ctrl-btn:hover {
+  transform: scale(1.12);
+  opacity: 0.9;
+}
+
+.gallery-video-ctrl-divider {
+  width: 1px;
+  height: 16px;
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.gallery-video-volume-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.gallery-video-volume-slider {
+  width: 65px;
+  height: 4px;
+  cursor: pointer;
+}
+
+.sad-video-theme .gallery-video-volume-slider {
+  accent-color: #38bdf8;
+}
+
+.happy-video-theme .gallery-video-volume-slider {
+  accent-color: #fbbf24;
+}
+
+/* ==============================================================================
+   Q&A SECTION STYLES (MOMENTS & MEMORIES)
+   Frosted-Glass Elegance, 2x2 Options Layout, Dynamic Left/Right Message Cards
+   ============================================================================== */
+
+.qna-root {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  box-sizing: border-box;
+  background: linear-gradient(180deg, #169dfe 0%, #30583a 50%, #686915 100%);
+}
+
+.qna-background-wrapper {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg, #169dfe 0%, #30583a 50%, #686915 100%);
+}
+
+.qna-background-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  display: block;
+}
+
+.qna-background-overlay {
+  display: none;
+}
+
+.qna-screen-container {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 24px;
+  box-sizing: border-box;
+}
+
+@keyframes qnaFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.qna-fade-in {
+  animation: qnaFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Base Glass Card */
+.qna-glass-card {
+  background: linear-gradient(135deg, rgba(22, 30, 42, 0.62) 0%, rgba(14, 20, 30, 0.72) 100%);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border: 1px solid rgba(235, 200, 140, 0.48);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.38), 0 0 32px rgba(235, 195, 130, 0.22), inset 0 1px 1px rgba(255, 255, 255, 0.3);
+  border-radius: 20px;
+  color: #f8fafc;
+  box-sizing: border-box;
+}
+
+/* -----------------------------------------------------------------------------
+   SCREEN 1: CATEGORY SELECTION
+   ----------------------------------------------------------------------------- */
+.qna-categories-card {
+  max-width: 860px;
+  width: 100%;
+  padding: 48px 42px;
+  text-align: center;
+}
+
+.qna-header-section {
+  margin-bottom: 34px;
+}
+
+.qna-main-title {
+  font-family: var(--font-serif-display);
+  font-size: 2.25rem;
+  letter-spacing: 0.05em;
+  color: #fff9ed;
+  margin-bottom: 12px;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.55);
+}
+
+.qna-main-subtitle {
+  font-family: var(--font-serif-card);
+  font-size: 1.2rem;
+  color: #f3e5d0;
+  font-style: italic;
+}
+
+.qna-categories-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.qna-category-tile {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(235, 200, 140, 0.36);
+  border-radius: 18px;
+  padding: 28px 24px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  color: #f8fafc;
+  text-align: center;
+}
+
+.qna-category-tile:hover {
+  transform: translateY(-4px);
+  background: rgba(255, 255, 255, 0.16);
+  border-color: rgba(250, 220, 160, 0.85);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.32), 0 0 24px rgba(235, 195, 130, 0.36);
+}
+
+.qna-category-emoji {
+  font-size: 2.4rem;
+  line-height: 1;
+}
+
+.qna-category-title {
+  font-family: var(--font-serif-display);
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #fff6e5;
+  letter-spacing: 0.02em;
+}
+
+.qna-category-progress {
+  font-size: 0.88rem;
+  color: #e4d6c0;
+  letter-spacing: 0.03em;
+}
+
+.qna-progress-done {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #86efac;
+  font-weight: 500;
+}
+
+/* -----------------------------------------------------------------------------
+   SCREEN 2: QUESTION SCREEN (STAGE + DOCKS)
+   ----------------------------------------------------------------------------- */
+.qna-question-stage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 100%;
+  max-width: 1420px;
+  gap: 24px;
+  padding: 40px 16px;
+}
+
+/* Side Message Docks */
+.qna-message-dock {
+  width: 320px;
+  flex-shrink: 0;
+  transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+  opacity: 0;
+}
+
+.qna-message-dock-left {
+  transform: translateX(-35px);
+}
+
+.qna-message-dock-right {
+  transform: translateX(35px);
+}
+
+.qna-message-dock.is-open {
+  opacity: 1;
+  transform: translateX(0);
+  pointer-events: auto;
+}
+
+/* Message Card Styling */
+.qna-message-card {
+  padding: 24px 22px;
+  width: 100%;
+  border: 1px solid rgba(240, 215, 150, 0.65);
+  box-shadow: 0 16px 42px rgba(0, 0, 0, 0.42), 0 0 28px rgba(235, 195, 130, 0.3);
+  animation: qnaFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.qna-message-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(235, 200, 140, 0.28);
+  padding-bottom: 12px;
+  margin-bottom: 14px;
+}
+
+.qna-message-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-serif-display);
+  font-size: 0.95rem;
+  color: #ffe6b3;
+  letter-spacing: 0.03em;
+}
+
+.qna-message-close-btn {
+  background: transparent;
+  border: none;
+  color: #e2d4be;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.qna-message-close-btn:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.16);
+  transform: scale(1.1);
+}
+
+.qna-message-body {
+  padding: 4px 2px;
+}
+
+.qna-message-text {
+  font-family: var(--font-serif-card);
+  font-size: 1.18rem;
+  line-height: 1.62;
+  color: #fffdf5;
+  font-style: italic;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+}
+
+/* Center Question Card */
+.qna-question-card {
+  max-width: 750px;
+  width: 100%;
+  padding: 36px 36px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.qna-question-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(235, 200, 140, 0.25);
+  padding-bottom: 14px;
+}
+
+.qna-sub-back-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  color: #ebd4b5;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(235, 200, 140, 0.32);
+  border-radius: 20px;
+  padding: 6px 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.qna-sub-back-btn:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.18);
+  border-color: rgba(250, 220, 160, 0.75);
+}
+
+.qna-question-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.qna-cat-badge {
+  font-size: 0.88rem;
+  color: #f5dfbe;
+  font-family: var(--font-serif-display);
+  letter-spacing: 0.02em;
+}
+
+.qna-qnum-badge {
+  font-size: 0.82rem;
+  background: rgba(235, 200, 140, 0.22);
+  border: 1px solid rgba(235, 200, 140, 0.45);
+  border-radius: 12px;
+  padding: 3px 10px;
+  color: #fff8eb;
+  font-weight: 500;
+}
+
+.qna-question-body {
+  text-align: center;
+  padding: 10px 6px;
+}
+
+.qna-question-text {
+  font-family: var(--font-serif-display);
+  font-size: 1.55rem;
+  line-height: 1.45;
+  color: #fffdf8;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.45);
+  font-weight: 500;
+}
+
+/* 2x2 Answer Options Grid */
+.qna-options-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin: 6px 0;
+}
+
+.qna-option-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(235, 200, 140, 0.32);
+  border-radius: 14px;
+  padding: 18px 18px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  cursor: pointer;
+  text-align: left;
+  color: #f8fafc;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-sizing: border-box;
+}
+
+.qna-option-btn:hover {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: rgba(250, 220, 160, 0.78);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.28), 0 0 16px rgba(235, 195, 130, 0.28);
+}
+
+.qna-option-btn.is-selected {
+  background: linear-gradient(135deg, rgba(235, 195, 130, 0.26) 0%, rgba(200, 150, 80, 0.26) 100%);
+  border: 1.5px solid rgba(255, 225, 160, 0.95);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.32), 0 0 24px rgba(240, 200, 120, 0.45);
+  transform: translateY(-2px);
+}
+
+.qna-option-emoji {
+  font-size: 1.55rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.qna-option-text {
+  font-family: var(--font-serif-card);
+  font-size: 1.08rem;
+  line-height: 1.35;
+  color: #fffaf0;
+  font-weight: 500;
+}
+
+/* Footer Navigation */
+.qna-question-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 14px;
+  border-top: 1px solid rgba(235, 200, 140, 0.22);
+}
+
+.qna-nav-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-serif-display);
+  font-size: 0.92rem;
+  letter-spacing: 0.05em;
+  color: #fff6e5;
+  background: rgba(235, 200, 140, 0.16);
+  border: 1px solid rgba(235, 200, 140, 0.45);
+  border-radius: 25px;
+  padding: 10px 22px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.qna-nav-btn:hover {
+  background: rgba(235, 200, 140, 0.32);
+  border-color: rgba(255, 225, 160, 0.92);
+  box-shadow: 0 0 20px rgba(235, 195, 130, 0.4);
+  transform: translateY(-1px);
+}
+
+.qna-qnum-indicator {
+  font-family: var(--font-serif-display);
+  font-size: 0.95rem;
+  color: #ebd4b5;
+  letter-spacing: 0.05em;
+}
+
+/* -----------------------------------------------------------------------------
+   SCREEN 3: CATEGORY COMPLETION
+   ----------------------------------------------------------------------------- */
+.qna-completion-card {
+  max-width: 620px;
+  width: 100%;
+  padding: 48px 40px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.qna-completion-icon-wrapper {
+  width: 74px;
+  height: 74px;
+  border-radius: 50%;
+  background: rgba(235, 200, 140, 0.22);
+  border: 1px solid rgba(235, 200, 140, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 28px rgba(235, 195, 130, 0.38);
+}
+
+.qna-completion-emoji {
+  font-size: 2.5rem;
+  line-height: 1;
+}
+
+.qna-completion-title {
+  font-family: var(--font-serif-display);
+  font-size: 2.05rem;
+  color: #fff8eb;
+  margin-top: 4px;
+}
+
+.qna-completion-category-name {
+  font-family: var(--font-serif-display);
+  font-size: 1.15rem;
+  color: #f5dfbe;
+  font-style: italic;
+}
+
+.qna-completion-message {
+  font-family: var(--font-serif-card);
+  font-size: 1.15rem;
+  line-height: 1.62;
+  color: #fbf5e8;
+  max-width: 480px;
+}
+
+.qna-completion-actions {
+  display: flex;
+  gap: 16px;
+  margin-top: 14px;
+}
+
+.qna-completion-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-serif-display);
+  font-size: 0.92rem;
+  letter-spacing: 0.04em;
+  padding: 12px 24px;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.qna-completion-btn.btn-replay {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(235, 200, 140, 0.42);
+  color: #fff5e0;
+}
+
+.qna-completion-btn.btn-replay:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 225, 160, 0.85);
+  transform: translateY(-1px);
+}
+
+.qna-completion-btn.btn-categories {
+  background: rgba(235, 200, 140, 0.28);
+  border: 1px solid rgba(255, 225, 160, 0.88);
+  color: #fff8eb;
+  box-shadow: 0 0 20px rgba(235, 195, 130, 0.38);
+}
+
+.qna-completion-btn.btn-categories:hover {
+  background: rgba(235, 200, 140, 0.42);
+  border-color: #fff;
+  transform: translateY(-1px);
+}
+
+/* Dev button for Q&A */
+.dev-action-btn.qna-btn {
+  background: rgba(244, 63, 94, 0.15);
+  border: 1px solid rgba(244, 63, 94, 0.35);
+  color: #fecdd3;
+}
+
+.dev-action-btn.qna-btn:hover {
+  background: rgba(244, 63, 94, 0.28);
+  border-color: rgba(244, 63, 94, 0.6);
+}
+
+.dev-action-btn.qna-btn.is-active {
+  background: rgba(244, 63, 94, 0.35);
+  border-color: #f43f5e;
+  box-shadow: 0 0 10px rgba(244, 63, 94, 0.3);
+}
+
+/* ==============================================================================
+   SEE THIS VIEW (FULLSCREEN BACKGROUND FEATURE)
+   ============================================================================== */
+
+.see-this-view-container {
+  position: relative;
+  top: auto;
+  right: auto;
+  z-index: 110;
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.see-this-view-container.has-dev-controls,
+.see-this-view-container.no-dev-controls {
+  position: relative;
+  top: auto;
+  right: auto;
+}
+
+/* Standalone fallback if rendered outside .top-right-controls-cluster */
+:not(.top-right-controls-cluster) > .see-this-view-container {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+}
+:not(.top-right-controls-cluster) > .see-this-view-container.has-dev-controls {
+  right: 16.5rem;
+}
+
+.see-this-view-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 38px;
+  background: rgba(18, 24, 38, 0.78);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(235, 200, 140, 0.45);
+  border-radius: 9999px;
+  padding: 8px 14px;
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #fff6e5;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35), 0 0 10px rgba(235, 195, 130, 0.18);
+  transition: all 0.25s ease;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.see-this-view-btn:hover {
+  background: rgba(28, 36, 54, 0.9);
+  border-color: rgba(255, 225, 160, 0.85);
+  color: #ffffff;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45), 0 0 16px rgba(235, 195, 130, 0.35);
+  transform: translateY(-1px);
+}
+
+.see-this-view-icon {
+  color: #fbbf24;
+  flex-shrink: 0;
+}
+
+/* Fullscreen Background-Only Mode */
+.see-this-view-fullscreen-layer {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 999999;
+  background-color: #000;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  animation: seeThisViewFadeIn 0.25s ease-out forwards;
+}
+
+@keyframes seeThisViewFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.see-this-view-fullscreen-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* ==============================================================================
+   REBUILT Q&A & FINAL MESSAGE FOR YOU LAYOUTS
+   ============================================================================== */
+
+.qna-heading-label {
+  font-family: var(--font-serif-display);
+  font-size: 0.95rem;
+  color: #f7e6cc;
+  letter-spacing: 0.04em;
+  font-weight: 500;
+}
+
+/* Single "💌 Message for You" Trigger Card */
+.qna-message-for-you-trigger-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+}
+
+.qna-final-surprise-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  background: linear-gradient(135deg, rgba(28, 36, 52, 0.82) 0%, rgba(18, 24, 38, 0.92) 100%);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1.5px solid rgba(255, 225, 160, 0.75);
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.45), 0 0 28px rgba(240, 200, 120, 0.4);
+  border-radius: 50px;
+  padding: 18px 44px;
+  font-family: var(--font-serif-display);
+  font-size: 1.35rem;
+  color: #fffaf0;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  letter-spacing: 0.03em;
+  user-select: none;
+}
+
+.qna-final-surprise-btn:hover {
+  transform: scale(1.04) translateY(-2px);
+  background: linear-gradient(135deg, rgba(38, 48, 68, 0.9) 0%, rgba(24, 32, 48, 0.96) 100%);
+  border-color: #ffffff;
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.55), 0 0 38px rgba(255, 225, 150, 0.65);
+}
+
+.qna-surprise-btn-icon {
+  width: 22px;
+  height: 22px;
+  color: #fbbf24;
+}
+
+/* Final Surprise Stage (Main-Section-Style Layout) */
+.qna-final-surprise-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  gap: 16px;
+  padding: 40px 24px;
+}
+
+.qna-final-top-bar {
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 4px;
+}
+
+.qna-final-content-layout {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  width: 100%;
+  gap: 32px;
+}
+
+/* Left Column: Message Card (~65%) */
+.qna-final-left-column {
+  flex: 1 1 65%;
+  max-width: 780px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.qna-final-page-title {
+  font-family: var(--font-serif-display);
+  font-size: 2.1rem;
+  line-height: 1.3;
+  color: #fff9ed;
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.6);
+  letter-spacing: 0.03em;
+  font-weight: 500;
+}
+
+.qna-final-message-card {
+  padding: 34px 36px;
+  max-height: 520px;
+  display: flex;
+  flex-direction: column;
+}
+
+.qna-final-message-scroll {
+  overflow-y: auto;
+  padding-right: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.qna-final-paragraph {
+  font-family: var(--font-serif-card);
+  font-size: 1.18rem;
+  line-height: 1.7;
+  color: #fffdf5;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+}
+
+.qna-final-signoff {
+  margin-top: 12px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(235, 200, 140, 0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.qna-final-closing {
+  font-family: var(--font-serif-card);
+  font-size: 1.1rem;
+  font-style: italic;
+  color: #f7e6cc;
+}
+
+.qna-final-signature {
+  font-family: var(--font-serif-display);
+  font-size: 1.15rem;
+  color: #fffaf0;
+  font-weight: 600;
+}
+
+/* Right Column: Media Cards (~35%) */
+.qna-final-right-column {
+  flex: 0 0 340px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Image Card */
+.qna-final-image-card {
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.qna-final-image-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(255, 225, 160, 0.85);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.45), 0 0 24px rgba(235, 195, 130, 0.4);
+}
+
+.qna-final-image-frame {
+  width: 100%;
+  height: 220px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: rgba(10, 15, 25, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.qna-final-portrait-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transition: transform 0.4s ease;
+}
+
+.qna-final-image-card:hover .qna-final-portrait-image {
+  transform: scale(1.04);
+}
+
+.qna-final-media-badge {
+  font-size: 0.82rem;
+  color: #ebd4b5;
+  letter-spacing: 0.03em;
+}
+
+/* Video Card */
+.qna-final-video-card {
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.qna-final-video-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(255, 225, 160, 0.85);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.45), 0 0 24px rgba(235, 195, 130, 0.4);
+}
+
+.qna-final-video-preview-wrapper {
+  width: 100%;
+  height: 170px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: rgba(10, 15, 25, 0.45);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.qna-final-video-thumbnail {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.qna-final-video-thumb-elem {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.qna-final-play-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.3);
+  transition: background 0.25s ease;
+}
+
+.qna-final-video-card:hover .qna-final-play-overlay {
+  background: rgba(0, 0, 0, 0.15);
+}
+
+.qna-final-play-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.22);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  transition: transform 0.25s ease, background 0.25s ease;
+}
+
+.qna-final-video-card:hover .qna-final-play-icon {
+  transform: scale(1.12);
+  background: rgba(235, 200, 140, 0.4);
+  border-color: rgba(255, 225, 160, 0.9);
+}
+
+.qna-final-link-box {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 16px;
+  background: rgba(235, 200, 140, 0.16);
+  border: 1px solid rgba(235, 200, 140, 0.42);
+  border-radius: 20px;
+}
+
+.qna-final-link-text {
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  color: #fff8eb;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+}
+
+/* Fallback media box */
+.qna-final-empty-media-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 16px;
+}
+
+.qna-final-empty-tag {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #f7e6cc;
+  letter-spacing: 0.04em;
+  margin-bottom: 4px;
+}
+
+.qna-final-empty-note {
+  font-size: 0.75rem;
+  color: #c4b5a0;
+  font-style: italic;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1280px) {
+  .qna-question-stage {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .qna-message-dock {
+    width: 100%;
+    max-width: 750px;
+    transform: none !important;
+  }
+
+  .qna-final-content-layout {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .qna-final-left-column,
+  .qna-final-right-column {
+    width: 100%;
+    max-width: 750px;
+  }
+}
+
+@media (max-width: 768px) {
+  .qna-options-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .qna-question-card,
+  .qna-final-message-card {
+    padding: 26px 18px;
+  }
+
+  .qna-question-text {
+    font-size: 1.3rem;
+  }
+
+  .qna-final-page-title {
+    font-size: 1.6rem;
+  }
+
+  .top-right-controls-cluster {
+    right: 0.75rem;
+    top: 0.75rem;
+    gap: 6px;
+  }
+}
+
+

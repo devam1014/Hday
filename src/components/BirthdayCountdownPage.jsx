@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import countdownBg from '../../final-countdown.png?v=1';
-import { BIRTHDAY_CONFIG } from '../config';
+import { BIRTHDAY_CONFIG, parseISTTarget } from '../config';
 
 /**
  * BirthdayCountdownPage Component
@@ -27,12 +27,30 @@ export default function BirthdayCountdownPage({
 
   function calculateTimeLeft(dateInput) {
     if (!dateInput) {
-      return { days: 2, hours: 14, minutes: 37, seconds: 9, isConfigured: false, isCompleted: false };
+      const oc = BIRTHDAY_CONFIG?.openingCountdown;
+      if (oc && (oc.targetDate || oc.targetTime)) {
+        dateInput = parseISTTarget(oc.targetDate, oc.targetTime);
+      } else {
+        dateInput = BIRTHDAY_CONFIG?.coverTargetDate || BIRTHDAY_CONFIG?.targetDate;
+      }
     }
 
-    const target = new Date(dateInput).getTime();
+    if (!dateInput) {
+      return { days: 0, hours: 0, minutes: 0, seconds: 0, isConfigured: false, isCompleted: false };
+    }
+
+    // Resolve target in Indian Standard Time (UTC+05:30)
+    let target = null;
+    if (typeof dateInput === 'string' && !dateInput.includes('Z') && !/[+-]\d{2}:\d{2}$/.test(dateInput)) {
+      target = parseISTTarget(dateInput);
+    }
+    if (!target) {
+      target = typeof dateInput === 'number' ? dateInput : new Date(dateInput).getTime();
+    }
+
     if (isNaN(target)) {
-      return { days: 2, hours: 14, minutes: 37, seconds: 9, isConfigured: false, isCompleted: false };
+      console.warn('[BirthdayCountdownPage] Invalid target date provided in src/config.js:', dateInput);
+      return { days: 0, hours: 0, minutes: 0, seconds: 0, isConfigured: false, isCompleted: false };
     }
 
     const now = Date.now();
@@ -55,15 +73,16 @@ export default function BirthdayCountdownPage({
     const initial = calculateTimeLeft(targetDate);
     setTimeLeft(initial);
 
-    if (initial.isConfigured && initial.isCompleted && !hasTriggeredComplete.current) {
-      hasTriggeredComplete.current = true;
-      onCountdownComplete?.();
+    // If targetDate is already completed prior to mount, do NOT auto-trigger immediate navigation.
+    // Display 00:00:00:00 on the cover page so the user can view the countdown and use the secret password.
+    // Transition occurs when the live countdown ticks down to zero on the active page.
+    if (initial.isCompleted) {
       return;
     }
 
     const intervalId = setInterval(() => {
       setTimeLeft((prev) => {
-        if (targetDate) {
+        if (targetDate || BIRTHDAY_CONFIG?.openingCountdown) {
           const updated = calculateTimeLeft(targetDate);
           if (updated.isCompleted && !hasTriggeredComplete.current) {
             hasTriggeredComplete.current = true;
@@ -101,25 +120,31 @@ export default function BirthdayCountdownPage({
   // ----------------------------------------------------------------------------
   const [passwordInput, setPasswordInput] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const [hasPasswordError, setHasPasswordError] = useState(false);
   const errorTimerRef = useRef(null);
 
-  const expectedPassword = (BIRTHDAY_CONFIG.secretPassword || BIRTHDAY_CONFIG.recipientName || 'miioo').toLowerCase().trim();
-  const alternateAccepted = ['birthday', 'happy birthday', 'miioo', 'miio', 'mimi'];
+  // Single source of truth: strictly reads secretPassword from src/config.js
+  const isPasswordEnabled = Boolean(BIRTHDAY_CONFIG.secretPassword);
+  const expectedPassword = String(BIRTHDAY_CONFIG.secretPassword || '').trim().toLowerCase();
 
   const handlePasswordSubmit = (e) => {
     if (e) e.preventDefault();
     const clean = passwordInput.trim().toLowerCase();
     if (!clean) return;
 
-    if (clean === expectedPassword || alternateAccepted.includes(clean)) {
+    // Strict single source of truth comparison — NO hardcoded alternate passwords
+    if (expectedPassword && clean === expectedPassword) {
       setErrorMessage('');
+      setHasPasswordError(false);
       onCountdownComplete?.();
     } else {
+      setHasPasswordError(true);
       setErrorMessage('Incorrect password. Try clicking Hint! ♡');
       if (errorTimerRef.current) clearTimeout(errorTimerRef.current);
       errorTimerRef.current = setTimeout(() => {
+        setHasPasswordError(false);
         setErrorMessage('');
-      }, 3500);
+      }, 5000);
     }
   };
 
@@ -202,26 +227,65 @@ export default function BirthdayCountdownPage({
             OVERLAY 2: PASSWORD INPUT
             Clean, functional input over the golden field area
            ---------------------------------------------------------------------- */}
-        <form className="overlay-password-form" onSubmit={handlePasswordSubmit}>
-          <input
-            type="password"
-            value={passwordInput}
-            onChange={(e) => {
-              setPasswordInput(e.target.value);
-              if (errorMessage) setErrorMessage('');
-            }}
-            placeholder="Enter Password..."
-            className="overlay-password-input"
-            aria-label="Secret password to open surprise"
-            autoComplete="off"
-            spellCheck="false"
-          />
-        </form>
+        {isPasswordEnabled && (
+          <form className="overlay-password-form" onSubmit={handlePasswordSubmit}>
+            <input
+              type="password"
+              value={passwordInput}
+              onChange={(e) => {
+                setPasswordInput(e.target.value);
+                if (hasPasswordError) setHasPasswordError(false);
+                if (errorMessage) setErrorMessage('');
+              }}
+              placeholder="Enter Password..."
+              className="overlay-password-input"
+              aria-label="Secret password to open surprise"
+              autoComplete="off"
+              spellCheck="false"
+            />
+          </form>
+        )}
 
-        {/* Error notification if incorrect password entered */}
-        {errorMessage && (
-          <div className="overlay-password-feedback" role="alert">
-            {errorMessage}
+        {/* Separate Notification BELOW the Password Panel (Matching Reference Image) */}
+        {hasPasswordError && (
+          <div className="overlay-password-error-card" role="alert">
+            {/* Left glowing radiant tick lines */}
+            <div className="error-card-ticks ticks-left" aria-hidden="true">
+              <span className="tick-ray ray-top" />
+              <span className="tick-ray ray-mid" />
+              <span className="tick-ray ray-bot" />
+            </div>
+
+            {/* Glowing Pink/Red Glass Capsule */}
+            <div className="error-card-capsule">
+              {/* Glossy top glass glare */}
+              <div className="error-capsule-glass-glare" aria-hidden="true" />
+
+              {/* Row 1: Circular White X Icon + "Incorrect Password!" */}
+              <div className="error-card-header-row">
+                <span className="error-circle-icon" aria-hidden="true">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                  </svg>
+                </span>
+                <span className="error-card-title">Incorrect Password!</span>
+              </div>
+
+              {/* Row 2: Supporting Text flanked by delicate horizontal lines */}
+              <div className="error-card-sub-row">
+                <span className="error-sub-flourish-line" aria-hidden="true" />
+                <span className="error-card-subtitle">Try again or use the Hint ♡</span>
+                <span className="error-sub-flourish-line" aria-hidden="true" />
+              </div>
+            </div>
+
+            {/* Right glowing radiant tick lines */}
+            <div className="error-card-ticks ticks-right" aria-hidden="true">
+              <span className="tick-ray ray-top" />
+              <span className="tick-ray ray-mid" />
+              <span className="tick-ray ray-bot" />
+            </div>
           </div>
         )}
 
@@ -229,19 +293,21 @@ export default function BirthdayCountdownPage({
             OVERLAY 3: HINT BUTTON
             Opens the dark translucent Password Hint modal card
            ---------------------------------------------------------------------- */}
-        <button
-          type="button"
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            setShowHintModal(true);
-          }}
-          className="overlay-hint-button"
-          aria-label="Show password hint"
-          title="Click for Hint"
-        >
-          <span className="hint-btn-text">Hint</span>
-        </button>
+        {isPasswordEnabled && (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setShowHintModal(true);
+            }}
+            className="overlay-hint-button"
+            aria-label="Show password hint"
+            title="Click for Hint"
+          >
+            <span className="hint-btn-text">Hint</span>
+          </button>
+        )}
 
         {/* ----------------------------------------------------------------------
             OVERLAY 4: MESSAGE FOR YOU BUTTON
@@ -262,7 +328,6 @@ export default function BirthdayCountdownPage({
 
       {/* ----------------------------------------------------------------------
           MODAL CARD 1: MESSAGE FOR YOU
-          Dark translucent modal with interior kept empty
          ---------------------------------------------------------------------- */}
       {showMessageModal && (
         <div
@@ -283,13 +348,35 @@ export default function BirthdayCountdownPage({
             >
               ×
             </button>
+            <div className="countdown-modal-body" style={{ padding: '2rem 1.75rem', color: '#fff' }}>
+              <h3 style={{ fontFamily: 'var(--font-serif-card), serif', fontSize: '1.4rem', color: '#ffe29a', marginBottom: '0.35rem' }}>
+                {BIRTHDAY_CONFIG.countdownPage?.messageContent?.title || BIRTHDAY_CONFIG.openingPage?.messageModal?.title || "Message For You"}
+              </h3>
+              <p style={{ fontSize: '0.88rem', color: 'rgba(255, 255, 255, 0.7)', fontStyle: 'italic', marginBottom: '1.25rem' }}>
+                {BIRTHDAY_CONFIG.countdownPage?.messageContent?.subtitle || BIRTHDAY_CONFIG.openingPage?.messageModal?.subtitle || ""}
+              </p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', lineHeight: '1.7', color: '#f8efe2', fontSize: '0.98rem' }}>
+                {(BIRTHDAY_CONFIG.countdownPage?.messageContent?.paragraphs || BIRTHDAY_CONFIG.openingPage?.messageModal?.paragraphs || [])?.map((p, idx) => (
+                  <p key={idx}>{p}</p>
+                ))}
+              </div>
+              {(BIRTHDAY_CONFIG.countdownPage?.messageContent?.closing || BIRTHDAY_CONFIG.openingPage?.messageModal?.closing) && (
+                <div style={{ marginTop: '1.25rem', textAlign: 'right' }}>
+                  <div style={{ fontSize: '0.9rem', color: '#f8efe2' }}>
+                    {BIRTHDAY_CONFIG.countdownPage?.messageContent?.closing || BIRTHDAY_CONFIG.openingPage?.messageModal?.closing}
+                  </div>
+                  <div style={{ fontSize: '1.05rem', color: '#ffe29a', fontWeight: '600' }}>
+                    {BIRTHDAY_CONFIG.countdownPage?.messageContent?.signature || BIRTHDAY_CONFIG.openingPage?.messageModal?.signature}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}
 
       {/* ----------------------------------------------------------------------
           MODAL CARD 2: PASSWORD HINT
-          Dark translucent modal with interior kept empty
          ---------------------------------------------------------------------- */}
       {showHintModal && (
         <div
@@ -310,6 +397,20 @@ export default function BirthdayCountdownPage({
             >
               ×
             </button>
+            <div className="countdown-modal-body" style={{ padding: '2rem 1.75rem', textAlign: 'center', color: '#fff' }}>
+              <h3 style={{ fontFamily: 'var(--font-serif-card), serif', fontSize: '1.4rem', color: '#ffe29a', marginBottom: '0.5rem' }}>
+                {BIRTHDAY_CONFIG.countdownPage?.hintContent?.title || "Password Hint"}
+              </h3>
+              <p style={{ fontSize: '0.9rem', color: 'rgba(255, 255, 255, 0.75)', marginBottom: '1.25rem' }}>
+                {BIRTHDAY_CONFIG.countdownPage?.hintContent?.subtitle || "Can't wait for the countdown? Here is your clue:"}
+              </p>
+              <div style={{ background: 'rgba(255, 220, 140, 0.12)', border: '1px solid rgba(255, 220, 140, 0.35)', borderRadius: '12px', padding: '0.85rem 1.25rem', display: 'inline-block' }}>
+                <span style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#ffd67a', display: 'block', marginBottom: '4px' }}>Hint</span>
+                <span style={{ fontSize: '1.05rem', color: '#fff9ea', fontWeight: '500' }}>
+                  {BIRTHDAY_CONFIG.passwordHint || BIRTHDAY_CONFIG.countdownPage?.hintContent?.hint || ""}
+                </span>
+              </div>
+            </div>
           </div>
         </div>
       )}

@@ -1,0 +1,455 @@
+import { createHotContext as __vite__createHotContext } from "/@vite/client";import.meta.hot = __vite__createHotContext("/src/components/DevControls.jsx");import __vite__cjsImport0_react_jsxDevRuntime from "/node_modules/.vite/deps/react_jsx-dev-runtime.js?v=8a6794f3"; const jsxDEV = __vite__cjsImport0_react_jsxDevRuntime["jsxDEV"];
+import * as RefreshRuntime from "/@react-refresh";
+const inWebWorker = typeof WorkerGlobalScope !== "undefined" && self instanceof WorkerGlobalScope;
+let prevRefreshReg;
+let prevRefreshSig;
+if (import.meta.hot && !inWebWorker) {
+  if (!window.$RefreshReg$) {
+    throw new Error(
+      "@vitejs/plugin-react can't detect preamble. Something is wrong."
+    );
+  }
+  prevRefreshReg = window.$RefreshReg$;
+  prevRefreshSig = window.$RefreshSig$;
+  window.$RefreshReg$ = RefreshRuntime.getRefreshReg("C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/DevControls.jsx");
+  window.$RefreshSig$ = RefreshRuntime.createSignatureFunctionForTransform;
+}
+var _s = $RefreshSig$();
+import __vite__cjsImport3_react from "/node_modules/.vite/deps/react.js?v=8a6794f3"; const React = __vite__cjsImport3_react.__esModule ? __vite__cjsImport3_react.default : __vite__cjsImport3_react; const useState = __vite__cjsImport3_react["useState"];
+import { Wrench, Play, Sparkles, Heart, RotateCcw, ChevronDown, ChevronUp, BookOpen, Clock, Flame, ArrowRight } from "/node_modules/.vite/deps/lucide-react.js?v=8a6794f3";
+import { BIRTHDAY_CONFIG } from "/src/config.js?t=1795097999880";
+export default function DevControls({
+  currentStage,
+  onClickAndSee,
+  onTestCoverTimer,
+  onTestFirecrackerTimer,
+  onJumpToCountdown,
+  onJumpToFireworksPage,
+  onJumpToMainPage,
+  onJumpToSadMemories,
+  onJumpToHappyGallery,
+  onTriggerCover5sCountdown,
+  onTriggerFirecracker5sCountdown,
+  onResetToDefaultConfig
+}) {
+  _s();
+  const [isOpen, setIsOpen] = useState(false);
+  if (!BIRTHDAY_CONFIG.dev.showDevControls) return null;
+  return /* @__PURE__ */ jsxDEV("aside", { className: "dev-test-panel", "aria-label": "Development Test Helper", children: [
+    /* @__PURE__ */ jsxDEV("div", { className: "dev-panel-top-row", children: [
+      onClickAndSee && /* @__PURE__ */ jsxDEV(
+        "button",
+        {
+          type: "button",
+          onClick: onClickAndSee,
+          className: "dev-panel-toggle-btn dev-click-see-btn",
+          title: "Preview 10s countdown to full fireworks celebration",
+          children: [
+            /* @__PURE__ */ jsxDEV(Sparkles, { className: "w-4 h-4 text-amber-300 mr-1.5" }, void 0, false, {
+              fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/DevControls.jsx",
+              lineNumber: 61,
+              columnNumber: 13
+            }, this),
+            /* @__PURE__ */ jsxDEV("span", { children: "Click & See" }, void 0, false, {
+              fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/DevControls.jsx",
+              lineNumber: 62,
+              columnNumber: 13
+            }, this)
+          ]
+        },
+        void 0,
+        true,
+        {
+          fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/DevControls.jsx",
+          lineNumber: 55,
+          columnNumber: 9
+        },
+        this
+      ),
+      /* @__PURE__ */ jsxDEV(
+        "button",
+        {
+          type: "button",
+          onClick: () => setIsOpen(!isOpen),
+          className: "dev-panel-toggle-btn",
+          title: "Toggle testing controls",
+          "aria-expanded": isOpen,
+          children: [
+            /* @__PURE__ */ jsxDEV(Wrench, { className: "w-4 h-4 text-amber-300 mr-1.5" }, void 0, false, {
+              fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/DevControls.jsx",
+              lineNumber: 73,
+              columnNumber: 11
+            }, this),
+            /* @__PURE__ */ jsxDEV("span", { children: "Test Helper" }, void 0, false, {
+              fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/DevControls.jsx",
+              lineNumber: 74,
+              columnNumber: 11
+            }, this),
+            isOpen ? /* @__PURE__ */ jsxDEV(ChevronUp, { className: "w-3.5 h-3.5 ml-1" }, void 0, false, {
+              fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/DevControls.jsx",
+              lineNumber: 75,
+              columnNumber: 21
+            }, this) : /* @__PURE__ */ jsxDEV(ChevronDown, { className: "w-3.5 h-3.5 ml-1" }, void 0, false, {
+              fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/DevControls.jsx",
+              lineNumber: 75,
+              columnNumber: 66
+            }, this)
+          ]
+        },
+        void 0,
+        true,
+        {
+          fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/DevControls.jsx",
+          lineNumber: 66,
+          columnNumber: 9
+        },
+        this
+      )
+    ] }, void 0, true, {
+      fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/DevControls.jsx",
+      lineNumber: 53,
+      columnNumber: 7
+    }, this),
+    isOpen && /* @__PURE__ */ jsxDEV("div", { className: "dev-panel-content animate-fade-in", children: [
+      /* @__PURE__ */ jsxDEV("div", { className: "dev-panel-header", children: /* @__PURE__ */ jsxDEV("span", { className: "dev-current-stage", children: [
+        "Active Stage: ",
+        /* @__PURE__ */ jsxDEV("strong", { children: currentStage }, void 0, false, {
+          fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/DevControls.jsx",
+          lineNumber: 83,
+          columnNumber: 29
+        }, this)
+      ] }, void 0, true, {
+        fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/DevControls.jsx",
+        lineNumber: 82,
+        columnNumber: 13
+      }, this) }, void 0, false, {
+        fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/DevControls.jsx",
+        lineNumber: 81,
+        columnNumber: 11
+      }, this),
+      /* @__PURE__ */ jsxDEV("p", { className: "dev-panel-note", children: "Test isolated timer transitions & celebrations:" }, void 0, false, {
+        fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/DevControls.jsx",
+        lineNumber: 87,
+        columnNumber: 11
+      }, this),
+      /* @__PURE__ */ jsxDEV("div", { className: "dev-buttons-grid", children: [
+        /* @__PURE__ */ jsxDEV(
+          "button",
+          {
+            type: "button",
+            onClick: onTestCoverTimer,
+            className: "dev-action-btn test-cover-timer-btn",
+            title: "Simulate Timer 1 reaching zero: Navigates to Firecracker page with Timer 2 visible and NO fireworks",
+            children: [
+              /* @__PURE__ */ jsxDEV(ArrowRight, { className: "w-3.5 h-3.5 mr-1 text-sky-400" }, void 0, false, {
+                fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/DevControls.jsx",
+                lineNumber: 103,
+                columnNumber: 15
+              }, this),
+              /* @__PURE__ */ jsxDEV("span", { children: "Test Timer 1 (Cover → Firecracker)" }, void 0, false, {
+                fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/DevControls.jsx",
+                lineNumber: 104,
+                columnNumber: 15
+              }, this)
+            ]
+          },
+          void 0,
+          true,
+          {
+            fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/DevControls.jsx",
+            lineNumber: 97,
+            columnNumber: 13
+          },
+          this
+        ),
+        /* @__PURE__ */ jsxDEV(
+          "button",
+          {
+            type: "button",
+            onClick: onTestFirecrackerTimer,
+            className: "dev-action-btn test-firecracker-timer-btn",
+            title: "Simulate Timer 2 reaching zero: Launches colorful crackers/fireworks. First heart click forms HAPPY BIRTHDAY, second click opens Main page",
+            children: [
+              /* @__PURE__ */ jsxDEV(Flame, { className: "w-3.5 h-3.5 mr-1 text-amber-400" }, void 0, false, {
+                fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/DevControls.jsx",
+                lineNumber: 114,
+                columnNumber: 15
+              }, this),
+              /* @__PURE__ */ jsxDEV("span", { children: "Test Timer 2 (Firecracker Crackers)" }, void 0, false, {
+                fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/DevControls.jsx",
+                lineNumber: 115,
+                columnNumber: 15
+              }, this)
+            ]
+          },
+          void 0,
+          true,
+          {
+            fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/DevControls.jsx",
+            lineNumber: 108,
+            columnNumber: 13
+          },
+          this
+        ),
+        /* @__PURE__ */ jsxDEV(
+          "button",
+          {
+            type: "button",
+            onClick: onTriggerCover5sCountdown,
+            className: "dev-action-btn test-timer-btn",
+            title: "Start 5-second countdown on Cover page",
+            children: [
+              /* @__PURE__ */ jsxDEV(Play, { className: "w-3.5 h-3.5 mr-1" }, void 0, false, {
+                fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/DevControls.jsx",
+                lineNumber: 127,
+                columnNumber: 15
+              }, this),
+              /* @__PURE__ */ jsxDEV("span", { children: "5s Countdown: Cover Timer" }, void 0, false, {
+                fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/DevControls.jsx",
+                lineNumber: 128,
+                columnNumber: 15
+              }, this)
+            ]
+          },
+          void 0,
+          true,
+          {
+            fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/DevControls.jsx",
+            lineNumber: 121,
+            columnNumber: 13
+          },
+          this
+        ),
+        /* @__PURE__ */ jsxDEV(
+          "button",
+          {
+            type: "button",
+            onClick: onTriggerFirecracker5sCountdown,
+            className: "dev-action-btn test-timer-btn",
+            title: "Start 5-second countdown on Firecracker wall",
+            children: [
+              /* @__PURE__ */ jsxDEV(Play, { className: "w-3.5 h-3.5 mr-1 text-amber-300" }, void 0, false, {
+                fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/DevControls.jsx",
+                lineNumber: 137,
+                columnNumber: 15
+              }, this),
+              /* @__PURE__ */ jsxDEV("span", { children: "5s Countdown: Firecracker Timer" }, void 0, false, {
+                fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/DevControls.jsx",
+                lineNumber: 138,
+                columnNumber: 15
+              }, this)
+            ]
+          },
+          void 0,
+          true,
+          {
+            fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/DevControls.jsx",
+            lineNumber: 131,
+            columnNumber: 13
+          },
+          this
+        ),
+        /* @__PURE__ */ jsxDEV(
+          "button",
+          {
+            type: "button",
+            onClick: onJumpToCountdown,
+            className: `dev-action-btn countdown-btn ${currentStage === "countdown" ? "is-active" : ""}`,
+            children: [
+              /* @__PURE__ */ jsxDEV(Clock, { className: "w-3.5 h-3.5 mr-1" }, void 0, false, {
+                fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/DevControls.jsx",
+                lineNumber: 149,
+                columnNumber: 15
+              }, this),
+              /* @__PURE__ */ jsxDEV("span", { children: "1. Blurred Countdown Page" }, void 0, false, {
+                fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/DevControls.jsx",
+                lineNumber: 150,
+                columnNumber: 15
+              }, this)
+            ]
+          },
+          void 0,
+          true,
+          {
+            fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/DevControls.jsx",
+            lineNumber: 144,
+            columnNumber: 13
+          },
+          this
+        ),
+        /* @__PURE__ */ jsxDEV(
+          "button",
+          {
+            type: "button",
+            onClick: onJumpToFireworksPage,
+            className: `dev-action-btn fireworks-btn ${currentStage === "fireworks" ? "is-active" : ""}`,
+            children: [
+              /* @__PURE__ */ jsxDEV(Sparkles, { className: "w-3.5 h-3.5 mr-1" }, void 0, false, {
+                fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/DevControls.jsx",
+                lineNumber: 158,
+                columnNumber: 15
+              }, this),
+              /* @__PURE__ */ jsxDEV("span", { children: "2. Firecracker Page (Idle)" }, void 0, false, {
+                fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/DevControls.jsx",
+                lineNumber: 159,
+                columnNumber: 15
+              }, this)
+            ]
+          },
+          void 0,
+          true,
+          {
+            fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/DevControls.jsx",
+            lineNumber: 153,
+            columnNumber: 13
+          },
+          this
+        ),
+        /* @__PURE__ */ jsxDEV(
+          "button",
+          {
+            type: "button",
+            onClick: onJumpToMainPage,
+            className: `dev-action-btn mainpage-btn ${currentStage === "main" ? "is-active" : ""}`,
+            children: [
+              /* @__PURE__ */ jsxDEV(Heart, { className: "w-3.5 h-3.5 mr-1" }, void 0, false, {
+                fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/DevControls.jsx",
+                lineNumber: 167,
+                columnNumber: 15
+              }, this),
+              /* @__PURE__ */ jsxDEV("span", { children: "3. Main Birthday Page" }, void 0, false, {
+                fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/DevControls.jsx",
+                lineNumber: 168,
+                columnNumber: 15
+              }, this)
+            ]
+          },
+          void 0,
+          true,
+          {
+            fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/DevControls.jsx",
+            lineNumber: 162,
+            columnNumber: 13
+          },
+          this
+        ),
+        onJumpToSadMemories && /* @__PURE__ */ jsxDEV(
+          "button",
+          {
+            type: "button",
+            onClick: onJumpToSadMemories,
+            className: `dev-action-btn memories-btn ${currentStage === "sad-memories" ? "is-active" : ""}`,
+            children: [
+              /* @__PURE__ */ jsxDEV(BookOpen, { className: "w-3.5 h-3.5 mr-1" }, void 0, false, {
+                fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/DevControls.jsx",
+                lineNumber: 177,
+                columnNumber: 17
+              }, this),
+              /* @__PURE__ */ jsxDEV("span", { children: "4. Sad Image Gallery" }, void 0, false, {
+                fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/DevControls.jsx",
+                lineNumber: 178,
+                columnNumber: 17
+              }, this)
+            ]
+          },
+          void 0,
+          true,
+          {
+            fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/DevControls.jsx",
+            lineNumber: 172,
+            columnNumber: 11
+          },
+          this
+        ),
+        onJumpToHappyGallery && /* @__PURE__ */ jsxDEV(
+          "button",
+          {
+            type: "button",
+            onClick: onJumpToHappyGallery,
+            className: `dev-action-btn happy-gallery-btn ${currentStage === "happy-gallery" ? "is-active" : ""}`,
+            children: [
+              /* @__PURE__ */ jsxDEV(Sparkles, { className: "w-3.5 h-3.5 mr-1 text-amber-300" }, void 0, false, {
+                fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/DevControls.jsx",
+                lineNumber: 188,
+                columnNumber: 17
+              }, this),
+              /* @__PURE__ */ jsxDEV("span", { children: "5. Happy Gallery" }, void 0, false, {
+                fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/DevControls.jsx",
+                lineNumber: 189,
+                columnNumber: 17
+              }, this)
+            ]
+          },
+          void 0,
+          true,
+          {
+            fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/DevControls.jsx",
+            lineNumber: 183,
+            columnNumber: 11
+          },
+          this
+        ),
+        /* @__PURE__ */ jsxDEV(
+          "button",
+          {
+            type: "button",
+            onClick: onResetToDefaultConfig,
+            className: "dev-action-btn reset-btn",
+            children: [
+              /* @__PURE__ */ jsxDEV(RotateCcw, { className: "w-3.5 h-3.5 mr-1" }, void 0, false, {
+                fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/DevControls.jsx",
+                lineNumber: 199,
+                columnNumber: 15
+              }, this),
+              /* @__PURE__ */ jsxDEV("span", { children: "Reset to Clean Config" }, void 0, false, {
+                fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/DevControls.jsx",
+                lineNumber: 200,
+                columnNumber: 15
+              }, this)
+            ]
+          },
+          void 0,
+          true,
+          {
+            fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/DevControls.jsx",
+            lineNumber: 194,
+            columnNumber: 13
+          },
+          this
+        )
+      ] }, void 0, true, {
+        fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/DevControls.jsx",
+        lineNumber: 91,
+        columnNumber: 11
+      }, this)
+    ] }, void 0, true, {
+      fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/DevControls.jsx",
+      lineNumber: 80,
+      columnNumber: 7
+    }, this)
+  ] }, void 0, true, {
+    fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/DevControls.jsx",
+    lineNumber: 52,
+    columnNumber: 5
+  }, this);
+}
+_s(DevControls, "+sus0Lb0ewKHdwiUhiTAJFoFyQ0=");
+_c = DevControls;
+var _c;
+$RefreshReg$(_c, "DevControls");
+if (import.meta.hot && !inWebWorker) {
+  window.$RefreshReg$ = prevRefreshReg;
+  window.$RefreshSig$ = prevRefreshSig;
+}
+if (import.meta.hot && !inWebWorker) {
+  RefreshRuntime.__hmr_import(import.meta.url).then((currentExports) => {
+    RefreshRuntime.registerExportsForReactRefresh("C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/DevControls.jsx", currentExports);
+    import.meta.hot.accept((nextExports) => {
+      if (!nextExports) return;
+      const invalidateMessage = RefreshRuntime.validateRefreshBoundaryAndEnqueueUpdate("C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/DevControls.jsx", currentExports, nextExports);
+      if (invalidateMessage) import.meta.hot.invalidate(invalidateMessage);
+    });
+  });
+}
+
+//# sourceMappingURL=data:application/json;base64,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Q0MsR0E5S3VCYixhQUFXO0FBQUEsS0FBWEE7QUFBVyxJQUFBa0I7QUFBQSxhQUFBQSxJQUFBIiwibmFtZXMiOlsiUmVhY3QiLCJ1c2VTdGF0ZSIsIldyZW5jaCIsIlBsYXkiLCJTcGFya2xlcyIsIkhlYXJ0IiwiUm90YXRlQ2N3IiwiQ2hldnJvbkRvd24iLCJDaGV2cm9uVXAiLCJCb29rT3BlbiIsIkNsb2NrIiwiRmxhbWUiLCJBcnJvd1JpZ2h0IiwiQklSVEhEQVlfQ09ORklHIiwiRGV2Q29udHJvbHMiLCJjdXJyZW50U3RhZ2UiLCJvbkNsaWNrQW5kU2VlIiwib25UZXN0Q292ZXJUaW1lciIsIm9uVGVzdEZpcmVjcmFja2VyVGltZXIiLCJvbkp1bXBUb0NvdW50ZG93biIsIm9uSnVtcFRvRmlyZXdvcmtzUGFnZSIsIm9uSnVtcFRvTWFpblBhZ2UiLCJvbkp1bXBUb1NhZE1lbW9yaWVzIiwib25KdW1wVG9IYXBweUdhbGxlcnkiLCJvblRyaWdnZXJDb3ZlcjVzQ291bnRkb3duIiwib25UcmlnZ2VyRmlyZWNyYWNrZXI1c0NvdW50ZG93biIsIm9uUmVzZXRUb0RlZmF1bHRDb25maWciLCJfcyIsImlzT3BlbiIsInNldElzT3BlbiIsImRldiIsInNob3dEZXZDb250cm9scyIsIl9jIl0sImlnbm9yZUxpc3QiOltdLCJzb3VyY2VzIjpbIkRldkNvbnRyb2xzLmpzeCJdLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgUmVhY3QsIHsgdXNlU3RhdGUgfSBmcm9tICdyZWFjdCc7XG5pbXBvcnQgeyBXcmVuY2gsIFBsYXksIFNwYXJrbGVzLCBIZWFydCwgUm90YXRlQ2N3LCBDaGV2cm9uRG93biwgQ2hldnJvblVwLCBCb29rT3BlbiwgQ2xvY2ssIEZsYW1lLCBBcnJvd1JpZ2h0IH0gZnJvbSAnbHVjaWRlLXJlYWN0JztcbmltcG9ydCB7IEJJUlRIREFZX0NPTkZJRyB9IGZyb20gJy4uL2NvbmZpZyc7XG5cbi8qKlxuICogRGV2IENvbnRyb2xzIENvbXBvbmVudFxuICogUHJvdmlkZXMgaXNvbGF0ZWQgdGVzdGluZyBmb3I6XG4gKiAxLiBUZXN0IE9wdGlvbiBBOiBDb3ZlciBUaW1lciBUZXN0IChDb3ZlciAtPiBGaXJlY3JhY2tlciBwYWdlLCBUaW1lciAyIHZpc2libGUsIHplcm8gZmlyZXdvcmtzKVxuICogMi4gVGVzdCBPcHRpb24gQjogRmlyZWNyYWNrZXIgVGltZXIgVGVzdCAoRmlyZWNyYWNrZXIgcGFnZSAtPiBGaXJld29ya3MgY2VsZWJyYXRpb24gZm9ybXMgSEFQUFkgQklSVEhEQVksIHdhaXRzIGZvciBoZWFydCBjbGljaylcbiAqIDMuIExpdmUgNXMgQ291bnRkb3ducyAoVGltZXIgMSBhbmQgVGltZXIgMilcbiAqIDQuIFNlY3Rpb24gTmF2aWdhdGlvbiBQcmV2aWV3c1xuICogNS4gQ2xlYW4gQ29uZmlnIFJlc2V0XG4gKi9cbmV4cG9ydCBkZWZhdWx0IGZ1bmN0aW9uIERldkNvbnRyb2xzKHtcbiAgY3VycmVudFN0YWdlLFxuICBvbkNsaWNrQW5kU2VlLFxuICBvblRlc3RDb3ZlclRpbWVyLFxuICBvblRlc3RGaXJlY3JhY2tlclRpbWVyLFxuICBvbkp1bXBUb0NvdW50ZG93bixcbiAgb25KdW1wVG9GaXJld29ya3NQYWdlLFxuICBvbkp1bXBUb01haW5QYWdlLFxuICBvbkp1bXBUb1NhZE1lbW9yaWVzLFxuICBvbkp1bXBUb0hhcHB5R2FsbGVyeSxcbiAgb25UcmlnZ2VyQ292ZXI1c0NvdW50ZG93bixcbiAgb25UcmlnZ2VyRmlyZWNyYWNrZXI1c0NvdW50ZG93bixcbiAgb25SZXNldFRvRGVmYXVsdENvbmZpZ1xufSkge1xuICBjb25zdCBbaXNPcGVuLCBzZXRJc09wZW5dID0gdXNlU3RhdGUoZmFsc2UpO1xuXG4gIGlmICghQklSVEhEQVlfQ09ORklHLmRldi5zaG93RGV2Q29udHJvbHMpIHJldHVybiBudWxsO1xuXG4gIHJldHVybiAoXG4gICAgPGFzaWRlIGNsYXNzTmFtZT1cImRldi10ZXN0LXBhbmVsXCIgYXJpYS1sYWJlbD1cIkRldmVsb3BtZW50IFRlc3QgSGVscGVyXCI+XG4gICAgICA8ZGl2IGNsYXNzTmFtZT1cImRldi1wYW5lbC10b3Atcm93XCI+XG4gICAgICAgIHtvbkNsaWNrQW5kU2VlICYmIChcbiAgICAgICAgICA8YnV0dG9uXG4gICAgICAgICAgICB0eXBlPVwiYnV0dG9uXCJcbiAgICAgICAgICAgIG9uQ2xpY2s9e29uQ2xpY2tBbmRTZWV9XG4gICAgICAgICAgICBjbGFzc05hbWU9XCJkZXYtcGFuZWwtdG9nZ2xlLWJ0biBkZXYtY2xpY2stc2VlLWJ0blwiXG4gICAgICAgICAgICB0aXRsZT1cIlByZXZpZXcgMTBzIGNvdW50ZG93biB0byBmdWxsIGZpcmV3b3JrcyBjZWxlYnJhdGlvblwiXG4gICAgICAgICAgPlxuICAgICAgICAgICAgPFNwYXJrbGVzIGNsYXNzTmFtZT1cInctNCBoLTQgdGV4dC1hbWJlci0zMDAgbXItMS41XCIgLz5cbiAgICAgICAgICAgIDxzcGFuPkNsaWNrICZhbXA7IFNlZTwvc3Bhbj5cbiAgICAgICAgICA8L2J1dHRvbj5cbiAgICAgICAgKX1cblxuICAgICAgICA8YnV0dG9uXG4gICAgICAgICAgdHlwZT1cImJ1dHRvblwiXG4gICAgICAgICAgb25DbGljaz17KCkgPT4gc2V0SXNPcGVuKCFpc09wZW4pfVxuICAgICAgICAgIGNsYXNzTmFtZT1cImRldi1wYW5lbC10b2dnbGUtYnRuXCJcbiAgICAgICAgICB0aXRsZT1cIlRvZ2dsZSB0ZXN0aW5nIGNvbnRyb2xzXCJcbiAgICAgICAgICBhcmlhLWV4cGFuZGVkPXtpc09wZW59XG4gICAgICAgID5cbiAgICAgICAgICA8V3JlbmNoIGNsYXNzTmFtZT1cInctNCBoLTQgdGV4dC1hbWJlci0zMDAgbXItMS41XCIgLz5cbiAgICAgICAgICA8c3Bhbj5UZXN0IEhlbHBlcjwvc3Bhbj5cbiAgICAgICAgICB7aXNPcGVuID8gPENoZXZyb25VcCBjbGFzc05hbWU9XCJ3LTMuNSBoLTMuNSBtbC0xXCIgLz4gOiA8Q2hldnJvbkRvd24gY2xhc3NOYW1lPVwidy0zLjUgaC0zLjUgbWwtMVwiIC8+fVxuICAgICAgICA8L2J1dHRvbj5cbiAgICAgIDwvZGl2PlxuXG4gICAgICB7aXNPcGVuICYmIChcbiAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJkZXYtcGFuZWwtY29udGVudCBhbmltYXRlLWZhZGUtaW5cIj5cbiAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImRldi1wYW5lbC1oZWFkZXJcIj5cbiAgICAgICAgICAgIDxzcGFuIGNsYXNzTmFtZT1cImRldi1jdXJyZW50LXN0YWdlXCI+XG4gICAgICAgICAgICAgIEFjdGl2ZSBTdGFnZTogPHN0cm9uZz57Y3VycmVudFN0YWdlfTwvc3Ryb25nPlxuICAgICAgICAgICAgPC9zcGFuPlxuICAgICAgICAgIDwvZGl2PlxuXG4gICAgICAgICAgPHAgY2xhc3NOYW1lPVwiZGV2LXBhbmVsLW5vdGVcIj5cbiAgICAgICAgICAgIFRlc3QgaXNvbGF0ZWQgdGltZXIgdHJhbnNpdGlvbnMgJiBjZWxlYnJhdGlvbnM6XG4gICAgICAgICAgPC9wPlxuXG4gICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJkZXYtYnV0dG9ucy1ncmlkXCI+XG4gICAgICAgICAgICB7LyogPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0gKi99XG4gICAgICAgICAgICB7LyogUFJJTUFSWSBURVNUIEFDVElPTlMgKE1BTkRBVE9SWSBWRVJJRklDQVRJT04gQUNUSU9OUykgICAgICAgICAgKi99XG4gICAgICAgICAgICB7LyogPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0gKi99XG5cbiAgICAgICAgICAgIHsvKiBUZXN0IE9wdGlvbiBBOiBDb3ZlciBUaW1lciBUZXN0ICovfVxuICAgICAgICAgICAgPGJ1dHRvblxuICAgICAgICAgICAgICB0eXBlPVwiYnV0dG9uXCJcbiAgICAgICAgICAgICAgb25DbGljaz17b25UZXN0Q292ZXJUaW1lcn1cbiAgICAgICAgICAgICAgY2xhc3NOYW1lPVwiZGV2LWFjdGlvbi1idG4gdGVzdC1jb3Zlci10aW1lci1idG5cIlxuICAgICAgICAgICAgICB0aXRsZT1cIlNpbXVsYXRlIFRpbWVyIDEgcmVhY2hpbmcgemVybzogTmF2aWdhdGVzIHRvIEZpcmVjcmFja2VyIHBhZ2Ugd2l0aCBUaW1lciAyIHZpc2libGUgYW5kIE5PIGZpcmV3b3Jrc1wiXG4gICAgICAgICAgICA+XG4gICAgICAgICAgICAgIDxBcnJvd1JpZ2h0IGNsYXNzTmFtZT1cInctMy41IGgtMy41IG1yLTEgdGV4dC1za3ktNDAwXCIgLz5cbiAgICAgICAgICAgICAgPHNwYW4+VGVzdCBUaW1lciAxIChDb3ZlciDihpIgRmlyZWNyYWNrZXIpPC9zcGFuPlxuICAgICAgICAgICAgPC9idXR0b24+XG5cbiAgICAgICAgICAgIHsvKiBUZXN0IE9wdGlvbiBCOiBGaXJlY3JhY2tlciBUaW1lciBUZXN0ICovfVxuICAgICAgICAgICAgPGJ1dHRvblxuICAgICAgICAgICAgICB0eXBlPVwiYnV0dG9uXCJcbiAgICAgICAgICAgICAgb25DbGljaz17b25UZXN0RmlyZWNyYWNrZXJUaW1lcn1cbiAgICAgICAgICAgICAgY2xhc3NOYW1lPVwiZGV2LWFjdGlvbi1idG4gdGVzdC1maXJlY3JhY2tlci10aW1lci1idG5cIlxuICAgICAgICAgICAgICB0aXRsZT1cIlNpbXVsYXRlIFRpbWVyIDIgcmVhY2hpbmcgemVybzogTGF1bmNoZXMgY29sb3JmdWwgY3JhY2tlcnMvZmlyZXdvcmtzLiBGaXJzdCBoZWFydCBjbGljayBmb3JtcyBIQVBQWSBCSVJUSERBWSwgc2Vjb25kIGNsaWNrIG9wZW5zIE1haW4gcGFnZVwiXG4gICAgICAgICAgICA+XG4gICAgICAgICAgICAgIDxGbGFtZSBjbGFzc05hbWU9XCJ3LTMuNSBoLTMuNSBtci0xIHRleHQtYW1iZXItNDAwXCIgLz5cbiAgICAgICAgICAgICAgPHNwYW4+VGVzdCBUaW1lciAyIChGaXJlY3JhY2tlciBDcmFja2Vycyk8L3NwYW4+XG4gICAgICAgICAgICA8L2J1dHRvbj5cblxuICAgICAgICAgICAgey8qID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09ICovfVxuICAgICAgICAgICAgey8qIE9QVElPTkFMIExJVkUgNS1TRUNPTkQgQ09VTlRET1dOIFRFU1RTICAgICAgICAgICAgICAgICAgICAgICAgICovfVxuICAgICAgICAgICAgey8qID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09ICovfVxuICAgICAgICAgICAgPGJ1dHRvblxuICAgICAgICAgICAgICB0eXBlPVwiYnV0dG9uXCJcbiAgICAgICAgICAgICAgb25DbGljaz17b25UcmlnZ2VyQ292ZXI1c0NvdW50ZG93bn1cbiAgICAgICAgICAgICAgY2xhc3NOYW1lPVwiZGV2LWFjdGlvbi1idG4gdGVzdC10aW1lci1idG5cIlxuICAgICAgICAgICAgICB0aXRsZT1cIlN0YXJ0IDUtc2Vjb25kIGNvdW50ZG93biBvbiBDb3ZlciBwYWdlXCJcbiAgICAgICAgICAgID5cbiAgICAgICAgICAgICAgPFBsYXkgY2xhc3NOYW1lPVwidy0zLjUgaC0zLjUgbXItMVwiIC8+XG4gICAgICAgICAgICAgIDxzcGFuPjVzIENvdW50ZG93bjogQ292ZXIgVGltZXI8L3NwYW4+XG4gICAgICAgICAgICA8L2J1dHRvbj5cblxuICAgICAgICAgICAgPGJ1dHRvblxuICAgICAgICAgICAgICB0eXBlPVwiYnV0dG9uXCJcbiAgICAgICAgICAgICAgb25DbGljaz17b25UcmlnZ2VyRmlyZWNyYWNrZXI1c0NvdW50ZG93bn1cbiAgICAgICAgICAgICAgY2xhc3NOYW1lPVwiZGV2LWFjdGlvbi1idG4gdGVzdC10aW1lci1idG5cIlxuICAgICAgICAgICAgICB0aXRsZT1cIlN0YXJ0IDUtc2Vjb25kIGNvdW50ZG93biBvbiBGaXJlY3JhY2tlciB3YWxsXCJcbiAgICAgICAgICAgID5cbiAgICAgICAgICAgICAgPFBsYXkgY2xhc3NOYW1lPVwidy0zLjUgaC0zLjUgbXItMSB0ZXh0LWFtYmVyLTMwMFwiIC8+XG4gICAgICAgICAgICAgIDxzcGFuPjVzIENvdW50ZG93bjogRmlyZWNyYWNrZXIgVGltZXI8L3NwYW4+XG4gICAgICAgICAgICA8L2J1dHRvbj5cblxuICAgICAgICAgICAgey8qID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09ICovfVxuICAgICAgICAgICAgey8qIERJUkVDVCBTRUNUSU9OIFBSRVZJRVdTICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICovfVxuICAgICAgICAgICAgey8qID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09ICovfVxuICAgICAgICAgICAgPGJ1dHRvblxuICAgICAgICAgICAgICB0eXBlPVwiYnV0dG9uXCJcbiAgICAgICAgICAgICAgb25DbGljaz17b25KdW1wVG9Db3VudGRvd259XG4gICAgICAgICAgICAgIGNsYXNzTmFtZT17YGRldi1hY3Rpb24tYnRuIGNvdW50ZG93bi1idG4gJHtjdXJyZW50U3RhZ2UgPT09ICdjb3VudGRvd24nID8gJ2lzLWFjdGl2ZScgOiAnJ31gfVxuICAgICAgICAgICAgPlxuICAgICAgICAgICAgICA8Q2xvY2sgY2xhc3NOYW1lPVwidy0zLjUgaC0zLjUgbXItMVwiIC8+XG4gICAgICAgICAgICAgIDxzcGFuPjEuIEJsdXJyZWQgQ291bnRkb3duIFBhZ2U8L3NwYW4+XG4gICAgICAgICAgICA8L2J1dHRvbj5cblxuICAgICAgICAgICAgPGJ1dHRvblxuICAgICAgICAgICAgICB0eXBlPVwiYnV0dG9uXCJcbiAgICAgICAgICAgICAgb25DbGljaz17b25KdW1wVG9GaXJld29ya3NQYWdlfVxuICAgICAgICAgICAgICBjbGFzc05hbWU9e2BkZXYtYWN0aW9uLWJ0biBmaXJld29ya3MtYnRuICR7Y3VycmVudFN0YWdlID09PSAnZmlyZXdvcmtzJyA/ICdpcy1hY3RpdmUnIDogJyd9YH1cbiAgICAgICAgICAgID5cbiAgICAgICAgICAgICAgPFNwYXJrbGVzIGNsYXNzTmFtZT1cInctMy41IGgtMy41IG1yLTFcIiAvPlxuICAgICAgICAgICAgICA8c3Bhbj4yLiBGaXJlY3JhY2tlciBQYWdlIChJZGxlKTwvc3Bhbj5cbiAgICAgICAgICAgIDwvYnV0dG9uPlxuXG4gICAgICAgICAgICA8YnV0dG9uXG4gICAgICAgICAgICAgIHR5cGU9XCJidXR0b25cIlxuICAgICAgICAgICAgICBvbkNsaWNrPXtvbkp1bXBUb01haW5QYWdlfVxuICAgICAgICAgICAgICBjbGFzc05hbWU9e2BkZXYtYWN0aW9uLWJ0biBtYWlucGFnZS1idG4gJHtjdXJyZW50U3RhZ2UgPT09ICdtYWluJyA/ICdpcy1hY3RpdmUnIDogJyd9YH1cbiAgICAgICAgICAgID5cbiAgICAgICAgICAgICAgPEhlYXJ0IGNsYXNzTmFtZT1cInctMy41IGgtMy41IG1yLTFcIiAvPlxuICAgICAgICAgICAgICA8c3Bhbj4zLiBNYWluIEJpcnRoZGF5IFBhZ2U8L3NwYW4+XG4gICAgICAgICAgICA8L2J1dHRvbj5cblxuICAgICAgICAgICAge29uSnVtcFRvU2FkTWVtb3JpZXMgJiYgKFxuICAgICAgICAgICAgICA8YnV0dG9uXG4gICAgICAgICAgICAgICAgdHlwZT1cImJ1dHRvblwiXG4gICAgICAgICAgICAgICAgb25DbGljaz17b25KdW1wVG9TYWRNZW1vcmllc31cbiAgICAgICAgICAgICAgICBjbGFzc05hbWU9e2BkZXYtYWN0aW9uLWJ0biBtZW1vcmllcy1idG4gJHtjdXJyZW50U3RhZ2UgPT09ICdzYWQtbWVtb3JpZXMnID8gJ2lzLWFjdGl2ZScgOiAnJ31gfVxuICAgICAgICAgICAgICA+XG4gICAgICAgICAgICAgICAgPEJvb2tPcGVuIGNsYXNzTmFtZT1cInctMy41IGgtMy41IG1yLTFcIiAvPlxuICAgICAgICAgICAgICAgIDxzcGFuPjQuIFNhZCBJbWFnZSBHYWxsZXJ5PC9zcGFuPlxuICAgICAgICAgICAgICA8L2J1dHRvbj5cbiAgICAgICAgICAgICl9XG5cbiAgICAgICAgICAgIHtvbkp1bXBUb0hhcHB5R2FsbGVyeSAmJiAoXG4gICAgICAgICAgICAgIDxidXR0b25cbiAgICAgICAgICAgICAgICB0eXBlPVwiYnV0dG9uXCJcbiAgICAgICAgICAgICAgICBvbkNsaWNrPXtvbkp1bXBUb0hhcHB5R2FsbGVyeX1cbiAgICAgICAgICAgICAgICBjbGFzc05hbWU9e2BkZXYtYWN0aW9uLWJ0biBoYXBweS1nYWxsZXJ5LWJ0biAke2N1cnJlbnRTdGFnZSA9PT0gJ2hhcHB5LWdhbGxlcnknID8gJ2lzLWFjdGl2ZScgOiAnJ31gfVxuICAgICAgICAgICAgICA+XG4gICAgICAgICAgICAgICAgPFNwYXJrbGVzIGNsYXNzTmFtZT1cInctMy41IGgtMy41IG1yLTEgdGV4dC1hbWJlci0zMDBcIiAvPlxuICAgICAgICAgICAgICAgIDxzcGFuPjUuIEhhcHB5IEdhbGxlcnk8L3NwYW4+XG4gICAgICAgICAgICAgIDwvYnV0dG9uPlxuICAgICAgICAgICAgKX1cblxuICAgICAgICAgICAgey8qIFJlc2V0IHRvIENsZWFuIENvbmZpZyAqL31cbiAgICAgICAgICAgIDxidXR0b25cbiAgICAgICAgICAgICAgdHlwZT1cImJ1dHRvblwiXG4gICAgICAgICAgICAgIG9uQ2xpY2s9e29uUmVzZXRUb0RlZmF1bHRDb25maWd9XG4gICAgICAgICAgICAgIGNsYXNzTmFtZT1cImRldi1hY3Rpb24tYnRuIHJlc2V0LWJ0blwiXG4gICAgICAgICAgICA+XG4gICAgICAgICAgICAgIDxSb3RhdGVDY3cgY2xhc3NOYW1lPVwidy0zLjUgaC0zLjUgbXItMVwiIC8+XG4gICAgICAgICAgICAgIDxzcGFuPlJlc2V0IHRvIENsZWFuIENvbmZpZzwvc3Bhbj5cbiAgICAgICAgICAgIDwvYnV0dG9uPlxuICAgICAgICAgIDwvZGl2PlxuICAgICAgICA8L2Rpdj5cbiAgICAgICl9XG4gICAgPC9hc2lkZT5cbiAgKTtcbn1cbiJdLCJmaWxlIjoiQzovVXNlcnMvZGV2YW0vT25lRHJpdmUvRGVza3RvcC9IYXBwcGllc3QtQmlydGhhZHktTWlpb29vL3NyYy9jb21wb25lbnRzL0RldkNvbnRyb2xzLmpzeCJ9

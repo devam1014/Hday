@@ -1,0 +1,668 @@
+import { createHotContext as __vite__createHotContext } from "/@vite/client";import.meta.hot = __vite__createHotContext("/src/components/HappyMemoriesGallery.jsx");import __vite__cjsImport0_react_jsxDevRuntime from "/node_modules/.vite/deps/react_jsx-dev-runtime.js?v=8a6794f3"; const jsxDEV = __vite__cjsImport0_react_jsxDevRuntime["jsxDEV"];
+import * as RefreshRuntime from "/@react-refresh";
+const inWebWorker = typeof WorkerGlobalScope !== "undefined" && self instanceof WorkerGlobalScope;
+let prevRefreshReg;
+let prevRefreshSig;
+if (import.meta.hot && !inWebWorker) {
+  if (!window.$RefreshReg$) {
+    throw new Error(
+      "@vitejs/plugin-react can't detect preamble. Something is wrong."
+    );
+  }
+  prevRefreshReg = window.$RefreshReg$;
+  prevRefreshSig = window.$RefreshSig$;
+  window.$RefreshReg$ = RefreshRuntime.getRefreshReg("C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/HappyMemoriesGallery.jsx");
+  window.$RefreshSig$ = RefreshRuntime.createSignatureFunctionForTransform;
+}
+var _s = $RefreshSig$();
+import __vite__cjsImport3_react from "/node_modules/.vite/deps/react.js?v=8a6794f3"; const React = __vite__cjsImport3_react.__esModule ? __vite__cjsImport3_react.default : __vite__cjsImport3_react; const useState = __vite__cjsImport3_react["useState"]; const useCallback = __vite__cjsImport3_react["useCallback"]; const useEffect = __vite__cjsImport3_react["useEffect"]; const useRef = __vite__cjsImport3_react["useRef"];
+import { ArrowLeft, ArrowRight, ChevronLeft, ChevronRight, Sparkles } from "/node_modules/.vite/deps/lucide-react.js?v=8a6794f3";
+import { HAPPY_ASSETS, happyAlbumCover } from "/src/data/happyGalleryData.js";
+import { getHappyPhotos } from "/src/data/happyPhotos.js?t=1795110501716";
+import { BIRTHDAY_CONFIG } from "/src/config.js?t=1795110501716";
+import GalleryMusicPlayer from "/src/components/GalleryMusicPlayer.jsx?t=1795118582611";
+import GalleryVideoPlayer from "/src/components/GalleryVideoPlayer.jsx";
+import SeeThisView from "/src/components/SeeThisView.jsx";
+export default function HappyMemoriesGallery({ onBack, onPreviousPage, onNextPage }) {
+  _s();
+  const [view, setView] = useState("cover");
+  const [photoIndex, setPhotoIndex] = useState(0);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [transitionPhase, setTransitionPhase] = useState("idle");
+  const [transitionDir, setTransitionDir] = useState("forward");
+  const [photoFading, setPhotoFading] = useState(false);
+  const [imageErrors, setImageErrors] = useState({});
+  const [isFullscreen, setIsFullscreen] = useState(() => {
+    if (typeof document === "undefined") return false;
+    const isDocFs = Boolean(
+      document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement
+    );
+    const isDisplayModeFs = Boolean(
+      typeof window !== "undefined" && window.matchMedia && window.matchMedia("(display-mode: fullscreen)").matches
+    );
+    return isDocFs || isDisplayModeFs;
+  });
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      const isDocFs = Boolean(
+        document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement
+      );
+      const isDisplayModeFs = Boolean(
+        typeof window !== "undefined" && window.matchMedia && window.matchMedia("(display-mode: fullscreen)").matches
+      );
+      setIsFullscreen(isDocFs || isDisplayModeFs);
+    };
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    document.addEventListener("webkitfullscreenchange", handleFullscreenChange);
+    document.addEventListener("mozfullscreenchange", handleFullscreenChange);
+    document.addEventListener("MSFullscreenChange", handleFullscreenChange);
+    window.addEventListener("resize", handleFullscreenChange);
+    let mql;
+    if (typeof window !== "undefined" && window.matchMedia) {
+      mql = window.matchMedia("(display-mode: fullscreen)");
+      if (mql.addEventListener) {
+        mql.addEventListener("change", handleFullscreenChange);
+      } else if (mql.addListener) {
+        mql.addListener(handleFullscreenChange);
+      }
+    }
+    return () => {
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+      document.removeEventListener("webkitfullscreenchange", handleFullscreenChange);
+      document.removeEventListener("mozfullscreenchange", handleFullscreenChange);
+      document.removeEventListener("MSFullscreenChange", handleFullscreenChange);
+      window.removeEventListener("resize", handleFullscreenChange);
+      if (mql) {
+        if (mql.removeEventListener) {
+          mql.removeEventListener("change", handleFullscreenChange);
+        } else if (mql.removeListener) {
+          mql.removeListener(handleFullscreenChange);
+        }
+      }
+    };
+  }, []);
+  const photos = getHappyPhotos();
+  const currentPhoto = photos[photoIndex] || photos[0];
+  const frameTimerRef = useRef(null);
+  const photoTimerRef = useRef(null);
+  useEffect(() => {
+    return () => {
+      if (frameTimerRef.current) clearTimeout(frameTimerRef.current);
+      if (photoTimerRef.current) clearTimeout(photoTimerRef.current);
+    };
+  }, []);
+  useEffect(() => {
+    photos.forEach((p) => {
+      if (p.src && p.type !== "video") {
+        const img = new Image();
+        img.src = p.src;
+      }
+    });
+  }, [photos]);
+  const switchFrameView = useCallback((targetView, targetPhotoIndex = 0, direction = "forward") => {
+    if (isTransitioning) return;
+    setIsTransitioning(true);
+    setTransitionDir(direction);
+    setTransitionPhase("out");
+    frameTimerRef.current = setTimeout(() => {
+      setView(targetView);
+      setPhotoIndex(targetPhotoIndex);
+      setTransitionPhase("in");
+      frameTimerRef.current = setTimeout(() => {
+        setTransitionPhase("idle");
+        setIsTransitioning(false);
+      }, 300);
+    }, 280);
+  }, [isTransitioning]);
+  const switchPhoto = useCallback((newIndex) => {
+    if (photoFading || isTransitioning) return;
+    setPhotoFading(true);
+    photoTimerRef.current = setTimeout(() => {
+      setPhotoIndex(newIndex);
+      photoTimerRef.current = setTimeout(() => {
+        setPhotoFading(false);
+      }, 140);
+    }, 140);
+  }, [photoFading, isTransitioning]);
+  const handleNext = () => {
+    if (isTransitioning || photoFading) return;
+    if (view === "cover") {
+      switchFrameView("img", 0, "forward");
+    } else if (view === "img") {
+      if (photoIndex < photos.length - 1) {
+        switchPhoto(photoIndex + 1);
+      }
+    }
+  };
+  const handlePrev = () => {
+    if (isTransitioning || photoFading) return;
+    if (view === "cover") {
+      onBack?.();
+    } else if (view === "img") {
+      if (photoIndex > 0) {
+        switchPhoto(photoIndex - 1);
+      } else {
+        switchFrameView("cover", 0, "backward");
+      }
+    }
+  };
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "ArrowRight") handleNext();
+      else if (e.key === "ArrowLeft") handlePrev();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [view, photoIndex, isTransitioning, photoFading, photos.length]);
+  const handleImageError = (id) => {
+    setImageErrors((prev) => ({ ...prev, [id]: true }));
+  };
+  const isNextDisabled = view === "img" && photoIndex === photos.length - 1 || isTransitioning || photoFading;
+  const isPrevDisabled = isTransitioning || photoFading;
+  return /* @__PURE__ */ jsxDEV("div", { className: `happy-gallery-root ${isFullscreen ? "is-fullscreen" : ""}`, role: "region", "aria-label": "Happy Gallery", children: [
+    /* @__PURE__ */ jsxDEV("div", { className: "happy-gallery-background-wrapper", "aria-hidden": "true", children: [
+      /* @__PURE__ */ jsxDEV(
+        "img",
+        {
+          src: BIRTHDAY_CONFIG.happyGallery?.background || HAPPY_ASSETS.background,
+          alt: "Happy gallery sunset background",
+          className: "happy-gallery-background-img"
+        },
+        void 0,
+        false,
+        {
+          fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/HappyMemoriesGallery.jsx",
+          lineNumber: 243,
+          columnNumber: 9
+        },
+        this
+      ),
+      /* @__PURE__ */ jsxDEV("div", { className: "happy-gallery-warm-glow" }, void 0, false, {
+        fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/HappyMemoriesGallery.jsx",
+        lineNumber: 248,
+        columnNumber: 9
+      }, this)
+    ] }, void 0, true, {
+      fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/HappyMemoriesGallery.jsx",
+      lineNumber: 242,
+      columnNumber: 7
+    }, this),
+    (onPreviousPage || onBack) && /* @__PURE__ */ jsxDEV(
+      "button",
+      {
+        type: "button",
+        onClick: onPreviousPage || onBack,
+        className: "corner-nav-btn corner-nav-prev",
+        "aria-label": "Previous Page: Return to Sad Gallery",
+        title: "Return to Sad Gallery",
+        children: [
+          /* @__PURE__ */ jsxDEV(ArrowLeft, { size: 16, className: "corner-nav-icon" }, void 0, false, {
+            fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/HappyMemoriesGallery.jsx",
+            lineNumber: 260,
+            columnNumber: 11
+          }, this),
+          /* @__PURE__ */ jsxDEV("span", { className: "corner-nav-text", children: "Previous Page" }, void 0, false, {
+            fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/HappyMemoriesGallery.jsx",
+            lineNumber: 261,
+            columnNumber: 11
+          }, this)
+        ]
+      },
+      void 0,
+      true,
+      {
+        fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/HappyMemoriesGallery.jsx",
+        lineNumber: 253,
+        columnNumber: 7
+      },
+      this
+    ),
+    /* @__PURE__ */ jsxDEV("div", { className: "happy-gallery-content-wrapper", children: [
+      /* @__PURE__ */ jsxDEV("header", { className: "happy-gallery-top-header", children: /* @__PURE__ */ jsxDEV("div", { className: "happy-header-flourish", children: [
+        /* @__PURE__ */ jsxDEV("span", { className: "flourish-line flourish-line-left" }, void 0, false, {
+          fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/HappyMemoriesGallery.jsx",
+          lineNumber: 270,
+          columnNumber: 13
+        }, this),
+        /* @__PURE__ */ jsxDEV("span", { className: "flourish-heart", children: "♡" }, void 0, false, {
+          fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/HappyMemoriesGallery.jsx",
+          lineNumber: 271,
+          columnNumber: 13
+        }, this),
+        /* @__PURE__ */ jsxDEV("h1", { className: "happy-gallery-heading", children: "Happy Gallery" }, void 0, false, {
+          fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/HappyMemoriesGallery.jsx",
+          lineNumber: 272,
+          columnNumber: 13
+        }, this),
+        /* @__PURE__ */ jsxDEV("span", { className: "flourish-heart", children: "♡" }, void 0, false, {
+          fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/HappyMemoriesGallery.jsx",
+          lineNumber: 273,
+          columnNumber: 13
+        }, this),
+        /* @__PURE__ */ jsxDEV("span", { className: "flourish-line flourish-line-right" }, void 0, false, {
+          fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/HappyMemoriesGallery.jsx",
+          lineNumber: 274,
+          columnNumber: 13
+        }, this)
+      ] }, void 0, true, {
+        fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/HappyMemoriesGallery.jsx",
+        lineNumber: 269,
+        columnNumber: 11
+      }, this) }, void 0, false, {
+        fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/HappyMemoriesGallery.jsx",
+        lineNumber: 268,
+        columnNumber: 9
+      }, this),
+      /* @__PURE__ */ jsxDEV("main", { className: "happy-gallery-main-stage", children: /* @__PURE__ */ jsxDEV(
+        "div",
+        {
+          className: `happy-stage-perspective-wrapper is-${view}-view phase-${transitionPhase} turn-${transitionDir}`,
+          "aria-live": "polite",
+          children: view === "cover" ? (
+            /* ==============================================================
+               SCREEN 1: ALBUM COVER (LEFT SIDE OF REFERENCE)
+               ============================================================== */
+            /* @__PURE__ */ jsxDEV("div", { className: "happy-cover-layout", children: [
+              /* @__PURE__ */ jsxDEV("div", { className: "happy-cover-frame-box", children: [
+                /* @__PURE__ */ jsxDEV("div", { className: "happy-cover-card-content", children: [
+                  /* @__PURE__ */ jsxDEV("div", { className: "happy-cover-sparkle-pill", children: [
+                    /* @__PURE__ */ jsxDEV(Sparkles, { size: 12, className: "text-amber-300" }, void 0, false, {
+                      fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/HappyMemoriesGallery.jsx",
+                      lineNumber: 294,
+                      columnNumber: 21
+                    }, this),
+                    /* @__PURE__ */ jsxDEV("span", { children: "MEMORIES OF JOY" }, void 0, false, {
+                      fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/HappyMemoriesGallery.jsx",
+                      lineNumber: 295,
+                      columnNumber: 21
+                    }, this),
+                    /* @__PURE__ */ jsxDEV(Sparkles, { size: 12, className: "text-amber-300" }, void 0, false, {
+                      fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/HappyMemoriesGallery.jsx",
+                      lineNumber: 296,
+                      columnNumber: 21
+                    }, this)
+                  ] }, void 0, true, {
+                    fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/HappyMemoriesGallery.jsx",
+                    lineNumber: 293,
+                    columnNumber: 19
+                  }, this),
+                  /* @__PURE__ */ jsxDEV("h2", { className: "happy-cover-card-title", children: BIRTHDAY_CONFIG.happyGallery?.coverTitle || happyAlbumCover.coverTitle }, void 0, false, {
+                    fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/HappyMemoriesGallery.jsx",
+                    lineNumber: 298,
+                    columnNumber: 19
+                  }, this),
+                  /* @__PURE__ */ jsxDEV("p", { className: "happy-cover-card-edition", children: BIRTHDAY_CONFIG.happyGallery?.edition || happyAlbumCover.edition }, void 0, false, {
+                    fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/HappyMemoriesGallery.jsx",
+                    lineNumber: 299,
+                    columnNumber: 19
+                  }, this),
+                  /* @__PURE__ */ jsxDEV("div", { className: "happy-cover-card-divider" }, void 0, false, {
+                    fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/HappyMemoriesGallery.jsx",
+                    lineNumber: 300,
+                    columnNumber: 19
+                  }, this),
+                  /* @__PURE__ */ jsxDEV("p", { className: "happy-cover-card-msg", children: BIRTHDAY_CONFIG.happyGallery?.coverMessage || happyAlbumCover.coverMessage }, void 0, false, {
+                    fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/HappyMemoriesGallery.jsx",
+                    lineNumber: 301,
+                    columnNumber: 19
+                  }, this)
+                ] }, void 0, true, {
+                  fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/HappyMemoriesGallery.jsx",
+                  lineNumber: 292,
+                  columnNumber: 17
+                }, this),
+                /* @__PURE__ */ jsxDEV(
+                  "img",
+                  {
+                    src: BIRTHDAY_CONFIG.happyGallery?.frame || HAPPY_ASSETS.frame,
+                    alt: happyAlbumCover.alt,
+                    className: "happy-cover-art-frame",
+                    loading: "eager"
+                  },
+                  void 0,
+                  false,
+                  {
+                    fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/HappyMemoriesGallery.jsx",
+                    lineNumber: 305,
+                    columnNumber: 17
+                  },
+                  this
+                ),
+                /* @__PURE__ */ jsxDEV("div", { className: "happy-cover-art-label", children: /* @__PURE__ */ jsxDEV("span", { children: "Our Treasured Story ♡" }, void 0, false, {
+                  fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/HappyMemoriesGallery.jsx",
+                  lineNumber: 314,
+                  columnNumber: 19
+                }, this) }, void 0, false, {
+                  fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/HappyMemoriesGallery.jsx",
+                  lineNumber: 313,
+                  columnNumber: 17
+                }, this)
+              ] }, void 0, true, {
+                fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/HappyMemoriesGallery.jsx",
+                lineNumber: 290,
+                columnNumber: 15
+              }, this),
+              /* @__PURE__ */ jsxDEV("p", { className: "happy-cover-subtitle-text", children: BIRTHDAY_CONFIG.happyGallery?.subtitle || happyAlbumCover.subtitle }, void 0, false, {
+                fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/HappyMemoriesGallery.jsx",
+                lineNumber: 319,
+                columnNumber: 15
+              }, this),
+              /* @__PURE__ */ jsxDEV("div", { className: "happy-cover-bottom-nav", children: [
+                /* @__PURE__ */ jsxDEV(
+                  "button",
+                  {
+                    type: "button",
+                    onClick: onPreviousPage || onBack,
+                    className: "happy-bottom-pill-btn btn-back",
+                    "aria-label": "Previous Page: Return to Sad Gallery",
+                    children: [
+                      /* @__PURE__ */ jsxDEV(ArrowLeft, { size: 16 }, void 0, false, {
+                        fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/HappyMemoriesGallery.jsx",
+                        lineNumber: 331,
+                        columnNumber: 19
+                      }, this),
+                      /* @__PURE__ */ jsxDEV("span", { children: "Previous Page" }, void 0, false, {
+                        fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/HappyMemoriesGallery.jsx",
+                        lineNumber: 332,
+                        columnNumber: 19
+                      }, this)
+                    ]
+                  },
+                  void 0,
+                  true,
+                  {
+                    fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/HappyMemoriesGallery.jsx",
+                    lineNumber: 325,
+                    columnNumber: 17
+                  },
+                  this
+                ),
+                /* @__PURE__ */ jsxDEV(
+                  "button",
+                  {
+                    type: "button",
+                    onClick: handleNext,
+                    className: "happy-bottom-pill-btn btn-next",
+                    "aria-label": "Open Happy Memories Album",
+                    children: [
+                      /* @__PURE__ */ jsxDEV("span", { children: "Next" }, void 0, false, {
+                        fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/HappyMemoriesGallery.jsx",
+                        lineNumber: 341,
+                        columnNumber: 19
+                      }, this),
+                      /* @__PURE__ */ jsxDEV(ChevronRight, { size: 16 }, void 0, false, {
+                        fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/HappyMemoriesGallery.jsx",
+                        lineNumber: 342,
+                        columnNumber: 19
+                      }, this)
+                    ]
+                  },
+                  void 0,
+                  true,
+                  {
+                    fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/HappyMemoriesGallery.jsx",
+                    lineNumber: 335,
+                    columnNumber: 17
+                  },
+                  this
+                )
+              ] }, void 0, true, {
+                fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/HappyMemoriesGallery.jsx",
+                lineNumber: 324,
+                columnNumber: 15
+              }, this)
+            ] }, void 0, true, {
+              fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/HappyMemoriesGallery.jsx",
+              lineNumber: 288,
+              columnNumber: 13
+            }, this)
+          ) : (
+            /* ==============================================================
+               SCREEN 2: INDIVIDUAL PHOTO VIEW (RIGHT SIDE OF REFERENCE)
+               ============================================================== */
+            /* @__PURE__ */ jsxDEV("div", { className: "happy-photo-view-layout", children: [
+              /* @__PURE__ */ jsxDEV("div", { className: "happy-individual-glass-card", children: [
+                /* @__PURE__ */ jsxDEV("div", { className: "happy-card-photo-counter", children: [
+                  photoIndex + 1,
+                  " / ",
+                  photos.length
+                ] }, void 0, true, {
+                  fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/HappyMemoriesGallery.jsx",
+                  lineNumber: 354,
+                  columnNumber: 17
+                }, this),
+                /* @__PURE__ */ jsxDEV("div", { className: "happy-photo-presentation-box", children: currentPhoto?.type === "video" && currentPhoto?.src ? /* @__PURE__ */ jsxDEV(
+                  GalleryVideoPlayer,
+                  {
+                    src: currentPhoto.src,
+                    alt: currentPhoto.alt || `Memory ${photoIndex + 1}`,
+                    theme: "happy",
+                    isFading: photoFading
+                  },
+                  void 0,
+                  false,
+                  {
+                    fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/HappyMemoriesGallery.jsx",
+                    lineNumber: 361,
+                    columnNumber: 19
+                  },
+                  this
+                ) : currentPhoto?.src && !imageErrors[currentPhoto.id] ? /* @__PURE__ */ jsxDEV(
+                  "img",
+                  {
+                    src: currentPhoto.src,
+                    alt: currentPhoto.alt || `Memory ${photoIndex + 1}`,
+                    className: `happy-photo-element ${photoFading ? "is-fading" : ""}`,
+                    onError: () => handleImageError(currentPhoto.id)
+                  },
+                  void 0,
+                  false,
+                  {
+                    fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/HappyMemoriesGallery.jsx",
+                    lineNumber: 368,
+                    columnNumber: 19
+                  },
+                  this
+                ) : (
+                  // Cheerful fallback placeholder when photo is not yet in /happy/
+                  /* @__PURE__ */ jsxDEV("div", { className: `happy-photo-placeholder-box ${photoFading ? "is-fading" : ""}`, children: [
+                    /* @__PURE__ */ jsxDEV("div", { className: "placeholder-sun-symbol" }, void 0, false, {
+                      fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/HappyMemoriesGallery.jsx",
+                      lineNumber: 377,
+                      columnNumber: 23
+                    }, this),
+                    /* @__PURE__ */ jsxDEV("span", { className: "placeholder-slot-tag", children: [
+                      "PHOTO ",
+                      photoIndex + 1,
+                      " OF ",
+                      photos.length
+                    ] }, void 0, true, {
+                      fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/HappyMemoriesGallery.jsx",
+                      lineNumber: 378,
+                      columnNumber: 23
+                    }, this),
+                    /* @__PURE__ */ jsxDEV("p", { className: "placeholder-instruction", children: [
+                      '"Place photograph ',
+                      photoIndex + 1,
+                      ' into /happy folder..."'
+                    ] }, void 0, true, {
+                      fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/HappyMemoriesGallery.jsx",
+                      lineNumber: 381,
+                      columnNumber: 23
+                    }, this)
+                  ] }, void 0, true, {
+                    fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/HappyMemoriesGallery.jsx",
+                    lineNumber: 376,
+                    columnNumber: 19
+                  }, this)
+                ) }, void 0, false, {
+                  fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/HappyMemoriesGallery.jsx",
+                  lineNumber: 359,
+                  columnNumber: 17
+                }, this),
+                /* @__PURE__ */ jsxDEV("div", { className: "happy-card-caption-section", children: /* @__PURE__ */ jsxDEV("p", { className: `happy-card-caption-text ${photoFading ? "is-fading" : ""}`, children: currentPhoto?.message || "" }, void 0, false, {
+                  fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/HappyMemoriesGallery.jsx",
+                  lineNumber: 390,
+                  columnNumber: 19
+                }, this) }, void 0, false, {
+                  fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/HappyMemoriesGallery.jsx",
+                  lineNumber: 389,
+                  columnNumber: 17
+                }, this)
+              ] }, void 0, true, {
+                fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/HappyMemoriesGallery.jsx",
+                lineNumber: 352,
+                columnNumber: 15
+              }, this),
+              /* @__PURE__ */ jsxDEV("div", { className: "happy-photo-bottom-nav", children: [
+                /* @__PURE__ */ jsxDEV(
+                  "button",
+                  {
+                    type: "button",
+                    onClick: handlePrev,
+                    disabled: isPrevDisabled,
+                    className: `happy-bottom-pill-btn btn-back ${isPrevDisabled ? "is-disabled" : ""}`,
+                    "aria-label": photoIndex === 0 ? "Back to Album Cover" : "Previous Photo",
+                    children: [
+                      /* @__PURE__ */ jsxDEV(ChevronLeft, { size: 16 }, void 0, false, {
+                        fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/HappyMemoriesGallery.jsx",
+                        lineNumber: 405,
+                        columnNumber: 19
+                      }, this),
+                      /* @__PURE__ */ jsxDEV("span", { children: "Back" }, void 0, false, {
+                        fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/HappyMemoriesGallery.jsx",
+                        lineNumber: 406,
+                        columnNumber: 19
+                      }, this)
+                    ]
+                  },
+                  void 0,
+                  true,
+                  {
+                    fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/HappyMemoriesGallery.jsx",
+                    lineNumber: 398,
+                    columnNumber: 17
+                  },
+                  this
+                ),
+                /* @__PURE__ */ jsxDEV(
+                  "button",
+                  {
+                    type: "button",
+                    onClick: handleNext,
+                    disabled: isNextDisabled,
+                    className: `happy-bottom-pill-btn btn-next ${isNextDisabled ? "is-disabled" : ""}`,
+                    "aria-label": photoIndex === photos.length - 1 ? "End of Photos" : "Next Photo",
+                    children: [
+                      /* @__PURE__ */ jsxDEV("span", { children: "Next" }, void 0, false, {
+                        fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/HappyMemoriesGallery.jsx",
+                        lineNumber: 416,
+                        columnNumber: 19
+                      }, this),
+                      /* @__PURE__ */ jsxDEV(ChevronRight, { size: 16 }, void 0, false, {
+                        fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/HappyMemoriesGallery.jsx",
+                        lineNumber: 417,
+                        columnNumber: 19
+                      }, this)
+                    ]
+                  },
+                  void 0,
+                  true,
+                  {
+                    fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/HappyMemoriesGallery.jsx",
+                    lineNumber: 409,
+                    columnNumber: 17
+                  },
+                  this
+                )
+              ] }, void 0, true, {
+                fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/HappyMemoriesGallery.jsx",
+                lineNumber: 397,
+                columnNumber: 15
+              }, this)
+            ] }, void 0, true, {
+              fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/HappyMemoriesGallery.jsx",
+              lineNumber: 350,
+              columnNumber: 13
+            }, this)
+          )
+        },
+        void 0,
+        false,
+        {
+          fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/HappyMemoriesGallery.jsx",
+          lineNumber: 280,
+          columnNumber: 9
+        },
+        this
+      ) }, void 0, false, {
+        fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/HappyMemoriesGallery.jsx",
+        lineNumber: 279,
+        columnNumber: 9
+      }, this)
+    ] }, void 0, true, {
+      fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/HappyMemoriesGallery.jsx",
+      lineNumber: 266,
+      columnNumber: 7
+    }, this),
+    view === "img" && photoIndex === photos.length - 1 && onNextPage && /* @__PURE__ */ jsxDEV(
+      "button",
+      {
+        type: "button",
+        onClick: onNextPage,
+        className: "corner-nav-btn corner-nav-next",
+        "aria-label": "Next Page: Navigate to Q&A Section",
+        title: "Proceed to Q&A Section",
+        children: [
+          /* @__PURE__ */ jsxDEV("span", { className: "corner-nav-text", children: "Next Page" }, void 0, false, {
+            fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/HappyMemoriesGallery.jsx",
+            lineNumber: 435,
+            columnNumber: 9
+          }, this),
+          /* @__PURE__ */ jsxDEV(ArrowRight, { size: 16, className: "corner-nav-icon" }, void 0, false, {
+            fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/HappyMemoriesGallery.jsx",
+            lineNumber: 436,
+            columnNumber: 9
+          }, this)
+        ]
+      },
+      void 0,
+      true,
+      {
+        fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/HappyMemoriesGallery.jsx",
+        lineNumber: 428,
+        columnNumber: 7
+      },
+      this
+    ),
+    /* @__PURE__ */ jsxDEV(GalleryMusicPlayer, { theme: "happy", config: BIRTHDAY_CONFIG.happyMusicPlayer }, void 0, false, {
+      fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/HappyMemoriesGallery.jsx",
+      lineNumber: 441,
+      columnNumber: 5
+    }, this)
+  ] }, void 0, true, {
+    fileName: "C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/HappyMemoriesGallery.jsx",
+    lineNumber: 240,
+    columnNumber: 5
+  }, this);
+}
+_s(HappyMemoriesGallery, "tlNxmWS2zNglt4iPgw3bjWJQvUE=");
+_c = HappyMemoriesGallery;
+var _c;
+$RefreshReg$(_c, "HappyMemoriesGallery");
+if (import.meta.hot && !inWebWorker) {
+  window.$RefreshReg$ = prevRefreshReg;
+  window.$RefreshSig$ = prevRefreshSig;
+}
+if (import.meta.hot && !inWebWorker) {
+  RefreshRuntime.__hmr_import(import.meta.url).then((currentExports) => {
+    RefreshRuntime.registerExportsForReactRefresh("C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/HappyMemoriesGallery.jsx", currentExports);
+    import.meta.hot.accept((nextExports) => {
+      if (!nextExports) return;
+      const invalidateMessage = RefreshRuntime.validateRefreshBoundaryAndEnqueueUpdate("C:/Users/devam/OneDrive/Desktop/Happpiest-Birthady-Miiooo/src/components/HappyMemoriesGallery.jsx", currentExports, nextExports);
+      if (invalidateMessage) import.meta.hot.invalidate(invalidateMessage);
+    });
+  });
+}
+
+//# sourceMappingURL=data:application/json;base64,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RDtBQUFBO0FBQUE7QUFBQTtBQUFBLFdBQTJFO0FBQUEsT0F6TTNFO0FBQUE7QUFBQTtBQUFBO0FBQUEsU0EwTUY7QUFFRjtBQUFDekUsR0FwWXVCSixzQkFBb0I7QUFBQSxLQUFwQkE7QUFBb0IsSUFBQThFO0FBQUEsYUFBQUEsSUFBQSIsIm5hbWVzIjpbIlJlYWN0IiwidXNlU3RhdGUiLCJ1c2VDYWxsYmFjayIsInVzZUVmZmVjdCIsInVzZVJlZiIsIkFycm93TGVmdCIsIkFycm93UmlnaHQiLCJDaGV2cm9uTGVmdCIsIkNoZXZyb25SaWdodCIsIlNwYXJrbGVzIiwiSEFQUFlfQVNTRVRTIiwiaGFwcHlBbGJ1bUNvdmVyIiwiZ2V0SGFwcHlQaG90b3MiLCJCSVJUSERBWV9DT05GSUciLCJHYWxsZXJ5TXVzaWNQbGF5ZXIiLCJHYWxsZXJ5VmlkZW9QbGF5ZXIiLCJTZWVUaGlzVmlldyIsIkhhcHB5TWVtb3JpZXNHYWxsZXJ5Iiwib25CYWNrIiwib25QcmV2aW91c1BhZ2UiLCJvbk5leHRQYWdlIiwiX3MiLCJ2aWV3Iiwic2V0VmlldyIsInBob3RvSW5kZXgiLCJzZXRQaG90b0luZGV4IiwiaXNUcmFuc2l0aW9uaW5nIiwic2V0SXNUcmFuc2l0aW9uaW5nIiwidHJhbnNpdGlvblBoYXNlIiwic2V0VHJhbnNpdGlvblBoYXNlIiwidHJhbnNpdGlvbkRpciIsInNldFRyYW5zaXRpb25EaXIiLCJwaG90b0ZhZGluZyIsInNldFBob3RvRmFkaW5nIiwiaW1hZ2VFcnJvcnMiLCJzZXRJbWFnZUVycm9ycyIsImlzRnVsbHNjcmVlbiIsInNldElzRnVsbHNjcmVlbiIsImRvY3VtZW50IiwiaXNEb2NGcyIsIkJvb2xlYW4iLCJmdWxsc2NyZWVuRWxlbWVudCIsIndlYmtpdEZ1bGxzY3JlZW5FbGVtZW50IiwibW96RnVsbFNjcmVlbkVsZW1lbnQiLCJtc0Z1bGxzY3JlZW5FbGVtZW50IiwiaXNEaXNwbGF5TW9kZUZzIiwid2luZG93IiwibWF0Y2hNZWRpYSIsIm1hdGNoZXMiLCJoYW5kbGVGdWxsc2NyZWVuQ2hhbmdlIiwiYWRkRXZlbnRMaXN0ZW5lciIsIm1xbCIsImFkZExpc3RlbmVyIiwicmVtb3ZlRXZlbnRMaXN0ZW5lciIsInJlbW92ZUxpc3RlbmVyIiwicGhvdG9zIiwiY3VycmVudFBob3RvIiwiZnJhbWVUaW1lclJlZiIsInBob3RvVGltZXJSZWYiLCJjdXJyZW50IiwiY2xlYXJUaW1lb3V0IiwiZm9yRWFjaCIsInAiLCJzcmMiLCJ0eXBlIiwiaW1nIiwiSW1hZ2UiLCJzd2l0Y2hGcmFtZVZpZXciLCJ0YXJnZXRWaWV3IiwidGFyZ2V0UGhvdG9JbmRleCIsImRpcmVjdGlvbiIsInNldFRpbWVvdXQiLCJzd2l0Y2hQaG90byIsIm5ld0luZGV4IiwiaGFuZGxlTmV4dCIsImxlbmd0aCIsImhhbmRsZVByZXYiLCJoYW5kbGVLZXlEb3duIiwiZSIsImtleSIsImhhbmRsZUltYWdlRXJyb3IiLCJpZCIsInByZXYiLCJpc05leHREaXNhYmxlZCIsImlzUHJldkRpc2FibGVkIiwiaGFwcHlHYWxsZXJ5IiwiYmFja2dyb3VuZCIsImNvdmVyVGl0bGUiLCJlZGl0aW9uIiwiY292ZXJNZXNzYWdlIiwiZnJhbWUiLCJhbHQiLCJzdWJ0aXRsZSIsIm1lc3NhZ2UiLCJoYXBweU11c2ljUGxheWVyIiwiX2MiXSwiaWdub3JlTGlzdCI6W10sInNvdXJjZXMiOlsiSGFwcHlNZW1vcmllc0dhbGxlcnkuanN4Il0sInNvdXJjZXNDb250ZW50IjpbImltcG9ydCBSZWFjdCwgeyB1c2VTdGF0ZSwgdXNlQ2FsbGJhY2ssIHVzZUVmZmVjdCwgdXNlUmVmIH0gZnJvbSAncmVhY3QnO1xuaW1wb3J0IHsgQXJyb3dMZWZ0LCBBcnJvd1JpZ2h0LCBDaGV2cm9uTGVmdCwgQ2hldnJvblJpZ2h0LCBTcGFya2xlcyB9IGZyb20gJ2x1Y2lkZS1yZWFjdCc7XG5pbXBvcnQgeyBIQVBQWV9BU1NFVFMsIGhhcHB5QWxidW1Db3ZlciB9IGZyb20gJy4uL2RhdGEvaGFwcHlHYWxsZXJ5RGF0YSc7XG5pbXBvcnQgeyBnZXRIYXBweVBob3RvcyB9IGZyb20gJy4uL2RhdGEvaGFwcHlQaG90b3MnO1xuaW1wb3J0IHsgQklSVEhEQVlfQ09ORklHIH0gZnJvbSAnLi4vY29uZmlnJztcbmltcG9ydCBHYWxsZXJ5TXVzaWNQbGF5ZXIgZnJvbSAnLi9HYWxsZXJ5TXVzaWNQbGF5ZXInO1xuaW1wb3J0IEdhbGxlcnlWaWRlb1BsYXllciBmcm9tICcuL0dhbGxlcnlWaWRlb1BsYXllcic7XG5pbXBvcnQgU2VlVGhpc1ZpZXcgZnJvbSAnLi9TZWVUaGlzVmlldyc7XG5cbi8qKlxuICogSGFwcHlNZW1vcmllc0dhbGxlcnkgQ29tcG9uZW50XG4gKiBcbiAqIEFjY3VyYXRlbHkgaW1wbGVtZW50cyB0aGUgcmVmZXJlbmNlIGRlc2lnbjpcbiAqIFNDUkVFTiAxIChMRUZUIFNJREUpOlxuICogLSBUb3AgQ2VudGVyOiBcIkhhcHB5IEdhbGxlcnlcIiB3aXRoIGRlbGljYXRlIGhvcml6b250YWwgbGluZXMgYW5kIGhlYXJ0IGFjY2VudHNcbiAqIC0gQ2VudGVyOiBBbGJ1bSBDb3ZlciBkaXNwbGF5ZWQgcHJvbWluZW50bHkgdXNpbmcgYGhhcHB5LWZyYW1lYCBPTkxZIG9uIHRoaXMgc2NyZWVuXG4gKiAtIFN1YnRpdGxlOiBcIkEgY29sbGVjdGlvbiBvZiBvdXIgaGFwcGllc3QgbW9tZW50cy4uLiDimaFcIiBkaXJlY3RseSBiZWxvdyB0aGUgYWxidW1cbiAqIC0gQm90dG9tOiBCYWNrIGFuZCBOZXh0IG5hdmlnYXRpb24gYnV0dG9uc1xuICogXG4gKiBTQ1JFRU4gMiAoUklHSFQgU0lERSk6XG4gKiAtIFRvcCBDZW50ZXI6IFwiSGFwcHkgR2FsbGVyeVwiIGhlYWRpbmcgd2l0aCBsaW5lcyBhbmQgaGVhcnQgYWNjZW50c1xuICogLSBDZW50ZXI6IExhcmdlLCBjZW50ZXJlZCB0cmFuc3BhcmVudCBmcm9zdGVkLWdsYXNzIGNhcmQgd2l0aCBjaGFtcGFnbmUtZ29sZCBib3JkZXIgYW5kIGdsb3dcbiAqICAgLSBQaG90byBDb3VudGVyOiBcIlggLyBZXCIgaW4gdGhlIHRvcC1yaWdodCBjb3JuZXIgb2YgdGhlIGdsYXNzIGNhcmRcbiAqICAgLSBQaG90b2dyYXBoOiBEaXNwbGF5ZWQgY2xlYW5seSBkaXJlY3RseSBpbnNpZGUgdGhlIGdsYXNzIGNhcmQgKE5PIGhhcHB5LWZyYW1lISlcbiAqICAgLSBNZXNzYWdlOiBQYWlyZWQgbWVzc2FnZSBjZW50ZXJlZCBkaXJlY3RseSBiZW5lYXRoIHRoZSBwaG90b2dyYXBoXG4gKiAtIE5hdmlnYXRpb246XG4gKiAgIC0gQ2lyY3VsYXIgc2lkZSBhcnJvdyBidXR0b25zIChQcmV2aW91cyBvbiBsZWZ0LCBOZXh0IG9uIHJpZ2h0KVxuICogICAtIEJhY2sgYW5kIE5leHQgYnV0dG9ucyBiZWxvdyB0aGUgZ2xhc3MgY2FyZFxuICogXG4gKiBOQVZJR0FUSU9OIExPR0lDICYgUEFHRS1GTElQOlxuICogLSBDb3ZlciBOZXh0IC0+IFBob3RvIDEgKDNEIHBhZ2UtZmxpcCBhbmltYXRpb24pXG4gKiAtIFBob3RvIE5leHQgLT4gYWR2YW5jZXMgUGhvdG8gMSAtPiAyIC0+IDMgLT4gNCAtPiA1Li4uIChzbW9vdGggY3Jvc3NmYWRlKVxuICogLSBQaG90byBQcmV2IC8gQmFjayAtPiByZXR1cm5zIHRvIHByZXZpb3VzIHBob3RvOyBvbiBQaG90byAxLCByZXR1cm5zIHRvIENvdmVyIChyZXZlcnNlIDNEIHBhZ2UtZmxpcClcbiAqIC0gQ292ZXIgQmFjayAtPiByZXR1cm5zIHRvIEJpcnRoZGF5IE1haW4gUGFnZVxuICogLSBTdHJpY3RseSBOTyBzYWQgZWZmZWN0cyAobm8gdGh1bmRlciwgbGlnaHRuaW5nLCBzdG9ybSwgcmFpbiwgZm9nLCBnaG9zdHMpXG4gKi9cbmV4cG9ydCBkZWZhdWx0IGZ1bmN0aW9uIEhhcHB5TWVtb3JpZXNHYWxsZXJ5KHsgb25CYWNrLCBvblByZXZpb3VzUGFnZSwgb25OZXh0UGFnZSB9KSB7XG4gIC8vICdjb3ZlcicgfCAnaW1nJ1xuICBjb25zdCBbdmlldywgc2V0Vmlld10gPSB1c2VTdGF0ZSgnY292ZXInKTtcbiAgY29uc3QgW3Bob3RvSW5kZXgsIHNldFBob3RvSW5kZXhdID0gdXNlU3RhdGUoMCk7XG4gIGNvbnN0IFtpc1RyYW5zaXRpb25pbmcsIHNldElzVHJhbnNpdGlvbmluZ10gPSB1c2VTdGF0ZShmYWxzZSk7XG4gIGNvbnN0IFt0cmFuc2l0aW9uUGhhc2UsIHNldFRyYW5zaXRpb25QaGFzZV0gPSB1c2VTdGF0ZSgnaWRsZScpOyAvLyAnaWRsZScgfCAnb3V0JyB8ICdpbidcbiAgY29uc3QgW3RyYW5zaXRpb25EaXIsIHNldFRyYW5zaXRpb25EaXJdID0gdXNlU3RhdGUoJ2ZvcndhcmQnKTsgLy8gJ2ZvcndhcmQnIHwgJ2JhY2t3YXJkJ1xuICBjb25zdCBbcGhvdG9GYWRpbmcsIHNldFBob3RvRmFkaW5nXSA9IHVzZVN0YXRlKGZhbHNlKTtcbiAgY29uc3QgW2ltYWdlRXJyb3JzLCBzZXRJbWFnZUVycm9yc10gPSB1c2VTdGF0ZSh7fSk7XG5cbiAgLy8gLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tXG4gIC8vIEZVTExTQ1JFRU4gREVURUNUSU9OIChTdXBwb3J0cyBicm93c2VyIEYxMSBhbmQgRnVsbHNjcmVlbiBBUEkpXG4gIC8vIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLVxuICBjb25zdCBbaXNGdWxsc2NyZWVuLCBzZXRJc0Z1bGxzY3JlZW5dID0gdXNlU3RhdGUoKCkgPT4ge1xuICAgIGlmICh0eXBlb2YgZG9jdW1lbnQgPT09ICd1bmRlZmluZWQnKSByZXR1cm4gZmFsc2U7XG4gICAgY29uc3QgaXNEb2NGcyA9IEJvb2xlYW4oXG4gICAgICBkb2N1bWVudC5mdWxsc2NyZWVuRWxlbWVudCB8fFxuICAgICAgZG9jdW1lbnQud2Via2l0RnVsbHNjcmVlbkVsZW1lbnQgfHxcbiAgICAgIGRvY3VtZW50Lm1vekZ1bGxTY3JlZW5FbGVtZW50IHx8XG4gICAgICBkb2N1bWVudC5tc0Z1bGxzY3JlZW5FbGVtZW50XG4gICAgKTtcbiAgICBjb25zdCBpc0Rpc3BsYXlNb2RlRnMgPSBCb29sZWFuKFxuICAgICAgdHlwZW9mIHdpbmRvdyAhPT0gJ3VuZGVmaW5lZCcgJiZcbiAgICAgIHdpbmRvdy5tYXRjaE1lZGlhICYmXG4gICAgICB3aW5kb3cubWF0Y2hNZWRpYSgnKGRpc3BsYXktbW9kZTogZnVsbHNjcmVlbiknKS5tYXRjaGVzXG4gICAgKTtcbiAgICByZXR1cm4gaXNEb2NGcyB8fCBpc0Rpc3BsYXlNb2RlRnM7XG4gIH0pO1xuXG4gIHVzZUVmZmVjdCgoKSA9PiB7XG4gICAgY29uc3QgaGFuZGxlRnVsbHNjcmVlbkNoYW5nZSA9ICgpID0+IHtcbiAgICAgIGNvbnN0IGlzRG9jRnMgPSBCb29sZWFuKFxuICAgICAgICBkb2N1bWVudC5mdWxsc2NyZWVuRWxlbWVudCB8fFxuICAgICAgICBkb2N1bWVudC53ZWJraXRGdWxsc2NyZWVuRWxlbWVudCB8fFxuICAgICAgICBkb2N1bWVudC5tb3pGdWxsU2NyZWVuRWxlbWVudCB8fFxuICAgICAgICBkb2N1bWVudC5tc0Z1bGxzY3JlZW5FbGVtZW50XG4gICAgICApO1xuICAgICAgY29uc3QgaXNEaXNwbGF5TW9kZUZzID0gQm9vbGVhbihcbiAgICAgICAgdHlwZW9mIHdpbmRvdyAhPT0gJ3VuZGVmaW5lZCcgJiZcbiAgICAgICAgd2luZG93Lm1hdGNoTWVkaWEgJiZcbiAgICAgICAgd2luZG93Lm1hdGNoTWVkaWEoJyhkaXNwbGF5LW1vZGU6IGZ1bGxzY3JlZW4pJykubWF0Y2hlc1xuICAgICAgKTtcbiAgICAgIHNldElzRnVsbHNjcmVlbihpc0RvY0ZzIHx8IGlzRGlzcGxheU1vZGVGcyk7XG4gICAgfTtcblxuICAgIGRvY3VtZW50LmFkZEV2ZW50TGlzdGVuZXIoJ2Z1bGxzY3JlZW5jaGFuZ2UnLCBoYW5kbGVGdWxsc2NyZWVuQ2hhbmdlKTtcbiAgICBkb2N1bWVudC5hZGRFdmVudExpc3RlbmVyKCd3ZWJraXRmdWxsc2NyZWVuY2hhbmdlJywgaGFuZGxlRnVsbHNjcmVlbkNoYW5nZSk7XG4gICAgZG9jdW1lbnQuYWRkRXZlbnRMaXN0ZW5lcignbW96ZnVsbHNjcmVlbmNoYW5nZScsIGhhbmRsZUZ1bGxzY3JlZW5DaGFuZ2UpO1xuICAgIGRvY3VtZW50LmFkZEV2ZW50TGlzdGVuZXIoJ01TRnVsbHNjcmVlbkNoYW5nZScsIGhhbmRsZUZ1bGxzY3JlZW5DaGFuZ2UpO1xuICAgIHdpbmRvdy5hZGRFdmVudExpc3RlbmVyKCdyZXNpemUnLCBoYW5kbGVGdWxsc2NyZWVuQ2hhbmdlKTtcblxuICAgIGxldCBtcWw7XG4gICAgaWYgKHR5cGVvZiB3aW5kb3cgIT09ICd1bmRlZmluZWQnICYmIHdpbmRvdy5tYXRjaE1lZGlhKSB7XG4gICAgICBtcWwgPSB3aW5kb3cubWF0Y2hNZWRpYSgnKGRpc3BsYXktbW9kZTogZnVsbHNjcmVlbiknKTtcbiAgICAgIGlmIChtcWwuYWRkRXZlbnRMaXN0ZW5lcikge1xuICAgICAgICBtcWwuYWRkRXZlbnRMaXN0ZW5lcignY2hhbmdlJywgaGFuZGxlRnVsbHNjcmVlbkNoYW5nZSk7XG4gICAgICB9IGVsc2UgaWYgKG1xbC5hZGRMaXN0ZW5lcikge1xuICAgICAgICBtcWwuYWRkTGlzdGVuZXIoaGFuZGxlRnVsbHNjcmVlbkNoYW5nZSk7XG4gICAgICB9XG4gICAgfVxuXG4gICAgcmV0dXJuICgpID0+IHtcbiAgICAgIGRvY3VtZW50LnJlbW92ZUV2ZW50TGlzdGVuZXIoJ2Z1bGxzY3JlZW5jaGFuZ2UnLCBoYW5kbGVGdWxsc2NyZWVuQ2hhbmdlKTtcbiAgICAgIGRvY3VtZW50LnJlbW92ZUV2ZW50TGlzdGVuZXIoJ3dlYmtpdGZ1bGxzY3JlZW5jaGFuZ2UnLCBoYW5kbGVGdWxsc2NyZWVuQ2hhbmdlKTtcbiAgICAgIGRvY3VtZW50LnJlbW92ZUV2ZW50TGlzdGVuZXIoJ21vemZ1bGxzY3JlZW5jaGFuZ2UnLCBoYW5kbGVGdWxsc2NyZWVuQ2hhbmdlKTtcbiAgICAgIGRvY3VtZW50LnJlbW92ZUV2ZW50TGlzdGVuZXIoJ01TRnVsbHNjcmVlbkNoYW5nZScsIGhhbmRsZUZ1bGxzY3JlZW5DaGFuZ2UpO1xuICAgICAgd2luZG93LnJlbW92ZUV2ZW50TGlzdGVuZXIoJ3Jlc2l6ZScsIGhhbmRsZUZ1bGxzY3JlZW5DaGFuZ2UpO1xuICAgICAgaWYgKG1xbCkge1xuICAgICAgICBpZiAobXFsLnJlbW92ZUV2ZW50TGlzdGVuZXIpIHtcbiAgICAgICAgICBtcWwucmVtb3ZlRXZlbnRMaXN0ZW5lcignY2hhbmdlJywgaGFuZGxlRnVsbHNjcmVlbkNoYW5nZSk7XG4gICAgICAgIH0gZWxzZSBpZiAobXFsLnJlbW92ZUxpc3RlbmVyKSB7XG4gICAgICAgICAgbXFsLnJlbW92ZUxpc3RlbmVyKGhhbmRsZUZ1bGxzY3JlZW5DaGFuZ2UpO1xuICAgICAgICB9XG4gICAgICB9XG4gICAgfTtcbiAgfSwgW10pO1xuXG4gIGNvbnN0IHBob3RvcyA9IGdldEhhcHB5UGhvdG9zKCk7XG4gIGNvbnN0IGN1cnJlbnRQaG90byA9IHBob3Rvc1twaG90b0luZGV4XSB8fCBwaG90b3NbMF07XG5cbiAgY29uc3QgZnJhbWVUaW1lclJlZiA9IHVzZVJlZihudWxsKTtcbiAgY29uc3QgcGhvdG9UaW1lclJlZiA9IHVzZVJlZihudWxsKTtcblxuICAvLyBDbGVhbnVwIHRpbWVycyBvbiB1bm1vdW50XG4gIHVzZUVmZmVjdCgoKSA9PiB7XG4gICAgcmV0dXJuICgpID0+IHtcbiAgICAgIGlmIChmcmFtZVRpbWVyUmVmLmN1cnJlbnQpIGNsZWFyVGltZW91dChmcmFtZVRpbWVyUmVmLmN1cnJlbnQpO1xuICAgICAgaWYgKHBob3RvVGltZXJSZWYuY3VycmVudCkgY2xlYXJUaW1lb3V0KHBob3RvVGltZXJSZWYuY3VycmVudCk7XG4gICAgfTtcbiAgfSwgW10pO1xuXG4gIC8vIFByZWxvYWQgcGhvdG8gYXNzZXRzXG4gIHVzZUVmZmVjdCgoKSA9PiB7XG4gICAgcGhvdG9zLmZvckVhY2goKHApID0+IHtcbiAgICAgIGlmIChwLnNyYyAmJiBwLnR5cGUgIT09ICd2aWRlbycpIHtcbiAgICAgICAgY29uc3QgaW1nID0gbmV3IEltYWdlKCk7XG4gICAgICAgIGltZy5zcmMgPSBwLnNyYztcbiAgICAgIH1cbiAgICB9KTtcbiAgfSwgW3Bob3Rvc10pO1xuXG4gIC8vIFNtb290aCBhbGJ1bSBwYWdlLXR1cm4gdHJhbnNpdGlvbiBiZXR3ZWVuIGFsYnVtIGNvdmVyIGFuZCBwaG90b3NcbiAgY29uc3Qgc3dpdGNoRnJhbWVWaWV3ID0gdXNlQ2FsbGJhY2soKHRhcmdldFZpZXcsIHRhcmdldFBob3RvSW5kZXggPSAwLCBkaXJlY3Rpb24gPSAnZm9yd2FyZCcpID0+IHtcbiAgICBpZiAoaXNUcmFuc2l0aW9uaW5nKSByZXR1cm47XG4gICAgc2V0SXNUcmFuc2l0aW9uaW5nKHRydWUpO1xuICAgIHNldFRyYW5zaXRpb25EaXIoZGlyZWN0aW9uKTtcbiAgICBzZXRUcmFuc2l0aW9uUGhhc2UoJ291dCcpO1xuXG4gICAgZnJhbWVUaW1lclJlZi5jdXJyZW50ID0gc2V0VGltZW91dCgoKSA9PiB7XG4gICAgICBzZXRWaWV3KHRhcmdldFZpZXcpO1xuICAgICAgc2V0UGhvdG9JbmRleCh0YXJnZXRQaG90b0luZGV4KTtcbiAgICAgIHNldFRyYW5zaXRpb25QaGFzZSgnaW4nKTtcblxuICAgICAgZnJhbWVUaW1lclJlZi5jdXJyZW50ID0gc2V0VGltZW91dCgoKSA9PiB7XG4gICAgICAgIHNldFRyYW5zaXRpb25QaGFzZSgnaWRsZScpO1xuICAgICAgICBzZXRJc1RyYW5zaXRpb25pbmcoZmFsc2UpO1xuICAgICAgfSwgMzAwKTtcbiAgICB9LCAyODApO1xuICB9LCBbaXNUcmFuc2l0aW9uaW5nXSk7XG5cbiAgLy8gU21vb3RoIHBob3RvIGZhZGUgdHJhbnNpdGlvbiBiZXR3ZWVuIGluZGl2aWR1YWwgcGhvdG9zICgyODBtcyB0b3RhbClcbiAgY29uc3Qgc3dpdGNoUGhvdG8gPSB1c2VDYWxsYmFjaygobmV3SW5kZXgpID0+IHtcbiAgICBpZiAocGhvdG9GYWRpbmcgfHwgaXNUcmFuc2l0aW9uaW5nKSByZXR1cm47XG4gICAgc2V0UGhvdG9GYWRpbmcodHJ1ZSk7XG5cbiAgICBwaG90b1RpbWVyUmVmLmN1cnJlbnQgPSBzZXRUaW1lb3V0KCgpID0+IHtcbiAgICAgIHNldFBob3RvSW5kZXgobmV3SW5kZXgpO1xuICAgICAgcGhvdG9UaW1lclJlZi5jdXJyZW50ID0gc2V0VGltZW91dCgoKSA9PiB7XG4gICAgICAgIHNldFBob3RvRmFkaW5nKGZhbHNlKTtcbiAgICAgIH0sIDE0MCk7XG4gICAgfSwgMTQwKTtcbiAgfSwgW3Bob3RvRmFkaW5nLCBpc1RyYW5zaXRpb25pbmddKTtcblxuICAvLyBOZXh0IG5hdmlnYXRpb24gaGFuZGxlclxuICBjb25zdCBoYW5kbGVOZXh0ID0gKCkgPT4ge1xuICAgIGlmIChpc1RyYW5zaXRpb25pbmcgfHwgcGhvdG9GYWRpbmcpIHJldHVybjtcblxuICAgIGlmICh2aWV3ID09PSAnY292ZXInKSB7XG4gICAgICAvLyBTdGVwIDE6IE9wZW4gYWxidW0gZnJvbSBjb3ZlciB0byBQaG90byAxIHdpdGggM0QgcGFnZSBmbGlwXG4gICAgICBzd2l0Y2hGcmFtZVZpZXcoJ2ltZycsIDAsICdmb3J3YXJkJyk7XG4gICAgfSBlbHNlIGlmICh2aWV3ID09PSAnaW1nJykge1xuICAgICAgLy8gUGhvdG8gMSAtPiAyIC0+IDMgLT4gNCAtPiA1Li4uXG4gICAgICBpZiAocGhvdG9JbmRleCA8IHBob3Rvcy5sZW5ndGggLSAxKSB7XG4gICAgICAgIHN3aXRjaFBob3RvKHBob3RvSW5kZXggKyAxKTtcbiAgICAgIH1cbiAgICB9XG4gIH07XG5cbiAgLy8gUHJldmlvdXMgLyBCYWNrIG5hdmlnYXRpb24gaGFuZGxlclxuICBjb25zdCBoYW5kbGVQcmV2ID0gKCkgPT4ge1xuICAgIGlmIChpc1RyYW5zaXRpb25pbmcgfHwgcGhvdG9GYWRpbmcpIHJldHVybjtcblxuICAgIGlmICh2aWV3ID09PSAnY292ZXInKSB7XG4gICAgICAvLyBPbiBjb3ZlciwgQmFjayByZXR1cm5zIHRvIE1haW4gQmlydGhkYXkgUGFnZVxuICAgICAgb25CYWNrPy4oKTtcbiAgICB9IGVsc2UgaWYgKHZpZXcgPT09ICdpbWcnKSB7XG4gICAgICBpZiAocGhvdG9JbmRleCA+IDApIHtcbiAgICAgICAgLy8gUGhvdG8gNSAtPiA0IC0+IDMgLT4gMiAtPiAxXG4gICAgICAgIHN3aXRjaFBob3RvKHBob3RvSW5kZXggLSAxKTtcbiAgICAgIH0gZWxzZSB7XG4gICAgICAgIC8vIE9uIFBob3RvIDE6IFJldHVybiB0byBhbGJ1bSBjb3ZlciB3aXRoIHJldmVyc2UgM0QgcGFnZSBmbGlwXG4gICAgICAgIHN3aXRjaEZyYW1lVmlldygnY292ZXInLCAwLCAnYmFja3dhcmQnKTtcbiAgICAgIH1cbiAgICB9XG4gIH07XG5cbiAgLy8gS2V5Ym9hcmQgbmF2aWdhdGlvblxuICB1c2VFZmZlY3QoKCkgPT4ge1xuICAgIGNvbnN0IGhhbmRsZUtleURvd24gPSAoZSkgPT4ge1xuICAgICAgaWYgKGUua2V5ID09PSAnQXJyb3dSaWdodCcpIGhhbmRsZU5leHQoKTtcbiAgICAgIGVsc2UgaWYgKGUua2V5ID09PSAnQXJyb3dMZWZ0JykgaGFuZGxlUHJldigpO1xuICAgIH07XG4gICAgd2luZG93LmFkZEV2ZW50TGlzdGVuZXIoJ2tleWRvd24nLCBoYW5kbGVLZXlEb3duKTtcbiAgICByZXR1cm4gKCkgPT4gd2luZG93LnJlbW92ZUV2ZW50TGlzdGVuZXIoJ2tleWRvd24nLCBoYW5kbGVLZXlEb3duKTtcbiAgfSwgW3ZpZXcsIHBob3RvSW5kZXgsIGlzVHJhbnNpdGlvbmluZywgcGhvdG9GYWRpbmcsIHBob3Rvcy5sZW5ndGhdKTtcblxuICBjb25zdCBoYW5kbGVJbWFnZUVycm9yID0gKGlkKSA9PiB7XG4gICAgc2V0SW1hZ2VFcnJvcnMoKHByZXYpID0+ICh7IC4uLnByZXYsIFtpZF06IHRydWUgfSkpO1xuICB9O1xuXG4gIGNvbnN0IGlzTmV4dERpc2FibGVkID0gKHZpZXcgPT09ICdpbWcnICYmIHBob3RvSW5kZXggPT09IHBob3Rvcy5sZW5ndGggLSAxKSB8fCBpc1RyYW5zaXRpb25pbmcgfHwgcGhvdG9GYWRpbmc7XG4gIGNvbnN0IGlzUHJldkRpc2FibGVkID0gaXNUcmFuc2l0aW9uaW5nIHx8IHBob3RvRmFkaW5nO1xuXG4gIHJldHVybiAoXG4gICAgPGRpdiBjbGFzc05hbWU9e2BoYXBweS1nYWxsZXJ5LXJvb3QgJHtpc0Z1bGxzY3JlZW4gPyAnaXMtZnVsbHNjcmVlbicgOiAnJ31gfSByb2xlPVwicmVnaW9uXCIgYXJpYS1sYWJlbD1cIkhhcHB5IEdhbGxlcnlcIj5cbiAgICAgIHsvKiBGdWxsLVBhZ2UgU3Vuc2V0L1R3aWxpZ2h0IEJhY2tncm91bmQgKGhhcHB5LWdhbGxlcnkpICovfVxuICAgICAgPGRpdiBjbGFzc05hbWU9XCJoYXBweS1nYWxsZXJ5LWJhY2tncm91bmQtd3JhcHBlclwiIGFyaWEtaGlkZGVuPVwidHJ1ZVwiPlxuICAgICAgICA8aW1nXG4gICAgICAgICAgc3JjPXtCSVJUSERBWV9DT05GSUcuaGFwcHlHYWxsZXJ5Py5iYWNrZ3JvdW5kIHx8IEhBUFBZX0FTU0VUUy5iYWNrZ3JvdW5kfVxuICAgICAgICAgIGFsdD1cIkhhcHB5IGdhbGxlcnkgc3Vuc2V0IGJhY2tncm91bmRcIlxuICAgICAgICAgIGNsYXNzTmFtZT1cImhhcHB5LWdhbGxlcnktYmFja2dyb3VuZC1pbWdcIlxuICAgICAgICAvPlxuICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImhhcHB5LWdhbGxlcnktd2FybS1nbG93XCIgLz5cbiAgICAgIDwvZGl2PlxuXG4gICAgICB7LyogVXBwZXItTGVmdDogUHJldmlvdXMgUGFnZSBCdXR0b24gKFJldHVybnMgdG8gU2FkIEdhbGxlcnkgd2l0aCBwcmVzZXJ2ZWQgc3RhdGUpICovfVxuICAgICAgeyhvblByZXZpb3VzUGFnZSB8fCBvbkJhY2spICYmIChcbiAgICAgICAgPGJ1dHRvblxuICAgICAgICAgIHR5cGU9XCJidXR0b25cIlxuICAgICAgICAgIG9uQ2xpY2s9e29uUHJldmlvdXNQYWdlIHx8IG9uQmFja31cbiAgICAgICAgICBjbGFzc05hbWU9XCJjb3JuZXItbmF2LWJ0biBjb3JuZXItbmF2LXByZXZcIlxuICAgICAgICAgIGFyaWEtbGFiZWw9XCJQcmV2aW91cyBQYWdlOiBSZXR1cm4gdG8gU2FkIEdhbGxlcnlcIlxuICAgICAgICAgIHRpdGxlPVwiUmV0dXJuIHRvIFNhZCBHYWxsZXJ5XCJcbiAgICAgICAgPlxuICAgICAgICAgIDxBcnJvd0xlZnQgc2l6ZT17MTZ9IGNsYXNzTmFtZT1cImNvcm5lci1uYXYtaWNvblwiIC8+XG4gICAgICAgICAgPHNwYW4gY2xhc3NOYW1lPVwiY29ybmVyLW5hdi10ZXh0XCI+UHJldmlvdXMgUGFnZTwvc3Bhbj5cbiAgICAgICAgPC9idXR0b24+XG4gICAgICApfVxuXG4gICAgICB7LyogU3luY2hyb25pemVkIENvbnRlbnQgV3JhcHBlcjogU2hpZnRzIGVudGlyZSBnYWxsZXJ5IGxheW91dCAoaGVhZGluZywgY2FyZCwgcGhvdG8sIGNvdW50ZXIsIG1lc3NhZ2UsIGJ1dHRvbnMpIGFzIG9uZSBjb2hlc2l2ZSB1bml0ICovfVxuICAgICAgPGRpdiBjbGFzc05hbWU9XCJoYXBweS1nYWxsZXJ5LWNvbnRlbnQtd3JhcHBlclwiPlxuICAgICAgICB7LyogVG9wIEhlYWRlciBGbG91cmlzaDogXCJIYXBweSBHYWxsZXJ5XCIgd2l0aCBkZWxpY2F0ZSBsaW5lcyAmIGhlYXJ0IGFjY2VudHMgKi99XG4gICAgICAgIDxoZWFkZXIgY2xhc3NOYW1lPVwiaGFwcHktZ2FsbGVyeS10b3AtaGVhZGVyXCI+XG4gICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJoYXBweS1oZWFkZXItZmxvdXJpc2hcIj5cbiAgICAgICAgICAgIDxzcGFuIGNsYXNzTmFtZT1cImZsb3VyaXNoLWxpbmUgZmxvdXJpc2gtbGluZS1sZWZ0XCIgLz5cbiAgICAgICAgICAgIDxzcGFuIGNsYXNzTmFtZT1cImZsb3VyaXNoLWhlYXJ0XCI+4pmhPC9zcGFuPlxuICAgICAgICAgICAgPGgxIGNsYXNzTmFtZT1cImhhcHB5LWdhbGxlcnktaGVhZGluZ1wiPkhhcHB5IEdhbGxlcnk8L2gxPlxuICAgICAgICAgICAgPHNwYW4gY2xhc3NOYW1lPVwiZmxvdXJpc2gtaGVhcnRcIj7imaE8L3NwYW4+XG4gICAgICAgICAgICA8c3BhbiBjbGFzc05hbWU9XCJmbG91cmlzaC1saW5lIGZsb3VyaXNoLWxpbmUtcmlnaHRcIiAvPlxuICAgICAgICAgIDwvZGl2PlxuICAgICAgICA8L2hlYWRlcj5cblxuICAgICAgICB7LyogTWFpbiBJbnRlcmFjdGl2ZSBTdGFnZSB3aXRoIDNEIFBhZ2UtRmxpcCBBcmNoaXRlY3R1cmUgKi99XG4gICAgICAgIDxtYWluIGNsYXNzTmFtZT1cImhhcHB5LWdhbGxlcnktbWFpbi1zdGFnZVwiPlxuICAgICAgICA8ZGl2XG4gICAgICAgICAgY2xhc3NOYW1lPXtgaGFwcHktc3RhZ2UtcGVyc3BlY3RpdmUtd3JhcHBlciBpcy0ke3ZpZXd9LXZpZXcgcGhhc2UtJHt0cmFuc2l0aW9uUGhhc2V9IHR1cm4tJHt0cmFuc2l0aW9uRGlyfWB9XG4gICAgICAgICAgYXJpYS1saXZlPVwicG9saXRlXCJcbiAgICAgICAgPlxuICAgICAgICAgIHt2aWV3ID09PSAnY292ZXInID8gKFxuICAgICAgICAgICAgLyogPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT1cbiAgICAgICAgICAgICAgIFNDUkVFTiAxOiBBTEJVTSBDT1ZFUiAoTEVGVCBTSURFIE9GIFJFRkVSRU5DRSlcbiAgICAgICAgICAgICAgID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09ICovXG4gICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImhhcHB5LWNvdmVyLWxheW91dFwiPlxuICAgICAgICAgICAgICB7LyogQ2VudHJhbCBQaHlzaWNhbCBBbGJ1bSBDb3ZlciB1c2luZyBoYXBweS1mcmFtZSBPTkxZICovfVxuICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImhhcHB5LWNvdmVyLWZyYW1lLWJveFwiPlxuICAgICAgICAgICAgICAgIHsvKiBEZWNvcmF0aXZlIENvdmVyIENvbnRlbnQgTGF5ZXIgcGxhY2VkIGluc2lkZSBvcGVuaW5nIGJlaGluZCBmcmFtZSAqL31cbiAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImhhcHB5LWNvdmVyLWNhcmQtY29udGVudFwiPlxuICAgICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJoYXBweS1jb3Zlci1zcGFya2xlLXBpbGxcIj5cbiAgICAgICAgICAgICAgICAgICAgPFNwYXJrbGVzIHNpemU9ezEyfSBjbGFzc05hbWU9XCJ0ZXh0LWFtYmVyLTMwMFwiIC8+XG4gICAgICAgICAgICAgICAgICAgIDxzcGFuPk1FTU9SSUVTIE9GIEpPWTwvc3Bhbj5cbiAgICAgICAgICAgICAgICAgICAgPFNwYXJrbGVzIHNpemU9ezEyfSBjbGFzc05hbWU9XCJ0ZXh0LWFtYmVyLTMwMFwiIC8+XG4gICAgICAgICAgICAgICAgICA8L2Rpdj5cbiAgICAgICAgICAgICAgICAgIDxoMiBjbGFzc05hbWU9XCJoYXBweS1jb3Zlci1jYXJkLXRpdGxlXCI+e0JJUlRIREFZX0NPTkZJRy5oYXBweUdhbGxlcnk/LmNvdmVyVGl0bGUgfHwgaGFwcHlBbGJ1bUNvdmVyLmNvdmVyVGl0bGV9PC9oMj5cbiAgICAgICAgICAgICAgICAgIDxwIGNsYXNzTmFtZT1cImhhcHB5LWNvdmVyLWNhcmQtZWRpdGlvblwiPntCSVJUSERBWV9DT05GSUcuaGFwcHlHYWxsZXJ5Py5lZGl0aW9uIHx8IGhhcHB5QWxidW1Db3Zlci5lZGl0aW9ufTwvcD5cbiAgICAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwiaGFwcHktY292ZXItY2FyZC1kaXZpZGVyXCIgLz5cbiAgICAgICAgICAgICAgICAgIDxwIGNsYXNzTmFtZT1cImhhcHB5LWNvdmVyLWNhcmQtbXNnXCI+e0JJUlRIREFZX0NPTkZJRy5oYXBweUdhbGxlcnk/LmNvdmVyTWVzc2FnZSB8fCBoYXBweUFsYnVtQ292ZXIuY292ZXJNZXNzYWdlfTwvcD5cbiAgICAgICAgICAgICAgICA8L2Rpdj5cblxuICAgICAgICAgICAgICAgIHsvKiBEZWNvcmF0aXZlIEFsYnVtIEZyYW1lIChoYXBweS1mcmFtZSkgTGF5ZXJlZCBBQk9WRSBjb3ZlciAqL31cbiAgICAgICAgICAgICAgICA8aW1nXG4gICAgICAgICAgICAgICAgICBzcmM9e0JJUlRIREFZX0NPTkZJRy5oYXBweUdhbGxlcnk/LmZyYW1lIHx8IEhBUFBZX0FTU0VUUy5mcmFtZX1cbiAgICAgICAgICAgICAgICAgIGFsdD17aGFwcHlBbGJ1bUNvdmVyLmFsdH1cbiAgICAgICAgICAgICAgICAgIGNsYXNzTmFtZT1cImhhcHB5LWNvdmVyLWFydC1mcmFtZVwiXG4gICAgICAgICAgICAgICAgICBsb2FkaW5nPVwiZWFnZXJcIlxuICAgICAgICAgICAgICAgIC8+XG5cbiAgICAgICAgICAgICAgICB7LyogU3VidGxlIHBhcmNobWVudCBsYWJlbCB0ZXh0IGF0IGJvdHRvbSBvZiBmcmFtZSAqL31cbiAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImhhcHB5LWNvdmVyLWFydC1sYWJlbFwiPlxuICAgICAgICAgICAgICAgICAgPHNwYW4+T3VyIFRyZWFzdXJlZCBTdG9yeSDimaE8L3NwYW4+XG4gICAgICAgICAgICAgICAgPC9kaXY+XG4gICAgICAgICAgICAgIDwvZGl2PlxuXG4gICAgICAgICAgICAgIHsvKiBTdWJ0aXRsZSBkaXJlY3RseSBiZWxvdyB0aGUgYWxidW0gY292ZXIgKi99XG4gICAgICAgICAgICAgIDxwIGNsYXNzTmFtZT1cImhhcHB5LWNvdmVyLXN1YnRpdGxlLXRleHRcIj5cbiAgICAgICAgICAgICAgICB7QklSVEhEQVlfQ09ORklHLmhhcHB5R2FsbGVyeT8uc3VidGl0bGUgfHwgaGFwcHlBbGJ1bUNvdmVyLnN1YnRpdGxlfVxuICAgICAgICAgICAgICA8L3A+XG5cbiAgICAgICAgICAgICAgey8qIEJvdHRvbSBOYXZpZ2F0aW9uIEJ1dHRvbnMgKEJhY2sgJiBOZXh0KSAqL31cbiAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJoYXBweS1jb3Zlci1ib3R0b20tbmF2XCI+XG4gICAgICAgICAgICAgICAgPGJ1dHRvblxuICAgICAgICAgICAgICAgICAgdHlwZT1cImJ1dHRvblwiXG4gICAgICAgICAgICAgICAgICBvbkNsaWNrPXtvblByZXZpb3VzUGFnZSB8fCBvbkJhY2t9XG4gICAgICAgICAgICAgICAgICBjbGFzc05hbWU9XCJoYXBweS1ib3R0b20tcGlsbC1idG4gYnRuLWJhY2tcIlxuICAgICAgICAgICAgICAgICAgYXJpYS1sYWJlbD1cIlByZXZpb3VzIFBhZ2U6IFJldHVybiB0byBTYWQgR2FsbGVyeVwiXG4gICAgICAgICAgICAgICAgPlxuICAgICAgICAgICAgICAgICAgPEFycm93TGVmdCBzaXplPXsxNn0gLz5cbiAgICAgICAgICAgICAgICAgIDxzcGFuPlByZXZpb3VzIFBhZ2U8L3NwYW4+XG4gICAgICAgICAgICAgICAgPC9idXR0b24+XG5cbiAgICAgICAgICAgICAgICA8YnV0dG9uXG4gICAgICAgICAgICAgICAgICB0eXBlPVwiYnV0dG9uXCJcbiAgICAgICAgICAgICAgICAgIG9uQ2xpY2s9e2hhbmRsZU5leHR9XG4gICAgICAgICAgICAgICAgICBjbGFzc05hbWU9XCJoYXBweS1ib3R0b20tcGlsbC1idG4gYnRuLW5leHRcIlxuICAgICAgICAgICAgICAgICAgYXJpYS1sYWJlbD1cIk9wZW4gSGFwcHkgTWVtb3JpZXMgQWxidW1cIlxuICAgICAgICAgICAgICAgID5cbiAgICAgICAgICAgICAgICAgIDxzcGFuPk5leHQ8L3NwYW4+XG4gICAgICAgICAgICAgICAgICA8Q2hldnJvblJpZ2h0IHNpemU9ezE2fSAvPlxuICAgICAgICAgICAgICAgIDwvYnV0dG9uPlxuICAgICAgICAgICAgICA8L2Rpdj5cbiAgICAgICAgICAgIDwvZGl2PlxuICAgICAgICAgICkgOiAoXG4gICAgICAgICAgICAvKiA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PVxuICAgICAgICAgICAgICAgU0NSRUVOIDI6IElORElWSURVQUwgUEhPVE8gVklFVyAoUklHSFQgU0lERSBPRiBSRUZFUkVOQ0UpXG4gICAgICAgICAgICAgICA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PSAqL1xuICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJoYXBweS1waG90by12aWV3LWxheW91dFwiPlxuICAgICAgICAgICAgICB7LyogTGFyZ2UgVHJhbnNwYXJlbnQgRnJvc3RlZC1HbGFzcyBDYXJkIChOTyBoYXBweS1mcmFtZSAmIE5PIHNpZGUgYnV0dG9ucyEpICovfVxuICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImhhcHB5LWluZGl2aWR1YWwtZ2xhc3MtY2FyZFwiPlxuICAgICAgICAgICAgICAgIHsvKiBQaG90byBDb3VudGVyIGluIFRvcC1SaWdodCBDb3JuZXIgKGUuZy4gMSAvIDUpICovfVxuICAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwiaGFwcHktY2FyZC1waG90by1jb3VudGVyXCI+XG4gICAgICAgICAgICAgICAgICB7cGhvdG9JbmRleCArIDF9IC8ge3Bob3Rvcy5sZW5ndGh9XG4gICAgICAgICAgICAgICAgPC9kaXY+XG5cbiAgICAgICAgICAgICAgICB7LyogQ2xlYW4gUGhvdG9ncmFwaCAvIFZpZGVvIERpc3BsYXkgQ29udGFpbmVyIChBZGFwdHMgdG8gYW55IHJhdGlvLCBuZXZlciBjcm9wcykgKi99XG4gICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJoYXBweS1waG90by1wcmVzZW50YXRpb24tYm94XCI+XG4gICAgICAgICAgICAgICAgICB7Y3VycmVudFBob3RvPy50eXBlID09PSAndmlkZW8nICYmIGN1cnJlbnRQaG90bz8uc3JjID8gKFxuICAgICAgICAgICAgICAgICAgICA8R2FsbGVyeVZpZGVvUGxheWVyXG4gICAgICAgICAgICAgICAgICAgICAgc3JjPXtjdXJyZW50UGhvdG8uc3JjfVxuICAgICAgICAgICAgICAgICAgICAgIGFsdD17Y3VycmVudFBob3RvLmFsdCB8fCBgTWVtb3J5ICR7cGhvdG9JbmRleCArIDF9YH1cbiAgICAgICAgICAgICAgICAgICAgICB0aGVtZT1cImhhcHB5XCJcbiAgICAgICAgICAgICAgICAgICAgICBpc0ZhZGluZz17cGhvdG9GYWRpbmd9XG4gICAgICAgICAgICAgICAgICAgIC8+XG4gICAgICAgICAgICAgICAgICApIDogY3VycmVudFBob3RvPy5zcmMgJiYgIWltYWdlRXJyb3JzW2N1cnJlbnRQaG90by5pZF0gPyAoXG4gICAgICAgICAgICAgICAgICAgIDxpbWdcbiAgICAgICAgICAgICAgICAgICAgICBzcmM9e2N1cnJlbnRQaG90by5zcmN9XG4gICAgICAgICAgICAgICAgICAgICAgYWx0PXtjdXJyZW50UGhvdG8uYWx0IHx8IGBNZW1vcnkgJHtwaG90b0luZGV4ICsgMX1gfVxuICAgICAgICAgICAgICAgICAgICAgIGNsYXNzTmFtZT17YGhhcHB5LXBob3RvLWVsZW1lbnQgJHtwaG90b0ZhZGluZyA/ICdpcy1mYWRpbmcnIDogJyd9YH1cbiAgICAgICAgICAgICAgICAgICAgICBvbkVycm9yPXsoKSA9PiBoYW5kbGVJbWFnZUVycm9yKGN1cnJlbnRQaG90by5pZCl9XG4gICAgICAgICAgICAgICAgICAgIC8+XG4gICAgICAgICAgICAgICAgICApIDogKFxuICAgICAgICAgICAgICAgICAgICAvLyBDaGVlcmZ1bCBmYWxsYmFjayBwbGFjZWhvbGRlciB3aGVuIHBob3RvIGlzIG5vdCB5ZXQgaW4gL2hhcHB5L1xuICAgICAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT17YGhhcHB5LXBob3RvLXBsYWNlaG9sZGVyLWJveCAke3Bob3RvRmFkaW5nID8gJ2lzLWZhZGluZycgOiAnJ31gfT5cbiAgICAgICAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cInBsYWNlaG9sZGVyLXN1bi1zeW1ib2xcIiAvPlxuICAgICAgICAgICAgICAgICAgICAgIDxzcGFuIGNsYXNzTmFtZT1cInBsYWNlaG9sZGVyLXNsb3QtdGFnXCI+XG4gICAgICAgICAgICAgICAgICAgICAgICBQSE9UTyB7cGhvdG9JbmRleCArIDF9IE9GIHtwaG90b3MubGVuZ3RofVxuICAgICAgICAgICAgICAgICAgICAgIDwvc3Bhbj5cbiAgICAgICAgICAgICAgICAgICAgICA8cCBjbGFzc05hbWU9XCJwbGFjZWhvbGRlci1pbnN0cnVjdGlvblwiPlxuICAgICAgICAgICAgICAgICAgICAgICAgXCJQbGFjZSBwaG90b2dyYXBoIHtwaG90b0luZGV4ICsgMX0gaW50byAvaGFwcHkgZm9sZGVyLi4uXCJcbiAgICAgICAgICAgICAgICAgICAgICA8L3A+XG4gICAgICAgICAgICAgICAgICAgIDwvZGl2PlxuICAgICAgICAgICAgICAgICAgKX1cbiAgICAgICAgICAgICAgICA8L2Rpdj5cblxuICAgICAgICAgICAgICAgIHsvKiBDZW50ZXJlZCBNZXNzYWdlIGRpcmVjdGx5IGJlbmVhdGggdGhlIHBob3RvZ3JhcGggKi99XG4gICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJoYXBweS1jYXJkLWNhcHRpb24tc2VjdGlvblwiPlxuICAgICAgICAgICAgICAgICAgPHAgY2xhc3NOYW1lPXtgaGFwcHktY2FyZC1jYXB0aW9uLXRleHQgJHtwaG90b0ZhZGluZyA/ICdpcy1mYWRpbmcnIDogJyd9YH0+XG4gICAgICAgICAgICAgICAgICAgIHtjdXJyZW50UGhvdG8/Lm1lc3NhZ2UgfHwgXCJcIn1cbiAgICAgICAgICAgICAgICAgIDwvcD5cbiAgICAgICAgICAgICAgICA8L2Rpdj5cbiAgICAgICAgICAgICAgPC9kaXY+XG5cbiAgICAgICAgICAgICAgey8qIEJvdHRvbSBOYXZpZ2F0aW9uIEJ1dHRvbnMgKEJhY2sgJiBOZXh0KSAqL31cbiAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJoYXBweS1waG90by1ib3R0b20tbmF2XCI+XG4gICAgICAgICAgICAgICAgPGJ1dHRvblxuICAgICAgICAgICAgICAgICAgdHlwZT1cImJ1dHRvblwiXG4gICAgICAgICAgICAgICAgICBvbkNsaWNrPXtoYW5kbGVQcmV2fVxuICAgICAgICAgICAgICAgICAgZGlzYWJsZWQ9e2lzUHJldkRpc2FibGVkfVxuICAgICAgICAgICAgICAgICAgY2xhc3NOYW1lPXtgaGFwcHktYm90dG9tLXBpbGwtYnRuIGJ0bi1iYWNrICR7aXNQcmV2RGlzYWJsZWQgPyAnaXMtZGlzYWJsZWQnIDogJyd9YH1cbiAgICAgICAgICAgICAgICAgIGFyaWEtbGFiZWw9e3Bob3RvSW5kZXggPT09IDAgPyBcIkJhY2sgdG8gQWxidW0gQ292ZXJcIiA6IFwiUHJldmlvdXMgUGhvdG9cIn1cbiAgICAgICAgICAgICAgICA+XG4gICAgICAgICAgICAgICAgICA8Q2hldnJvbkxlZnQgc2l6ZT17MTZ9IC8+XG4gICAgICAgICAgICAgICAgICA8c3Bhbj5CYWNrPC9zcGFuPlxuICAgICAgICAgICAgICAgIDwvYnV0dG9uPlxuXG4gICAgICAgICAgICAgICAgPGJ1dHRvblxuICAgICAgICAgICAgICAgICAgdHlwZT1cImJ1dHRvblwiXG4gICAgICAgICAgICAgICAgICBvbkNsaWNrPXtoYW5kbGVOZXh0fVxuICAgICAgICAgICAgICAgICAgZGlzYWJsZWQ9e2lzTmV4dERpc2FibGVkfVxuICAgICAgICAgICAgICAgICAgY2xhc3NOYW1lPXtgaGFwcHktYm90dG9tLXBpbGwtYnRuIGJ0bi1uZXh0ICR7aXNOZXh0RGlzYWJsZWQgPyAnaXMtZGlzYWJsZWQnIDogJyd9YH1cbiAgICAgICAgICAgICAgICAgIGFyaWEtbGFiZWw9e3Bob3RvSW5kZXggPT09IHBob3Rvcy5sZW5ndGggLSAxID8gXCJFbmQgb2YgUGhvdG9zXCIgOiBcIk5leHQgUGhvdG9cIn1cbiAgICAgICAgICAgICAgICA+XG4gICAgICAgICAgICAgICAgICA8c3Bhbj5OZXh0PC9zcGFuPlxuICAgICAgICAgICAgICAgICAgPENoZXZyb25SaWdodCBzaXplPXsxNn0gLz5cbiAgICAgICAgICAgICAgICA8L2J1dHRvbj5cbiAgICAgICAgICAgICAgPC9kaXY+XG4gICAgICAgICAgICA8L2Rpdj5cbiAgICAgICAgICApfVxuICAgICAgICA8L2Rpdj5cbiAgICAgIDwvbWFpbj5cbiAgICA8L2Rpdj5cblxuICAgIHsvKiBCb3R0b20tUmlnaHQ6IE5leHQgUGFnZSBCdXR0b24gKFZpc2libGUgT05MWSBvbiB0aGUgbGFzdCBpbWFnZSBvZiBIYXBweSBHYWxsZXJ5LCBuYXZpZ2F0aW5nIHRvIFEmQSBTZWN0aW9uKSAqL31cbiAgICB7dmlldyA9PT0gJ2ltZycgJiYgcGhvdG9JbmRleCA9PT0gcGhvdG9zLmxlbmd0aCAtIDEgJiYgb25OZXh0UGFnZSAmJiAoXG4gICAgICA8YnV0dG9uXG4gICAgICAgIHR5cGU9XCJidXR0b25cIlxuICAgICAgICBvbkNsaWNrPXtvbk5leHRQYWdlfVxuICAgICAgICBjbGFzc05hbWU9XCJjb3JuZXItbmF2LWJ0biBjb3JuZXItbmF2LW5leHRcIlxuICAgICAgICBhcmlhLWxhYmVsPVwiTmV4dCBQYWdlOiBOYXZpZ2F0ZSB0byBRJkEgU2VjdGlvblwiXG4gICAgICAgIHRpdGxlPVwiUHJvY2VlZCB0byBRJkEgU2VjdGlvblwiXG4gICAgICA+XG4gICAgICAgIDxzcGFuIGNsYXNzTmFtZT1cImNvcm5lci1uYXYtdGV4dFwiPk5leHQgUGFnZTwvc3Bhbj5cbiAgICAgICAgPEFycm93UmlnaHQgc2l6ZT17MTZ9IGNsYXNzTmFtZT1cImNvcm5lci1uYXYtaWNvblwiIC8+XG4gICAgICA8L2J1dHRvbj5cbiAgICApfVxuXG4gICAgey8qIERlZGljYXRlZCBIYXBweSBNZW1vcmllcyBNdXNpYyBQbGF5ZXIgKEV4YWN0IFNpemUgJiBGb290cHJpbnQgb2YgTWFpbiBCaXJ0aGRheSBNdXNpYyBCYXIpICovfVxuICAgIDxHYWxsZXJ5TXVzaWNQbGF5ZXIgdGhlbWU9XCJoYXBweVwiIGNvbmZpZz17QklSVEhEQVlfQ09ORklHLmhhcHB5TXVzaWNQbGF5ZXJ9IC8+XG4gIDwvZGl2PlxuKTtcbn1cbiJdLCJmaWxlIjoiQzovVXNlcnMvZGV2YW0vT25lRHJpdmUvRGVza3RvcC9IYXBwcGllc3QtQmlydGhhZHktTWlpb29vL3NyYy9jb21wb25lbnRzL0hhcHB5TWVtb3JpZXNHYWxsZXJ5LmpzeCJ9
