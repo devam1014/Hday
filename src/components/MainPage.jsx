@@ -30,6 +30,7 @@ export default function MainPage({
   onOpenMemories,
   onOpenHappyGallery,
   initialSectionIndex = 0,
+  onSectionChange,
 }) {
   const mainBirthdayConfig = BIRTHDAY_CONFIG.mainBirthday || BIRTHDAY_CONFIG.mainPage || {};
   const {
@@ -304,6 +305,11 @@ export default function MainPage({
       }
     }
   }, [initialSectionIndex, sections.length, updateScrollProgress]);
+
+  // TELEPORT_24H_NAV: Notify parent of current displayed section index for persistence
+  useEffect(() => {
+    onSectionChange?.(displayedSectionIndex);
+  }, [displayedSectionIndex, onSectionChange]);
 
   // Handle Wheel / Trackpad Scroll with Scroll Lock
   const handleWheel = useCallback((e) => {

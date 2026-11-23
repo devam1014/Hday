@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { X } from 'lucide-react';
 import countdownBg from '../../final-countdown.png?v=1';
 import { BIRTHDAY_CONFIG, parseISTTarget } from '../config';
 
@@ -323,11 +324,13 @@ export default function BirthdayCountdownPage({
           className="overlay-message-button"
           aria-label="Open Birthday Message"
           title="Message For You"
-        />
+        >
+          <span className="overlay-message-btn-text">Message For You</span>
+        </button>
       </div>
 
       {/* ----------------------------------------------------------------------
-          MODAL CARD 1: MESSAGE FOR YOU
+          MODAL CARD 1: MESSAGE FOR YOU (INSTRUCTION CARD)
          ---------------------------------------------------------------------- */}
       {showMessageModal && (
         <div
@@ -335,41 +338,86 @@ export default function BirthdayCountdownPage({
           onClick={() => setShowMessageModal(false)}
           role="dialog"
           aria-modal="true"
+          aria-label="Instructions before you begin"
         >
           <div
-            className="countdown-modal-card"
+            className="countdown-modal-card countdown-instruction-card"
             onClick={(e) => e.stopPropagation()}
           >
             <button
               type="button"
               className="countdown-modal-close"
               onClick={() => setShowMessageModal(false)}
-              aria-label="Close message"
+              aria-label="Close instructions"
+              title="Close (Esc)"
             >
-              ×
+              <X size={18} />
             </button>
-            <div className="countdown-modal-body" style={{ padding: '2rem 1.75rem', color: '#fff' }}>
-              <h3 style={{ fontFamily: 'var(--font-serif-card), serif', fontSize: '1.4rem', color: '#ffe29a', marginBottom: '0.35rem' }}>
-                {BIRTHDAY_CONFIG.countdownPage?.messageContent?.title || BIRTHDAY_CONFIG.openingPage?.messageModal?.title || "Message For You"}
-              </h3>
-              <p style={{ fontSize: '0.88rem', color: 'rgba(255, 255, 255, 0.7)', fontStyle: 'italic', marginBottom: '1.25rem' }}>
-                {BIRTHDAY_CONFIG.countdownPage?.messageContent?.subtitle || BIRTHDAY_CONFIG.openingPage?.messageModal?.subtitle || ""}
-              </p>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', lineHeight: '1.7', color: '#f8efe2', fontSize: '0.98rem' }}>
-                {(BIRTHDAY_CONFIG.countdownPage?.messageContent?.paragraphs || BIRTHDAY_CONFIG.openingPage?.messageModal?.paragraphs || [])?.map((p, idx) => (
-                  <p key={idx}>{p}</p>
-                ))}
-              </div>
-              {(BIRTHDAY_CONFIG.countdownPage?.messageContent?.closing || BIRTHDAY_CONFIG.openingPage?.messageModal?.closing) && (
-                <div style={{ marginTop: '1.25rem', textAlign: 'right' }}>
-                  <div style={{ fontSize: '0.9rem', color: '#f8efe2' }}>
-                    {BIRTHDAY_CONFIG.countdownPage?.messageContent?.closing || BIRTHDAY_CONFIG.openingPage?.messageModal?.closing}
-                  </div>
-                  <div style={{ fontSize: '1.05rem', color: '#ffe29a', fontWeight: '600' }}>
-                    {BIRTHDAY_CONFIG.countdownPage?.messageContent?.signature || BIRTHDAY_CONFIG.openingPage?.messageModal?.signature}
-                  </div>
+            <div className="countdown-instruction-body">
+              <div className="countdown-instruction-columns">
+                {/* Left Column: Original 6 Instructions */}
+                <div className="instruction-column instruction-col-left">
+                  <h3 className="countdown-instruction-heading">
+                    A Few Things Before You Begin ❤️
+                  </h3>
+                  <div className="countdown-instruction-divider" />
+                  <ol className="countdown-instruction-list">
+                    <li className="countdown-instruction-item">
+                      <span className="instruction-num-badge">1</span>
+                      <span className="instruction-item-text">Must put on buds before start.</span>
+                    </li>
+                    <li className="countdown-instruction-item">
+                      <span className="instruction-num-badge">2</span>
+                      <span className="instruction-item-text">Open site in full screen mode (Fn + F11 or F11).</span>
+                    </li>
+                    <li className="countdown-instruction-item">
+                      <span className="instruction-num-badge">3</span>
+                      <span className="instruction-item-text">Explore each and every button cause will help you.</span>
+                    </li>
+                    <li className="countdown-instruction-item">
+                      <span className="instruction-num-badge">4</span>
+                      <span className="instruction-item-text">Don't try to skip anything.</span>
+                    </li>
+                    <li className="countdown-instruction-item">
+                      <span className="instruction-num-badge">5</span>
+                      <span className="instruction-item-text">Don't leave it without finishing fully.</span>
+                    </li>
+                    <li className="countdown-instruction-item">
+                      <span className="instruction-num-badge">6</span>
+                      <span className="instruction-item-text">Sit alone and read.</span>
+                    </li>
+                  </ol>
                 </div>
-              )}
+
+                {/* Subtle Vertical Gold Divider */}
+                <div className="instruction-columns-divider" aria-hidden="true" />
+
+                {/* Right Column: Explore & Enjoy */}
+                <div className="instruction-column instruction-col-right">
+                  <h3 className="countdown-instruction-heading">
+                    Explore &amp; Enjoy ✨
+                  </h3>
+                  <div className="countdown-instruction-divider" />
+                  <ol className="countdown-instruction-list">
+                    <li className="countdown-instruction-item">
+                      <span className="instruction-num-badge">1</span>
+                      <span className="instruction-item-text">Zoom in on images and videos.</span>
+                    </li>
+                    <li className="countdown-instruction-item">
+                      <span className="instruction-num-badge">2</span>
+                      <span className="instruction-item-text">Change songs.</span>
+                    </li>
+                    <li className="countdown-instruction-item">
+                      <span className="instruction-num-badge">3</span>
+                      <span className="instruction-item-text">You can do many, many things!</span>
+                    </li>
+                    <li className="countdown-instruction-item">
+                      <span className="instruction-num-badge">4</span>
+                      <span className="instruction-item-text">As I've tried everything, I hope you won't have any problems.</span>
+                    </li>
+                  </ol>
+                </div>
+              </div>
             </div>
           </div>
         </div>

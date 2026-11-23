@@ -45,6 +45,8 @@ export default function FireworksCanvas({ active = false }) {
     const rockets = [];
     const flashes = [];
 
+    const pendingTimers = [];
+
     class Flash {
       constructor(x, y, radius, color) {
         this.x = x;
@@ -52,7 +54,13 @@ export default function FireworksCanvas({ active = false }) {
         this.radius = radius;
         this.color = color;
         this.alpha = 0.85;
-        this.decay = 0.08;
+        this.decay = 0.065; // Slightly slower, smoother flash fade (~18% longer glow)
+        // Pre-create radial gradient once upon creation instead of every frame
+        const grad = ctx.createRadialGradient(x, y, 0, x, y, radius);
+        grad.addColorStop(0, '#ffffff');
+        grad.addColorStop(0.4, color);
+        grad.addColorStop(1, 'transparent');
+        this.gradient = grad;
       }
       update() {
         this.alpha -= this.decay;
@@ -61,11 +69,7 @@ export default function FireworksCanvas({ active = false }) {
         if (this.alpha <= 0) return;
         c.save();
         c.globalAlpha = this.alpha;
-        const grad = c.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.radius);
-        grad.addColorStop(0, '#ffffff');
-        grad.addColorStop(0.4, this.color);
-        grad.addColorStop(1, 'transparent');
-        c.fillStyle = grad;
+        c.fillStyle = this.gradient;
         c.beginPath();
         c.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
         c.fill();
@@ -79,21 +83,30 @@ export default function FireworksCanvas({ active = false }) {
         this.y = y;
         this.color = color;
         const angle = Math.random() * Math.PI * 2;
-        const speed = (Math.random() * 4.5 + 1.2) * speedScale;
+        // ~18% reduced initial burst speed for graceful, less sudden expansion
+        const speed = (Math.random() * 3.7 + 1.0) * speedScale;
         this.vx = Math.cos(angle) * speed;
         this.vy = Math.sin(angle) * speed;
-        this.friction = 0.96;
-        this.gravity = 0.055;
+        this.friction = 0.965; // Smooth air resistance deceleration
+        this.gravity = 0.044; // Reduced downward gravity (particles float and fall gently)
         this.alpha = 1;
-        this.decay = Math.random() * 0.013 + 0.008;
+        // Moderately extended lifetime & gradual fading
+        this.decay = Math.random() * 0.0105 + 0.0065;
         this.size = (Math.random() * 2.2 + 1.2) * sizeScale;
         this.sparkle = Math.random() > 0.35;
-        this.history = [];
+        // Preallocated fixed ring buffer for trail coordinates to avoid 18,000 object allocations/sec
+        this.hx = [x, x, x, x];
+        this.hy = [y, y, y, y];
+        this.hCount = 1;
       }
 
       update() {
-        this.history.push({ x: this.x, y: this.y });
-        if (this.history.length > 4) this.history.shift();
+        // Shift trail history without allocating temporary { x, y } objects
+        this.hx[3] = this.hx[2]; this.hy[3] = this.hy[2];
+        this.hx[2] = this.hx[1]; this.hy[2] = this.hy[1];
+        this.hx[1] = this.hx[0]; this.hy[1] = this.hy[0];
+        this.hx[0] = this.x;     this.hy[0] = this.y;
+        if (this.hCount < 4) this.hCount++;
 
         this.vx *= this.friction;
         this.vy *= this.friction;
@@ -108,13 +121,13 @@ export default function FireworksCanvas({ active = false }) {
         c.globalAlpha = Math.max(0, this.alpha);
 
         // Subtle curved particle trail
-        if (this.history.length > 1) {
+        if (this.hCount > 1) {
           c.strokeStyle = this.color;
           c.lineWidth = this.size * 0.6;
           c.beginPath();
-          c.moveTo(this.history[0].x, this.history[0].y);
-          for (let i = 1; i < this.history.length; i++) {
-            c.lineTo(this.history[i].x, this.history[i].y);
+          c.moveTo(this.hx[0], this.hy[0]);
+          for (let i = 1; i < this.hCount; i++) {
+            c.lineTo(this.hx[i], this.hy[i]);
           }
           c.stroke();
         }
@@ -146,7 +159,8 @@ export default function FireworksCanvas({ active = false }) {
         this.y = height * 0.68;
         // Burst altitude in the upper-middle sky
         this.targetY = Math.random() * (height * 0.38) + height * 0.12;
-        this.speed = Math.random() * 2.5 + 8;
+        // ~18% slower launch ascent so rockets travel smoothly before exploding
+        this.speed = Math.random() * 2.0 + 6.6;
         this.theme = colorThemes[Math.floor(Math.random() * colorThemes.length)];
         this.color = this.theme[0];
         // Random burst type: large (30%), medium (50%), small sparkle (20%)
@@ -158,7 +172,7 @@ export default function FireworksCanvas({ active = false }) {
 
       update() {
         this.trail.push({ x: this.x, y: this.y });
-        if (this.trail.length > 5) this.trail.shift();
+        if (this.trail.length > 6) this.trail.shift();
         this.y -= this.speed;
 
         if (this.y <= this.targetY) {
@@ -212,7 +226,8 @@ export default function FireworksCanvas({ active = false }) {
     }
 
     let lastLaunch = 0;
-    const launchInterval = prefersReducedMotion ? 1200 : 520;
+    // Paced launch intervals (~18% more spaced out so experience doesn't feel rushed)
+    const launchInterval = prefersReducedMotion ? 1400 : 620;
 
     const loop = (timestamp) => {
       ctx.clearRect(0, 0, width, height);
@@ -222,9 +237,12 @@ export default function FireworksCanvas({ active = false }) {
         rockets.push(new Rocket());
         // Occasional double burst for depth
         if (Math.random() > 0.55 && !prefersReducedMotion) {
-          setTimeout(() => {
+          const tid = setTimeout(() => {
             rockets.push(new Rocket());
-          }, 160);
+            const idx = pendingTimers.indexOf(tid);
+            if (idx !== -1) pendingTimers.splice(idx, 1);
+          }, 190);
+          pendingTimers.push(tid);
         }
         lastLaunch = timestamp;
       }
@@ -266,6 +284,10 @@ export default function FireworksCanvas({ active = false }) {
       if (animFrameId.current) {
         cancelAnimationFrame(animFrameId.current);
       }
+      for (const tid of pendingTimers) {
+        clearTimeout(tid);
+      }
+      pendingTimers.length = 0;
       ctx.clearRect(0, 0, width, height);
     };
   }, [active]);

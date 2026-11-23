@@ -43,7 +43,13 @@ export default function SeeThisView({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isActive, handleClose]);
 
-  const showDevControls = Boolean(BIRTHDAY_CONFIG?.dev?.showDevControls);
+  const isDevUrl = typeof window !== 'undefined' && (
+    new URLSearchParams(window.location.search).get('dev') === 'true' ||
+    new URLSearchParams(window.location.search).get('test') === 'true' ||
+    window.location.hash === '#dev' ||
+    window.location.hash === '#test'
+  );
+  const showDevControls = (isDevUrl || Boolean(BIRTHDAY_CONFIG?.dev?.showDevControls));
 
   return (
     <>

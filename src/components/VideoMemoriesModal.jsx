@@ -9,7 +9,6 @@ import {
   VolumeX,
   Maximize,
   Minimize,
-  MoreVertical,
 } from 'lucide-react';
 
 /**
@@ -30,13 +29,18 @@ function formatTime(totalSeconds) {
 /**
  * VideoMemoriesModal Component
  *
- * Implements the exact portrait 9:16 video modal matching the reference design:
- * - Outer Glass Card: Thick dark translucent frosted glass with warm peach/champagne glowing border & outward bloom
- * - Close Button: Circular button at top-right of glass card with subtle warm glow
- * - Inner Player: 9:16 portrait video container with rounded corners and sharp native rendering
- * - Central Play Button: Large circular translucent glass button over video
- * - Bottom Controls: Working Play/Pause, Progress Scrubber, Time Display, Volume Slider, Fullscreen
- * - Complete dismissal: Close button, Escape key, or backdrop click stops & resets video and restores page
+ * Unified cinematic enlarged video viewer for Q&A, Sad Gallery, and Happy Gallery:
+ * - Dynamic aspect ratio detection: supports portrait (9:16), landscape (16:9), and square videos
+ * - Preserves original aspect ratio without cropping, squeezing, or stretching (object-fit: contain)
+ * - Large centered translucent frosted-glass card with subtle border and soft glow
+ * - Dark, softly blurred background overlay
+ * - Prominent close button in upper-right corner
+ * - Clean CSS-based centered Play button (Blue for Sad, Orange for Happy, Champagne for Q&A)
+ * - Custom control row placed in a separate area BELOW the video, never covering video content
+ * - Controls remain VISIBLE AT ALL TIMES (never hidden by a timeout)
+ * - Full controls: Play/Pause, Time display, Progress Scrubber (with seeking), Volume button + slider, Fullscreen
+ * - Complete dismissal via Close button, Escape key, or clicking outside
+ * - Pauses video on dismiss and restores background music only if it was playing previously
  */
 export default function VideoMemoriesModal({
   isOpen,
@@ -44,22 +48,23 @@ export default function VideoMemoriesModal({
   videoSrc = '/video-for-main-page/1.mp4',
   sectionNumber = 1,
   sectionTitle = '',
+  theme = 'qna',
+  alt = 'Video Player',
 }) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
-  const [volume, setVolume] = useState(1);
+  const [volume, setVolume] = useState(0.8);
   const [isMuted, setIsMuted] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [showControls, setShowControls] = useState(true);
   const [isClosing, setIsClosing] = useState(false);
   const [isScrubbing, setIsScrubbing] = useState(false);
   const [hasError, setHasError] = useState(false);
+  const [aspectRatioType, setAspectRatioType] = useState('landscape'); // 'portrait' | 'landscape' | 'square'
 
   const videoRef = useRef(null);
   const playerContainerRef = useRef(null);
   const scrubberTrackRef = useRef(null);
-  const hideControlsTimeoutRef = useRef(null);
 
   // Reset playback and error state whenever the video source changes or modal opens
   useEffect(() => {
@@ -70,6 +75,8 @@ export default function VideoMemoriesModal({
     if (videoRef.current) {
       videoRef.current.pause();
       videoRef.current.currentTime = 0;
+      videoRef.current.volume = 0.8;
+      videoRef.current.muted = false;
       videoRef.current.load();
     }
   }, [videoSrc, isOpen]);
@@ -110,6 +117,9 @@ export default function VideoMemoriesModal({
     setIsClosing(true);
 
     // 2. Resume background music from exact paused position (only if playing before video)
+    window.dispatchEvent(
+      new CustomEvent('gallery-video-state-change', { detail: { isPlaying: false } })
+    );
     audioController.resumeAfterVideo();
 
     setTimeout(() => {
@@ -162,42 +172,7 @@ export default function VideoMemoriesModal({
   }, []);
 
   // ---------------------------------------------------------------------------
-  // 4. AUTOHIDE CONTROLS WHEN PLAYING
-  // ---------------------------------------------------------------------------
-  const scheduleControlsHide = useCallback(() => {
-    if (hideControlsTimeoutRef.current) {
-      clearTimeout(hideControlsTimeoutRef.current);
-    }
-    setShowControls(true);
-    if (isPlaying && !isScrubbing) {
-      hideControlsTimeoutRef.current = setTimeout(() => {
-        setShowControls(false);
-      }, 2600);
-    }
-  }, [isPlaying, isScrubbing]);
-
-  const handlePlayerMouseMove = () => {
-    scheduleControlsHide();
-  };
-
-  useEffect(() => {
-    if (!isPlaying) {
-      setShowControls(true);
-      if (hideControlsTimeoutRef.current) {
-        clearTimeout(hideControlsTimeoutRef.current);
-      }
-    } else {
-      scheduleControlsHide();
-    }
-    return () => {
-      if (hideControlsTimeoutRef.current) {
-        clearTimeout(hideControlsTimeoutRef.current);
-      }
-    };
-  }, [isPlaying, scheduleControlsHide]);
-
-  // ---------------------------------------------------------------------------
-  // 5. PLAYBACK CONTROLS
+  // 4. PLAYBACK CONTROLS
   // ---------------------------------------------------------------------------
   const togglePlay = (e) => {
     e?.stopPropagation();
@@ -206,12 +181,28 @@ export default function VideoMemoriesModal({
     if (!video) return;
 
     if (video.paused || video.ended) {
-      video.play().catch((err) => {
-        console.warn('Playback error:', err);
-        setHasError(true);
-      });
+      video.muted = isMuted;
+      video.volume = volume;
+      video
+        .play()
+        .then(() => {
+          setIsPlaying(true);
+          window.dispatchEvent(
+            new CustomEvent('gallery-video-state-change', { detail: { isPlaying: true } })
+          );
+          audioController.pauseForVideo();
+        })
+        .catch((err) => {
+          console.warn('Playback error:', err);
+          setHasError(true);
+        });
     } else {
       video.pause();
+      setIsPlaying(false);
+      window.dispatchEvent(
+        new CustomEvent('gallery-video-state-change', { detail: { isPlaying: false } })
+      );
+      audioController.resumeAfterVideo();
     }
   };
 
@@ -220,14 +211,25 @@ export default function VideoMemoriesModal({
     if (hasError) return;
     const video = videoRef.current;
     if (!video) return;
-    video.play().catch((err) => {
-      console.warn('Playback error:', err);
-      setHasError(true);
-    });
+    video.muted = isMuted;
+    video.volume = volume;
+    video
+      .play()
+      .then(() => {
+        setIsPlaying(true);
+        window.dispatchEvent(
+          new CustomEvent('gallery-video-state-change', { detail: { isPlaying: true } })
+        );
+        audioController.pauseForVideo();
+      })
+      .catch((err) => {
+        console.warn('Playback error:', err);
+        setHasError(true);
+      });
   };
 
   // ---------------------------------------------------------------------------
-  // 6. SCRUBBER / SEEKING CONTROLS
+  // 5. SCRUBBER / SEEKING CONTROLS
   // ---------------------------------------------------------------------------
   const seekToPosition = useCallback(
     (clientX) => {
@@ -288,7 +290,7 @@ export default function VideoMemoriesModal({
   };
 
   // ---------------------------------------------------------------------------
-  // 7. VOLUME CONTROLS
+  // 6. VOLUME CONTROLS
   // ---------------------------------------------------------------------------
   const toggleMute = (e) => {
     e.stopPropagation();
@@ -299,8 +301,8 @@ export default function VideoMemoriesModal({
     video.muted = nextMuted;
     setIsMuted(nextMuted);
     if (!nextMuted && video.volume === 0) {
-      video.volume = 0.5;
-      setVolume(0.5);
+      video.volume = 0.8;
+      setVolume(0.8);
     }
   };
 
@@ -322,7 +324,7 @@ export default function VideoMemoriesModal({
   };
 
   // ---------------------------------------------------------------------------
-  // 8. FULLSCREEN TOGGLE
+  // 7. FULLSCREEN TOGGLE
   // ---------------------------------------------------------------------------
   const toggleFullscreen = (e) => {
     e.stopPropagation();
@@ -345,7 +347,7 @@ export default function VideoMemoriesModal({
   };
 
   // ---------------------------------------------------------------------------
-  // 9. VIDEO EVENT HANDLERS
+  // 8. VIDEO EVENT HANDLERS
   // ---------------------------------------------------------------------------
   const handleTimeUpdate = () => {
     if (!isScrubbing && videoRef.current) {
@@ -355,23 +357,37 @@ export default function VideoMemoriesModal({
 
   const handleLoadedMetadata = () => {
     if (videoRef.current) {
-      setDuration(videoRef.current.duration || 0);
-      setVolume(videoRef.current.volume);
-      setIsMuted(videoRef.current.muted);
+      const vid = videoRef.current;
+      setDuration(vid.duration || 0);
+      setVolume(vid.volume);
+      setIsMuted(vid.muted);
+
+      if (vid.videoWidth && vid.videoHeight) {
+        const ratio = vid.videoWidth / vid.videoHeight;
+        if (ratio >= 1.2) {
+          setAspectRatioType('landscape');
+        } else if (ratio <= 0.85) {
+          setAspectRatioType('portrait');
+        } else {
+          setAspectRatioType('square');
+        }
+      }
     }
   };
 
   const handleVideoEnded = () => {
     setIsPlaying(false);
-    setShowControls(true);
     if (videoRef.current) {
       videoRef.current.currentTime = 0;
       setCurrentTime(0);
     }
+    window.dispatchEvent(
+      new CustomEvent('gallery-video-state-change', { detail: { isPlaying: false } })
+    );
+    audioController.resumeAfterVideo();
   };
 
-  const handleVideoError = (e) => {
-    // If video file is missing (404) or fails to decode, display graceful feedback
+  const handleVideoError = () => {
     setHasError(true);
     setIsPlaying(false);
   };
@@ -386,11 +402,11 @@ export default function VideoMemoriesModal({
       onClick={handleDismiss}
       role="dialog"
       aria-modal="true"
-      aria-label="Our Memories Video Player"
+      aria-label={alt || 'Video Player'}
     >
-      {/* Outer Frosted Glass Card with Concentrated Golden Border Lighting */}
+      {/* Outer Frosted Glass Card with Dynamic Responsive Sizing */}
       <div
-        className={`video-modal-card ${isClosing ? 'is-closing' : 'is-open'}`}
+        className={`video-modal-card ${isClosing ? 'is-closing' : 'is-open'} is-${aspectRatioType} ${theme}-video-modal-theme`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Top-Right Circular Close Button */}
@@ -398,19 +414,19 @@ export default function VideoMemoriesModal({
           type="button"
           onClick={handleDismiss}
           className="video-modal-close-btn"
-          aria-label="Close memories video"
+          aria-label="Close video viewer"
           title="Close (Esc)"
         >
           <X className="video-close-icon" />
         </button>
 
-        {/* Inner 9:16 Portrait Video Player Container (No playback controls covering video) */}
+        {/* Video Player Container (Centered, object-fit: contain, never cropped or stretched) */}
         <div
           ref={playerContainerRef}
           className="video-player-container"
           onClick={hasError ? undefined : togglePlay}
         >
-          {/* Native HTML5 Video Element (100% Sharp, zero blur, object-fit: contain) */}
+          {/* Native HTML5 Video Element */}
           <video
             ref={videoRef}
             key={videoSrc}
@@ -424,13 +440,22 @@ export default function VideoMemoriesModal({
             onError={handleVideoError}
             onPlay={() => {
               setIsPlaying(true);
+              window.dispatchEvent(
+                new CustomEvent('gallery-video-state-change', { detail: { isPlaying: true } })
+              );
               audioController.pauseForVideo();
             }}
-            onPause={() => setIsPlaying(false)}
+            onPause={() => {
+              setIsPlaying(false);
+              window.dispatchEvent(
+                new CustomEvent('gallery-video-state-change', { detail: { isPlaying: false } })
+              );
+              audioController.resumeAfterVideo();
+            }}
             onEnded={handleVideoEnded}
           />
 
-          {/* Central Large Play Button (Shown only when video is valid, not playing, and not in error) */}
+          {/* Central Large Play Button (Themed for Sad Blue, Happy Orange, or Q&A Gold) */}
           {!hasError && (
             <button
               type="button"
@@ -440,13 +465,13 @@ export default function VideoMemoriesModal({
               title="Play"
             >
               <div className="video-central-play-circle">
-                <Play className="video-central-play-icon" fill="#ffffff" />
+                <Play className="video-central-play-icon" fill="#ffffff" stroke="#ffffff" />
               </div>
             </button>
           )}
         </div>
 
-        {/* Separate Compact Control Row Immediately BELOW the Video (Option 5 Layout) */}
+        {/* Separate Compact Control Row Immediately BELOW the Video (Always Visible) */}
         <div
           className={`video-external-controls-bar ${hasError ? 'is-disabled' : ''}`}
           onClick={(e) => e.stopPropagation()}
@@ -460,9 +485,9 @@ export default function VideoMemoriesModal({
             title={isPlaying ? 'Pause (Space)' : 'Play (Space)'}
           >
             {isPlaying ? (
-              <Pause className="video-ctrl-icon" fill="#ffffff" />
+              <Pause className="video-ctrl-icon" fill="#ffffff" stroke="#ffffff" />
             ) : (
-              <Play className="video-ctrl-icon" fill="#ffffff" />
+              <Play className="video-ctrl-icon" fill="#ffffff" stroke="#ffffff" />
             )}
           </button>
 

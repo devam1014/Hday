@@ -5,6 +5,7 @@ import { getHappyPhotos } from '../data/happyPhotos';
 import { BIRTHDAY_CONFIG } from '../config';
 import GalleryMusicPlayer from './GalleryMusicPlayer';
 import GalleryVideoPlayer from './GalleryVideoPlayer';
+import GalleryMediaModal from './GalleryMediaModal';
 import SeeThisView from './SeeThisView';
 
 /**
@@ -43,6 +44,7 @@ export default function HappyMemoriesGallery({ onBack, onPreviousPage, onNextPag
   const [transitionDir, setTransitionDir] = useState('forward'); // 'forward' | 'backward'
   const [photoFading, setPhotoFading] = useState(false);
   const [imageErrors, setImageErrors] = useState({});
+  const [isMediaModalOpen, setIsMediaModalOpen] = useState(false);
 
   // ---------------------------------------------------------------------------
   // FULLSCREEN DETECTION (Supports browser F11 and Fullscreen API)
@@ -344,6 +346,8 @@ export default function HappyMemoriesGallery({ onBack, onPreviousPage, onNextPag
                       alt={currentPhoto.alt || `Memory ${photoIndex + 1}`}
                       theme="happy"
                       isFading={photoFading}
+                      onOpenModal={() => setIsMediaModalOpen(true)}
+                      showControls={false}
                     />
                   ) : currentPhoto?.src && !imageErrors[currentPhoto.id] ? (
                     <img
@@ -351,6 +355,17 @@ export default function HappyMemoriesGallery({ onBack, onPreviousPage, onNextPag
                       alt={currentPhoto.alt || `Memory ${photoIndex + 1}`}
                       className={`happy-photo-element ${photoFading ? 'is-fading' : ''}`}
                       onError={() => handleImageError(currentPhoto.id)}
+                      onClick={() => setIsMediaModalOpen(true)}
+                      tabIndex={0}
+                      role="button"
+                      aria-label={`Enlarge photo ${photoIndex + 1}`}
+                      title="Click to view large photo"
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          setIsMediaModalOpen(true);
+                        }
+                      }}
                     />
                   ) : (
                     // Cheerful fallback placeholder when photo is not yet in /happy/
@@ -402,6 +417,9 @@ export default function HappyMemoriesGallery({ onBack, onPreviousPage, onNextPag
           )}
         </div>
       </main>
+
+      {/* Dedicated Happy Memories Music Player: Positioned directly below the media card and horizontally centered relative to that card */}
+      <GalleryMusicPlayer theme="happy" config={BIRTHDAY_CONFIG.happyMusicPlayer} />
     </div>
 
     {/* Bottom-Right: Next Page Button (Visible ONLY on the last image of Happy Gallery, navigating to Q&A Section) */}
@@ -418,8 +436,13 @@ export default function HappyMemoriesGallery({ onBack, onPreviousPage, onNextPag
       </button>
     )}
 
-    {/* Dedicated Happy Memories Music Player (Exact Size & Footprint of Main Birthday Music Bar) */}
-    <GalleryMusicPlayer theme="happy" config={BIRTHDAY_CONFIG.happyMusicPlayer} />
+    {/* Large Frosted Glass Media Viewer Modal for Images & Videos */}
+    <GalleryMediaModal
+      isOpen={isMediaModalOpen}
+      onClose={() => setIsMediaModalOpen(false)}
+      media={currentPhoto}
+      theme="happy"
+    />
   </div>
 );
 }

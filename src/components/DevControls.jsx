@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
-import { Wrench, Play, Sparkles, Heart, RotateCcw, ChevronDown, ChevronUp, BookOpen, Clock, Flame, ArrowRight } from 'lucide-react';
+import { Wrench, Play, Sparkles, Heart, RotateCcw, ChevronDown, ChevronUp, BookOpen, Clock, Flame, ArrowRight, Compass } from 'lucide-react';
 import { BIRTHDAY_CONFIG } from '../config';
+// TELEPORT_24H_NAV: Developer toggle utility
+import { isTeleportNavEnabled, setTeleportNavEnabled } from '../utils/teleport24hNav';
 
 /**
  * Dev Controls Component
@@ -10,10 +12,10 @@ import { BIRTHDAY_CONFIG } from '../config';
  * 3. Live 5s Countdowns (Timer 1 and Timer 2)
  * 4. Section Navigation Previews
  * 5. Clean Config Reset
+ * 6. TELEPORT_24H_NAV: Teleport Navigation ON/OFF switch
  */
 export default function DevControls({
   currentStage,
-  onClickAndSee,
   onTestCoverTimer,
   onTestFirecrackerTimer,
   onJumpToCountdown,
@@ -24,27 +26,34 @@ export default function DevControls({
   onJumpToQnA,
   onTriggerCover5sCountdown,
   onTriggerFirecracker5sCountdown,
-  onResetToDefaultConfig
+  onResetToDefaultConfig,
+  onToggleTeleportNav,
 }) {
   const [isOpen, setIsOpen] = useState(false);
+  // TELEPORT_24H_NAV: Track enabled state inside Test Helper
+  const [teleportNavOn, setTeleportNavOn] = useState(() => isTeleportNavEnabled());
 
-  if (!BIRTHDAY_CONFIG.dev.showDevControls) return null;
+  const handleToggleTeleport = () => {
+    const next = !teleportNavOn;
+    setTeleportNavOn(next);
+    setTeleportNavEnabled(next);
+    onToggleTeleportNav?.(next);
+  };
+
+  // Hidden by default for all normal visitors; accessible via ?dev=true, ?test=true, #dev, #test, or config
+  const isDevUrl = typeof window !== 'undefined' && (
+    new URLSearchParams(window.location.search).get('dev') === 'true' ||
+    new URLSearchParams(window.location.search).get('test') === 'true' ||
+    window.location.hash === '#dev' ||
+    window.location.hash === '#test'
+  );
+  const shouldShow = isDevUrl || Boolean(BIRTHDAY_CONFIG?.dev?.showDevControls);
+
+  if (!shouldShow) return null;
 
   return (
     <aside className="dev-test-panel" aria-label="Development Test Helper">
       <div className="dev-panel-top-row">
-        {currentStage === 'fireworks' && onClickAndSee && (
-          <button
-            type="button"
-            onClick={onClickAndSee}
-            className="dev-panel-toggle-btn dev-click-see-btn"
-            title="Preview 10s countdown to full fireworks celebration"
-          >
-            <Sparkles className="w-4 h-4 text-amber-300 mr-1.5" />
-            <span>Click &amp; See</span>
-          </button>
-        )}
-
         <button
           type="button"
           onClick={() => setIsOpen(!isOpen)}
@@ -71,6 +80,39 @@ export default function DevControls({
           </p>
 
           <div className="dev-buttons-grid">
+            {/* ============================================================== */}
+            {/* TELEPORT_24H_NAV: FEATURE TOGGLE                               */}
+            {/* ============================================================== */}
+            <button
+              type="button"
+              onClick={handleToggleTeleport}
+              className={`dev-action-btn teleport-toggle-btn ${teleportNavOn ? 'is-enabled' : 'is-disabled'}`}
+              title="Toggle TELEPORT_24H_NAV navigation feature for testing"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                border: teleportNavOn ? '1px solid rgba(52, 211, 153, 0.7)' : '1px solid rgba(248, 113, 113, 0.7)',
+                background: teleportNavOn ? 'rgba(6, 78, 59, 0.35)' : 'rgba(127, 29, 29, 0.35)',
+              }}
+            >
+              <span style={{ display: 'inline-flex', alignItems: 'center' }}>
+                <Compass className="w-3.5 h-3.5 mr-1.5 text-amber-300" />
+                <span>Teleport Navigation:</span>
+              </span>
+              <span
+                style={{
+                  fontWeight: 'bold',
+                  padding: '2px 8px',
+                  borderRadius: '4px',
+                  background: teleportNavOn ? 'rgba(16, 185, 129, 0.25)' : 'rgba(239, 68, 68, 0.25)',
+                  color: teleportNavOn ? '#34d399' : '#f87171',
+                }}
+              >
+                {teleportNavOn ? 'ON' : 'OFF'}
+              </span>
+            </button>
+
             {/* ============================================================== */}
             {/* PRIMARY TEST ACTIONS (MANDATORY VERIFICATION ACTIONS)          */}
             {/* ============================================================== */}

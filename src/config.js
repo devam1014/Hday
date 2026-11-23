@@ -170,8 +170,8 @@ export const BIRTHDAY_CONFIG = {
   coverTargetDate: null,
 
   openingCountdown: {
-    targetDate: "2026-11-20", // e.g. "2026-11-20"
-    targetTime: "0:00:00", // in IST (UTC+05:30)
+    targetDate: "2026-11-23", // e.g. "2026-11-20"
+    targetTime: "01:45:00", // in IST (UTC+05:30)
   },
 
   // Fallback target date if referencing generic property
@@ -189,8 +189,8 @@ export const BIRTHDAY_CONFIG = {
   firecrackerTargetDate: null,
 
   secondCountdown: {
-    targetDate: "2026-11-20", // e.g. "2026-11-20"
-    targetTime: "00:05:00", // in IST (UTC+05:30)
+    targetDate: "2026-11-23", // e.g. "2026-11-20"
+    targetTime: "01:46:00", // in IST (UTC+05:30)
   },
 
   // ============================================================================
@@ -288,7 +288,7 @@ export const BIRTHDAY_CONFIG = {
         id: 2,
         title: "Section 2",
         salutation: "Dearest Miioo,",
-        paragraphs: [],
+        paragraphs: ["bjgy"],
         closing: "",
         sender: "",
         linkLabel: "Clip for You ↗",
@@ -445,7 +445,7 @@ export const BIRTHDAY_CONFIG = {
     albumCover: sadCover,
     background: sadBg,
     messages: [
-      "Some moments stay with us forever... ♡",
+      "hyyyy",
       "Not every beautiful moment was meant to last forever... ♡",
       "We didn't say goodbye, but the silence said everything... ♡",
       "I still look for you in the songs we used to love... ♡",
@@ -853,8 +853,21 @@ export const BIRTHDAY_CONFIG = {
       ],
       closing: "With all my love and devotion,",
       signature: "Forever & Always ❤️",
-      image: "/last-msg/1.jpg",
-      video: "/last-msg/1.mp4"
+
+      // ========================================================================
+      // FINAL MESSAGE MEDIA CONFIGURATION (STORED IN public/last-msg/)
+      // ========================================================================
+      // 1. Final Message Image Card Media: Looping, control-free video (or image)
+      //    Default: "/last-msg/1.mp4" (automatically loops, muted autoplay, no controls)
+      imageCardMedia: "/last-msg/1.mp4",
+
+      // 2. Final Message Video Card Media: Normal controllable video
+      //    Default: "/last-msg/2.mp4" (Play/Pause, Volume controls, audio priority)
+      videoCardMedia: "/last-msg/2.mp4",
+
+      // Backward compatibility aliases
+      image: "/last-msg/1.mp4",
+      video: "/last-msg/2.mp4"
     }
   },
 
@@ -938,7 +951,7 @@ export const BIRTHDAY_CONFIG = {
   // ============================================================================
   happyMusicPlayer: {
     folder: "/happy-songs",
-    defaultTrackVolume: 0.60,
+    defaultTrackVolume: 0.30,
     autoplay: true,
     loop: true,
     playlistOrder: [
@@ -952,7 +965,7 @@ export const BIRTHDAY_CONFIG = {
   // 12. GENERAL WEBSITE & DEVELOPER SETTINGS
   // ============================================================================
   dev: {
-    showDevControls: true, // Show discreet test helper toggle in top corner
+    showDevControls: true, // Restored temporarily for testing (toggle to false before final deployment)
     testCountdownDurationSeconds: 5, // Triggers a 5s countdown when tested
   }
 };

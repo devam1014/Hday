@@ -193,6 +193,20 @@ export default function BirthdayFireworksCelebration({
             igniteStart: baseIgniteTime + i * stepTime,
             igniteDuration: 420,
           };
+
+          // Precompute linear gradient once per layout instead of every frame in render loop
+          const grad = ctx.createLinearGradient(
+            charCenterX,
+            centerY - layout.fontSize * 0.55,
+            charCenterX,
+            centerY + layout.fontSize * 0.55
+          );
+          grad.addColorStop(0, '#ffffff');
+          grad.addColorStop(0.25, '#fffbeb');
+          grad.addColorStop(0.65, '#fbbf24');
+          grad.addColorStop(1, '#f59e0b');
+          letterObj.gradient = grad;
+
           startX += widths[i] + letterSpacing;
           return letterObj;
         });
@@ -279,7 +293,13 @@ export default function BirthdayFireworksCelebration({
         this.radius = radius;
         this.color = color;
         this.alpha = 0.95;
-        this.decay = 0.055;
+        this.decay = 0.045; // ~18% slower flash fade for a softer, more graceful unfolding
+        // Pre-create radial gradient once on instantiation to eliminate per-frame allocations
+        const grad = ctx.createRadialGradient(x, y, 0, x, y, radius);
+        grad.addColorStop(0, '#ffffff');
+        grad.addColorStop(0.35, color);
+        grad.addColorStop(1, 'transparent');
+        this.gradient = grad;
       }
       update() {
         this.alpha -= this.decay;
@@ -288,11 +308,7 @@ export default function BirthdayFireworksCelebration({
         if (this.alpha <= 0) return;
         c.save();
         c.globalAlpha = Math.max(0, this.alpha);
-        const grad = c.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.radius);
-        grad.addColorStop(0, '#ffffff');
-        grad.addColorStop(0.35, this.color);
-        grad.addColorStop(1, 'transparent');
-        c.fillStyle = grad;
+        c.fillStyle = this.gradient;
         c.beginPath();
         c.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
         c.fill();
@@ -312,18 +328,28 @@ export default function BirthdayFireworksCelebration({
         this.color = color;
         this.onExplode = onExplode;
         this.progress = 0;
-        this.speed = prefersReducedMotion ? 0.06 : 0.030 + Math.random() * 0.005;
+        // ~17% slower ascent so rockets rise smoothly and gracefully before exploding
+        this.speed = prefersReducedMotion ? 0.05 : 0.025 + Math.random() * 0.004;
         this.trail = [];
         this.exploded = false;
       }
 
       update() {
-        if (this.exploded) return;
+        if (this.exploded) {
+          // Allow trail to completely fade out and empty so rocket is cleanly spliced out of memory
+          if (this.trail.length > 0) {
+            this.trail.shift();
+            for (const t of this.trail) {
+              t.alpha *= 0.89;
+            }
+          }
+          return;
+        }
         this.trail.push({ x: this.x, y: this.y, alpha: 1 });
         if (this.trail.length > 8) this.trail.shift();
 
         for (const t of this.trail) {
-          t.alpha *= 0.86;
+          t.alpha *= 0.89;
         }
 
         this.progress += this.speed;
@@ -338,7 +364,7 @@ export default function BirthdayFireworksCelebration({
       }
 
       draw(c) {
-        if (this.exploded) return;
+        if (this.trail.length === 0) return;
         c.save();
         for (let i = 0; i < this.trail.length; i++) {
           const pt = this.trail[i];
@@ -350,13 +376,15 @@ export default function BirthdayFireworksCelebration({
           c.arc(pt.x, pt.y, 1.4 + (i / this.trail.length) * 1.0, 0, Math.PI * 2);
           c.fill();
         }
-        c.globalAlpha = 1;
-        c.fillStyle = '#ffffff';
-        c.shadowBlur = 10;
-        c.shadowColor = this.color;
-        c.beginPath();
-        c.arc(this.x, this.y, 2.2, 0, Math.PI * 2);
-        c.fill();
+        if (!this.exploded) {
+          c.globalAlpha = 1;
+          c.fillStyle = '#ffffff';
+          c.shadowBlur = 10;
+          c.shadowColor = this.color;
+          c.beginPath();
+          c.arc(this.x, this.y, 2.2, 0, Math.PI * 2);
+          c.fill();
+        }
         c.restore();
       }
     }
@@ -371,7 +399,7 @@ export default function BirthdayFireworksCelebration({
         this.x = originX;
         this.y = originY;
         this.delay = delay;
-        this.duration = 450;
+        this.duration = 530; // ~18% slower convergence for a graceful sweep into letters
         this.color = color;
         this.size = Math.random() * 1.2 + 1.0;
         this.swirl = (Math.random() - 0.5) * 28;
@@ -416,7 +444,13 @@ export default function BirthdayFireworksCelebration({
         this.y = y;
         this.radius = Math.random() * 2.5 + 3.5; // 3.5 - 6px (delicate distant pop)
         this.life = 0;
-        this.maxLife = 5;
+        this.maxLife = 6; // Slower, softer flash pop
+        // Pre-create radial gradient once on instantiation to eliminate per-frame allocations
+        const grad = ctx.createRadialGradient(x, y, 0, x, y, this.radius);
+        grad.addColorStop(0, '#ffffff');
+        grad.addColorStop(0.45, '#fff59d');
+        grad.addColorStop(1, 'transparent');
+        this.gradient = grad;
       }
       update() {
         this.life++;
@@ -426,11 +460,7 @@ export default function BirthdayFireworksCelebration({
         const alpha = Math.max(0, 1 - this.life / this.maxLife);
         c.save();
         c.globalAlpha = alpha * 0.85;
-        const grad = c.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.radius);
-        grad.addColorStop(0, '#ffffff');
-        grad.addColorStop(0.45, '#fff59d');
-        grad.addColorStop(1, 'transparent');
-        c.fillStyle = grad;
+        c.fillStyle = this.gradient;
         c.beginPath();
         c.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
         c.fill();
@@ -445,14 +475,15 @@ export default function BirthdayFireworksCelebration({
         this.prevX = x;
         this.prevY = y;
         const angle = Math.random() * Math.PI * 2;
-        // Controlled, gentle expansion consistent with distant firecrackers
-        const speed = Math.random() * 1.4 + 0.8;
+        // ~18% reduced velocity for gentle, graceful firecracker bursts
+        const speed = Math.random() * 1.15 + 0.65;
         this.vx = Math.cos(angle) * speed;
         this.vy = Math.sin(angle) * speed;
-        this.friction = 0.89; // Rapid deceleration (travels only ~8-14px)
-        this.gravity = 0.012; // Very subtle downward drift, not heavy falling
+        this.friction = 0.905; // Smoother deceleration
+        this.gravity = 0.0095; // Gentler downward drift
         this.life = 0;
-        this.maxLife = Math.floor(Math.random() * 6) + 12; // 12 - 18 frames (~200 - 280ms)
+        // ~20% extended lifetime so sparks remain visible longer and fade gradually
+        this.maxLife = Math.floor(Math.random() * 7) + 15;
         this.color = yellowPalette[Math.floor(Math.random() * yellowPalette.length)];
         this.size = Math.random() * 0.5 + 0.9; // 0.9 - 1.4px delicate spark
       }
@@ -598,19 +629,21 @@ export default function BirthdayFireworksCelebration({
         this.y = y;
         this.color = color;
         const angle = Math.random() * Math.PI * 2;
-        const speed = Math.random() * 1.8 + 0.5;
+        // ~17% reduced velocity for graceful, less rushed peripheral burst
+        const speed = Math.random() * 1.5 + 0.42;
         this.vx = Math.cos(angle) * speed;
         this.vy = Math.sin(angle) * speed;
         this.alpha = 1;
-        this.decay = Math.random() * 0.022 + 0.014;
+        // Moderately extended lifetime & gradual fading
+        this.decay = Math.random() * 0.018 + 0.0115;
         this.size = Math.random() * 1.3 + 0.7;
       }
       update() {
         this.x += this.vx;
         this.y += this.vy;
-        this.vy += 0.015;
-        this.vx *= 0.95;
-        this.vy *= 0.95;
+        this.vy += 0.012; // Reduced downward gravity so particles drift gently
+        this.vx *= 0.958; // Smoother deceleration
+        this.vy *= 0.958;
         this.alpha -= this.decay;
 
         if (this.y >= regions.horizonLimitY ||
@@ -801,9 +834,13 @@ export default function BirthdayFireworksCelebration({
       }
 
       // Update & Draw Sparkler Convergence Particles
-      for (const sp of sparklerParticles) {
+      for (let i = sparklerParticles.length - 1; i >= 0; i--) {
+        const sp = sparklerParticles[i];
         sp.update(elapsed);
         sp.draw(ctx, elapsed);
+        if (sp.finished) {
+          sparklerParticles.splice(i, 1);
+        }
       }
 
       // =======================================================================
@@ -812,7 +849,8 @@ export default function BirthdayFireworksCelebration({
       // Bounded strictly: above distant mountain skyline, away from girl/sofa
       if (elapsed > 1100 && timestamp - lastCrackerTime > nextCrackerInterval && !isExitingRef.current) {
         lastCrackerTime = timestamp;
-        nextCrackerInterval = 160 + Math.random() * 220; // 160ms to 380ms irregular cadence
+        // Paced cadence (195ms to 455ms) for a more graceful, relaxed sequence
+        nextCrackerInterval = 195 + Math.random() * 260;
 
         // Bound active sparks to max 45 for guaranteed 60fps zero-lag performance
         if (crackerSparks.length < 45 && textRight > textLeft) {
@@ -881,8 +919,8 @@ export default function BirthdayFireworksCelebration({
         if (cs.life >= cs.maxLife) crackerSparks.splice(i, 1);
       }
 
-      // Occasional gentle peripheral firework during HOLD stage (every ~3.8s, far upper-right sky)
-      if (elapsed > 3000 && timestamp - lastPeripheralFirework > 3800) {
+      // Occasional gentle peripheral firework during HOLD stage (every ~4.5s, far upper-right sky)
+      if (elapsed > 3000 && timestamp - lastPeripheralFirework > 4500) {
         lastPeripheralFirework = timestamp;
         // Far right open sky, far away from girl (< 35%) and clear of text
         const px = width * (0.76 + Math.random() * 0.10);
@@ -894,8 +932,8 @@ export default function BirthdayFireworksCelebration({
         }
       }
 
-      // Soft breathing aura intensity for letters
-      const breathingAura = Math.sin(timestamp * 0.0022) * 2.5 + 11;
+      // Soft breathing aura intensity for letters (quantized to 0.5 steps to allow GPU blur cache reuse)
+      const breathingAura = Math.round((Math.sin(timestamp * 0.0022) * 2.5 + 11) * 2) / 2;
 
       // ==========================================
       // Draw "HAPPY BIRTHDAY" Letters
@@ -912,18 +950,6 @@ export default function BirthdayFireworksCelebration({
         const ease = 1 - Math.pow(1 - progress, 3);
         const letterAlpha = ease;
 
-        // Metallic multi-stop champagne gold gradient
-        const grad = ctx.createLinearGradient(
-          letter.x,
-          letter.y - letter.height * 0.55,
-          letter.x,
-          letter.y + letter.height * 0.55
-        );
-        grad.addColorStop(0, '#ffffff');
-        grad.addColorStop(0.25, '#fffbeb');
-        grad.addColorStop(0.65, '#fbbf24');
-        grad.addColorStop(1, '#f59e0b');
-
         ctx.save();
         ctx.globalAlpha = globalExitAlpha * letterAlpha;
 
@@ -932,7 +958,7 @@ export default function BirthdayFireworksCelebration({
         ctx.shadowColor = '#fbbf24';
 
         // Fill letter
-        ctx.fillStyle = grad;
+        ctx.fillStyle = letter.gradient;
         ctx.fillText(letter.char, letter.x, letter.y);
 
         // Crisp inner starlight highlight

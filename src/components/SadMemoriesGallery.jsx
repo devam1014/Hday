@@ -10,6 +10,7 @@ import SadAtmosphere from './SadAtmosphere';
 import SadLightning from './SadLightning';
 import GalleryMusicPlayer from './GalleryMusicPlayer';
 import GalleryVideoPlayer from './GalleryVideoPlayer';
+import GalleryMediaModal from './GalleryMediaModal';
 import SeeThisView from './SeeThisView';
 
 /**
@@ -41,6 +42,7 @@ export default function SadMemoriesGallery({
   const [photoFading, setPhotoFading] = useState(false);
   const [imageErrors, setImageErrors] = useState({});
   const [lightningTrigger, setLightningTrigger] = useState(0);
+  const [isMediaModalOpen, setIsMediaModalOpen] = useState(false);
 
   // Synchronize state changes with parent
   useEffect(() => {
@@ -253,6 +255,7 @@ export default function SadMemoriesGallery({
                     alt={currentPhoto.alt || `Memory ${photoIndex + 1}`}
                     theme="sad"
                     isFading={photoFading}
+                    onOpenModal={() => setIsMediaModalOpen(true)}
                   />
                 ) : currentPhoto?.src && !imageErrors[currentPhoto.id] ? (
                   <img
@@ -260,6 +263,17 @@ export default function SadMemoriesGallery({
                     alt={currentPhoto.alt || `Memory ${photoIndex + 1}`}
                     className={`sad-glass-photo-img ${photoFading ? 'is-fading' : ''}`}
                     onError={() => handleImageError(currentPhoto.id)}
+                    onClick={() => setIsMediaModalOpen(true)}
+                    tabIndex={0}
+                    role="button"
+                    aria-label={`Enlarge photo ${photoIndex + 1}`}
+                    title="Click to view large photo"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        setIsMediaModalOpen(true);
+                      }
+                    }}
                   />
                 ) : (
                   // Graceful fallback placeholder if photo file is still loading or unplaced
@@ -322,6 +336,14 @@ export default function SadMemoriesGallery({
 
       {/* Dedicated Sad Memories Music Player (Exact Size & Footprint of Main Birthday Music Bar) */}
       <GalleryMusicPlayer theme="sad" config={BIRTHDAY_CONFIG.sadMusicPlayer} />
+
+      {/* Large Frosted Glass Media Viewer Modal for Images & Videos */}
+      <GalleryMediaModal
+        isOpen={isMediaModalOpen}
+        onClose={() => setIsMediaModalOpen(false)}
+        media={currentPhoto}
+        theme="sad"
+      />
     </div>
   );
 }

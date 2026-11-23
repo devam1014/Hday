@@ -1408,6 +1408,142 @@ button:focus-visible {
 }
 
 /* ==============================================================================
+   TELEPORT_24H_NAV: TELEPORT DROPDOWN STYLES
+   ============================================================================== */
+.teleport-nav-container {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  z-index: 125;
+}
+
+.teleport-nav-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 38px;
+  background: rgba(18, 24, 38, 0.78);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(235, 200, 140, 0.45);
+  border-radius: 9999px;
+  padding: 8px 14px;
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #fff6e5;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+  user-select: none;
+}
+
+.teleport-nav-btn:hover,
+.teleport-nav-btn.is-active {
+  background: rgba(28, 36, 54, 0.9);
+  border-color: rgba(255, 225, 160, 0.85);
+  color: #ffffff;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45), 0 0 16px rgba(235, 195, 130, 0.35);
+  transform: translateY(-1px);
+}
+
+.teleport-chevron {
+  transition: transform 0.25s ease;
+  color: rgba(255, 228, 168, 0.85);
+}
+
+.teleport-chevron.rotate-180 {
+  transform: rotate(180deg);
+}
+
+/* Dropdown Menu Panel */
+.teleport-dropdown-panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 200px;
+  background: rgba(18, 14, 26, 0.94);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1.5px solid rgba(255, 228, 168, 0.65);
+  border-radius: 16px;
+  padding: 6px;
+  box-shadow:
+    0 12px 36px rgba(0, 0, 0, 0.65),
+    0 0 20px rgba(255, 215, 120, 0.22);
+  z-index: 150;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  animation: teleportDropdownFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes teleportDropdownFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.teleport-dropdown-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 8px 12px;
+  background: transparent;
+  border: none;
+  border-radius: 10px;
+  color: #f7e8d0;
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.teleport-dropdown-item:hover {
+  background: rgba(255, 228, 168, 0.15);
+  color: #ffffff;
+  transform: translateX(2px);
+}
+
+.teleport-dropdown-item.is-current {
+  background: rgba(255, 228, 168, 0.18);
+  color: #ffd880;
+  font-weight: 600;
+}
+
+.teleport-dropdown-item.item-magic {
+  color: #ffd880;
+  border-bottom: 1px solid rgba(255, 228, 168, 0.22);
+  margin-bottom: 3px;
+  padding-bottom: 9px;
+}
+
+.teleport-dropdown-item.item-magic:hover {
+  background: rgba(245, 158, 11, 0.22);
+  color: #ffffff;
+}
+
+.teleport-current-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #ffd880;
+  box-shadow: 0 0 6px #ffd880;
+  margin-left: 8px;
+  flex-shrink: 0;
+}
+
+/* ==============================================================================
    DEV TEST HELPER (Discreet testing floating toolbar)
    ============================================================================== */
 .dev-test-panel {
@@ -1747,10 +1883,10 @@ button:focus-visible {
   justify-content: space-between;
   gap: clamp(10px, 1.4vh, 14px);
   
-  /* Dark navy/black glass tint with very high transparency so background scenery remains clearly visible */
-  background: rgba(12, 18, 30, 0.22);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
+  /* Dark navy/black glass tint with refined transparency so background scenery remains visible but text is crisp */
+  background: rgba(10, 16, 28, 0.38);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   
   /* Thin, elegant light border */
   border: 1px solid rgba(255, 255, 255, 0.32);
@@ -1946,14 +2082,14 @@ button:focus-visible {
 .sad-glass-photo-wrapper {
   position: relative;
   width: 100%;
-  flex: 1;
+  flex: 1 1 auto;
   min-height: 0;
-  aspect-ratio: 16 / 10;
+  height: 100%;
   border-radius: clamp(10px, 1.4vw, 13px);
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.42);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.32);
-  background: #0d111a;
+  background: rgba(8, 12, 20, 0.75);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1962,10 +2098,17 @@ button:focus-visible {
 .sad-glass-photo-img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
   object-position: center center;
   display: block;
-  transition: opacity 140ms ease;
+  cursor: pointer;
+  transition: opacity 140ms ease, filter 0.2s ease, transform 0.2s ease;
+}
+
+.sad-glass-photo-img:hover {
+  filter: brightness(1.06);
 }
 
 .sad-glass-photo-img.is-fading {
@@ -2545,7 +2688,7 @@ button:focus-visible {
   align-items: center;
   justify-content: space-between;
   gap: clamp(8px, 1.4vh, 14px);
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(24, 14, 26, 0.28);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   border: 1.5px solid rgba(255, 228, 168, 0.75);
@@ -2578,15 +2721,20 @@ button:focus-visible {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
 }
 
-/* Clean Photograph Display Container (Adapts dynamically to ANY aspect ratio) */
+/* Clean Photograph Display Container (Adapts dynamically to ANY aspect ratio)
+ * Matches Sad Gallery soft rounded corners reference
+ */
 .happy-photo-presentation-box {
   position: relative;
   width: 100%;
   flex: 1 1 auto;
   min-height: 0;
-  border-radius: clamp(10px, 1.4vw, 14px);
+  height: 100%;
+  border-radius: clamp(10px, 1.4vw, 13px);
   overflow: hidden;
-  background: transparent;
+  border: 1px solid rgba(255, 228, 168, 0.45);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.32);
+  background: rgba(18, 10, 20, 0.75);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2594,18 +2742,23 @@ button:focus-visible {
 
 /* Original HD Photograph: Never cropped, never stretched, preserves natural ratio */
 .happy-photo-element {
+  width: 100%;
+  height: 100%;
   max-width: 100%;
   max-height: 100%;
-  width: auto;
-  height: auto;
   object-fit: contain;
   object-position: center center;
   display: block;
   margin: 0 auto;
-  border-radius: clamp(8px, 1.2vw, 12px);
+  border-radius: clamp(10px, 1.4vw, 13px);
   box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
   image-rendering: auto;
-  transition: opacity 140ms ease;
+  cursor: pointer;
+  transition: opacity 140ms ease, filter 0.2s ease, transform 0.2s ease;
+}
+
+.happy-photo-element:hover {
+  filter: brightness(1.06);
 }
 
 .happy-photo-element.is-fading {
@@ -3477,29 +3630,65 @@ button:focus-visible {
 
 /* --------------------------------------------------------------------------
    OVERLAY 4: MESSAGE FOR YOU BUTTON
-   Fitted 100% inside the glowing pill button of final-countdown.png
+   Prominent, dark frosted-glass button with champagne gold border & glow
    -------------------------------------------------------------------------- */
 .overlay-message-button {
   position: absolute;
-  left: 31.38%;
-  top: 78.56%;
-  width: 39.76%;
-  height: 10.61%;
-  z-index: 20;
-  background: transparent !important;
-  border: none !important;
-  cursor: pointer;
-  outline: none !important;
-  box-shadow: none !important;
+  left: 50%;
+  top: 79.2%;
+  transform: translateX(-50%);
+  width: auto;
+  min-width: clamp(210px, 22vw, 290px);
+  max-width: 90%;
+  height: clamp(40px, 5.2vh, 52px);
+  z-index: 50;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 clamp(20px, 2.5vw, 32px);
+  background: linear-gradient(135deg, rgba(32, 14, 30, 0.88) 0%, rgba(18, 8, 20, 0.94) 100%);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1.5px solid rgba(255, 228, 168, 0.75);
   border-radius: 9999px;
+  box-shadow:
+    0 10px 28px rgba(0, 0, 0, 0.65),
+    0 0 20px rgba(255, 215, 120, 0.28),
+    inset 0 1px 1.5px rgba(255, 248, 225, 0.45);
+  cursor: pointer;
   pointer-events: auto;
+  user-select: none;
   box-sizing: border-box;
-  overflow: hidden;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  outline: none;
+}
+
+.overlay-message-button:hover {
+  background: linear-gradient(135deg, rgba(44, 20, 42, 0.94) 0%, rgba(26, 12, 28, 0.98) 100%);
+  border-color: rgba(255, 240, 195, 0.95);
+  box-shadow:
+    0 12px 32px rgba(0, 0, 0, 0.75),
+    0 0 28px rgba(255, 220, 130, 0.48),
+    inset 0 1px 2px rgba(255, 255, 255, 0.6);
+  transform: translateX(-50%) translateY(-2px);
+}
+
+.overlay-message-button:active {
+  transform: translateX(-50%) translateY(0) scale(0.98);
 }
 
 .overlay-message-button:focus {
-  outline: none !important;
-  box-shadow: none !important;
+  outline: none;
+}
+
+.overlay-message-btn-text {
+  font-family: 'Cinzel', 'Playfair Display', Georgia, serif;
+  font-size: clamp(0.86rem, 1.3vw, 1.05rem);
+  font-weight: 600;
+  color: #fff6df;
+  letter-spacing: 0.05em;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8), 0 0 10px rgba(255, 220, 130, 0.3);
+  white-space: nowrap;
 }
 
 /* --------------------------------------------------------------------------
@@ -3545,6 +3734,134 @@ button:focus-visible {
 .countdown-modal-hint-card {
   max-width: 440px;
   min-height: 240px;
+}
+
+/* Instruction Card Specific Styling (Message For You) */
+.countdown-instruction-card {
+  max-width: min(94vw, 880px);
+  max-height: 88vh;
+  padding: clamp(28px, 3.8vw, 36px) clamp(20px, 3vw, 32px) clamp(24px, 3.5vw, 30px);
+  background: linear-gradient(145deg, rgba(26, 11, 28, 0.94) 0%, rgba(15, 6, 18, 0.97) 100%);
+  border: 1.5px solid rgba(255, 228, 168, 0.70);
+  border-radius: clamp(18px, 2.5vw, 24px);
+  box-shadow:
+    0 24px 60px rgba(0, 0, 0, 0.85),
+    0 0 32px rgba(255, 215, 120, 0.22),
+    inset 0 1px 2px rgba(255, 248, 225, 0.40);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.countdown-instruction-body {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.countdown-instruction-columns {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  gap: clamp(18px, 2.8vw, 34px);
+  width: 100%;
+}
+
+.instruction-column {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.instruction-columns-divider {
+  width: 1px;
+  background: linear-gradient(180deg, transparent 0%, rgba(255, 228, 168, 0.4) 15%, rgba(255, 240, 195, 0.75) 50%, rgba(255, 228, 168, 0.4) 85%, transparent 100%);
+  flex-shrink: 0;
+  margin: 4px 0;
+}
+
+@media (max-width: 768px) {
+  .countdown-instruction-columns {
+    flex-direction: column;
+    gap: 22px;
+  }
+
+  .instruction-columns-divider {
+    width: 80%;
+    height: 1px;
+    margin: 4px auto;
+    background: linear-gradient(90deg, transparent 0%, rgba(255, 228, 168, 0.4) 15%, rgba(255, 240, 195, 0.75) 50%, rgba(255, 228, 168, 0.4) 85%, transparent 100%);
+  }
+}
+
+.countdown-instruction-heading {
+  font-family: 'Cinzel', 'Playfair Display', Georgia, serif;
+  font-size: clamp(1.15rem, 1.8vw, 1.38rem);
+  font-weight: 600;
+  color: #ffe4a0;
+  text-align: center;
+  margin: 0 0 12px 0;
+  letter-spacing: 0.02em;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6), 0 0 14px rgba(255, 215, 120, 0.35);
+  line-height: 1.35;
+}
+
+.countdown-instruction-divider {
+  width: clamp(70px, 16vw, 110px);
+  height: 1.5px;
+  margin: 0 auto 20px auto;
+  background: linear-gradient(90deg, transparent, rgba(255, 228, 168, 0.85), transparent);
+}
+
+.countdown-instruction-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(10px, 1.6vh, 14px);
+}
+
+.countdown-instruction-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 14px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 228, 168, 0.16);
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.countdown-instruction-item:hover {
+  background: rgba(255, 228, 168, 0.08);
+  border-color: rgba(255, 228, 168, 0.38);
+  transform: translateX(2px);
+}
+
+.instruction-num-badge {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Cinzel', Georgia, serif;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #ffd67a;
+  background: rgba(255, 215, 120, 0.16);
+  border: 1px solid rgba(255, 228, 168, 0.5);
+  box-shadow: 0 0 10px rgba(255, 215, 120, 0.25);
+}
+
+.instruction-item-text {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: clamp(0.92rem, 1.25vw, 1.02rem);
+  color: #fffaf0;
+  line-height: 1.5;
+  letter-spacing: 0.01em;
 }
 
 .countdown-modal-close {
@@ -3744,14 +4061,14 @@ button:focus-visible {
   height: min(92vh, 800px);
   max-width: min(94vw, 550px);
   max-height: min(92vh, 800px);
-  background: rgba(255, 255, 255, 0.08);
-  -webkit-backdrop-filter: blur(14px);
-  backdrop-filter: blur(14px);
+  background: rgba(16, 20, 32, 0.55);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
   border: 1.5px solid rgba(255, 228, 168, 0.82);
   border-radius: 38px;
   box-shadow:
     /* Deep card elevation drop-shadow */
-    0 22px 55px rgba(0, 0, 0, 0.38),
+    0 22px 55px rgba(0, 0, 0, 0.48),
     /* Bright concentrated champagne-gold highlight directly along the edge */
     0 0 3px rgba(255, 240, 190, 0.75),
     /* Soft champagne-gold glow spreading gently outward from the border */
@@ -3770,7 +4087,68 @@ button:focus-visible {
   z-index: 10000;
   transform: scale(0.96);
   opacity: 0;
-  transition: transform 0.24s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.24s ease;
+  transition: transform 0.24s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.24s ease, width 0.3s ease, height 0.3s ease;
+}
+
+/* Dynamic Aspect Ratio Responsive Sizing for Cinematic Video Viewer */
+.video-modal-card.is-landscape {
+  width: min(94vw, 920px);
+  max-width: min(94vw, 920px);
+  height: auto;
+  max-height: min(92vh, 660px);
+}
+
+.video-modal-card.is-portrait {
+  width: min(94vw, 520px);
+  max-width: min(94vw, 520px);
+  height: min(92vh, 800px);
+  max-height: min(92vh, 800px);
+}
+
+.video-modal-card.is-square {
+  width: min(94vw, 680px);
+  max-width: min(94vw, 680px);
+  height: auto;
+  max-height: min(92vh, 720px);
+}
+
+/* Modal Themes for Sad & Happy Galleries */
+.video-modal-card.sad-video-modal-theme {
+  background: rgba(10, 18, 32, 0.65);
+  border-color: rgba(56, 189, 248, 0.85);
+  box-shadow:
+    0 22px 55px rgba(0, 0, 0, 0.55),
+    0 0 16px rgba(56, 189, 248, 0.40),
+    0 0 32px rgba(56, 189, 248, 0.20),
+    inset 0 1px 1.5px rgba(186, 230, 253, 0.65),
+    inset 0 0 12px rgba(56, 189, 248, 0.12);
+}
+
+.video-modal-card.sad-video-modal-theme .video-ctrl-scrubber-progress {
+  background: linear-gradient(90deg, #38bdf8, #7dd3fc);
+}
+
+.video-modal-card.sad-video-modal-theme .video-ctrl-volume-slider {
+  accent-color: #38bdf8;
+}
+
+.video-modal-card.happy-video-modal-theme {
+  background: rgba(28, 14, 26, 0.60);
+  border-color: rgba(251, 191, 36, 0.85);
+  box-shadow:
+    0 22px 55px rgba(0, 0, 0, 0.55),
+    0 0 16px rgba(251, 191, 36, 0.40),
+    0 0 32px rgba(245, 158, 11, 0.20),
+    inset 0 1px 1.5px rgba(254, 243, 199, 0.65),
+    inset 0 0 12px rgba(251, 191, 36, 0.12);
+}
+
+.video-modal-card.happy-video-modal-theme .video-ctrl-scrubber-progress {
+  background: linear-gradient(90deg, #f59e0b, #fbbf24);
+}
+
+.video-modal-card.happy-video-modal-theme .video-ctrl-volume-slider {
+  accent-color: #fbbf24;
 }
 
 .video-modal-card.is-open {
@@ -3823,14 +4201,13 @@ button:focus-visible {
   stroke-width: 2.2;
 }
 
-/* Strict 9:16 Video Player Container (Smooth rounded clipping, zero square backing) */
+/* Video Player Container (Dynamic aspect-ratio, smooth rounded corners) */
 .video-player-container {
   position: relative;
   flex: 1 1 auto;
   min-height: 0;
   height: 100%;
   width: auto;
-  aspect-ratio: 9 / 16;
   max-width: 100%;
   margin: 0 auto;
   border-radius: 22px;
@@ -3846,10 +4223,35 @@ button:focus-visible {
   z-index: 10;
 }
 
-/* Sharp, Native 9:16 Video Element: NEVER cover, ALWAYS contain, perfectly rounded */
+.video-modal-card.is-landscape .video-player-container {
+  aspect-ratio: 16 / 9;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  max-height: calc(min(92vh, 660px) - 86px);
+}
+
+.video-modal-card.is-portrait .video-player-container {
+  aspect-ratio: 9 / 16;
+  width: auto;
+  height: 100%;
+  max-width: 100%;
+}
+
+.video-modal-card.is-square .video-player-container {
+  aspect-ratio: 1 / 1;
+  width: auto;
+  height: 100%;
+  max-width: 100%;
+  max-height: calc(min(92vh, 720px) - 86px);
+}
+
+/* Sharp, Native Video Element: NEVER cover, ALWAYS contain, perfectly rounded */
 .video-player-media {
   width: 100%;
   height: 100%;
+  max-width: 100%;
+  max-height: 100%;
   object-fit: contain;
   display: block;
   border-radius: inherit;
@@ -3888,27 +4290,52 @@ button:focus-visible {
   width: 58px;
   height: 58px;
   border-radius: 50%;
-  background: rgba(0, 0, 0, 0.45);
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
-  border: 1.5px solid rgba(255, 255, 255, 0.4);
+  background: rgba(0, 0, 0, 0.55);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border: 1.5px solid rgba(255, 228, 168, 0.75);
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
-  transition: transform 0.2s ease, background 0.2s ease;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Themed Center Play Buttons inside Modal */
+.sad-video-modal-theme .video-central-play-circle {
+  background: rgba(10, 25, 52, 0.78);
+  border: 1.5px solid rgba(56, 189, 248, 0.85);
+  box-shadow: 0 0 20px rgba(56, 189, 248, 0.45), 0 8px 24px rgba(0, 0, 0, 0.65);
+}
+
+.sad-video-modal-theme .video-central-play-btn:hover .video-central-play-circle {
+  transform: scale(1.08);
+  background: rgba(14, 34, 70, 0.88);
+  border-color: #38bdf8;
+  box-shadow: 0 0 28px rgba(56, 189, 248, 0.72), 0 10px 28px rgba(0, 0, 0, 0.75);
+}
+
+.happy-video-modal-theme .video-central-play-circle {
+  background: rgba(48, 20, 10, 0.78);
+  border: 1.5px solid rgba(251, 146, 60, 0.85);
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.45), 0 8px 24px rgba(0, 0, 0, 0.65);
+}
+
+.happy-video-modal-theme .video-central-play-btn:hover .video-central-play-circle {
+  transform: scale(1.08);
+  background: rgba(66, 26, 12, 0.88);
+  border-color: #fbbf24;
+  box-shadow: 0 0 28px rgba(245, 158, 11, 0.72), 0 10px 28px rgba(0, 0, 0, 0.75);
 }
 
 .video-central-play-btn:hover .video-central-play-circle {
-  transform: scale(1.1);
-  background: rgba(0, 0, 0, 0.65);
-  border-color: rgba(255, 255, 255, 0.7);
+  transform: scale(1.08);
 }
 
 .video-central-play-icon {
   width: 22px;
   height: 22px;
-  margin-left: 3px;
+  transform: translateX(1.5px);
 }
 
 /* Separate Compact Control Row Immediately BELOW the Video (Option 5 Layout) */
@@ -4061,18 +4488,28 @@ button:focus-visible {
 .image-modal-backdrop {
   position: fixed;
   inset: 0;
-  z-index: 9999;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  width: 100dvw;
+  height: 100vh;
+  height: 100dvh;
+  z-index: 99999;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.22);
-  -webkit-backdrop-filter: blur(2px);
-  backdrop-filter: blur(2px);
+  background: rgba(0, 0, 0, 0.45);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.24s ease;
-  padding: 16px;
+  padding: clamp(12px, 2.5vw, 24px);
   box-sizing: border-box;
+  margin: 0;
+  overflow: hidden;
 }
 
 .image-modal-backdrop.is-open {
@@ -4086,15 +4523,18 @@ button:focus-visible {
 }
 
 /* Square / Near-Square Transparent Frosted Glass Card
- * - Enlarged by ~28% (desktop dimensions: min(94vw, 90vh, 790px))
+ * - Symmetrical desktop footprint: min(92vw, 88vh, 790px)
  * - Uses exact same glass material, transparency, champagne-gold border, and glow as video viewer
- * - Adapts cleanly to ANY aspect ratio image (portrait, landscape, square) via object-fit: contain
+ * - Adapts cleanly to ANY aspect ratio image or video via object-fit: contain
  */
 .image-modal-card {
   position: relative;
   box-sizing: border-box;
-  width: min(94vw, 90vh, 790px);
-  height: min(94vw, 90vh, 790px);
+  margin: auto;
+  width: min(92vw, 88vh, 790px);
+  height: min(92vw, 88vh, 790px);
+  max-width: calc(100vw - 28px);
+  max-height: calc(100vh - 28px);
   aspect-ratio: 1 / 1;
   background: rgba(255, 255, 255, 0.08);
   -webkit-backdrop-filter: blur(14px);
@@ -4304,6 +4744,205 @@ button:focus-visible {
     font-size: 11px;
     min-width: 36px;
   }
+}
+
+/* ==============================================================================
+   GALLERY MEDIA MODAL (Sad & Happy Galleries Large Video / Image Viewer)
+   ============================================================================== */
+.gallery-modal-video-stage {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 28px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  background: rgba(0, 0, 0, 0.30);
+  cursor: pointer;
+}
+
+.gallery-modal-video-element {
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  display: block;
+  border-radius: 24px;
+}
+
+/* Centered Play/Pause Button Overlay in Large Video Viewer */
+.gallery-modal-center-play-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 20;
+  transition: opacity 0.28s ease;
+}
+
+.gallery-modal-center-play-overlay.is-paused {
+  opacity: 1;
+}
+
+.gallery-modal-center-play-overlay.is-playing {
+  opacity: 0;
+}
+
+/* Subtle or visible on hover when video is playing */
+.gallery-modal-video-stage:hover .gallery-modal-center-play-overlay.is-playing {
+  opacity: 0.92;
+}
+
+.gallery-modal-center-play-btn {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: rgba(20, 12, 22, 0.68);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  border: 1.5px solid rgba(255, 228, 168, 0.85);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  pointer-events: auto;
+  box-shadow:
+    0 8px 28px rgba(0, 0, 0, 0.5),
+    0 0 16px rgba(255, 215, 120, 0.35);
+  transition: transform 0.22s ease, background 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
+  padding: 0;
+}
+
+.gallery-modal-center-play-btn:hover {
+  transform: scale(1.1);
+  background: rgba(255, 228, 168, 0.25);
+  border-color: #ffffff;
+  box-shadow:
+    0 10px 32px rgba(0, 0, 0, 0.6),
+    0 0 24px rgba(255, 225, 140, 0.55);
+}
+
+.gallery-modal-center-play-btn:active {
+  transform: scale(0.95);
+}
+
+.play-icon-shifted {
+  transform: translateX(2px);
+}
+
+@media (max-width: 580px), (max-height: 700px) {
+  .gallery-modal-video-stage {
+    border-radius: 20px;
+  }
+  .gallery-modal-center-play-btn {
+    width: 60px;
+    height: 60px;
+  }
+}
+
+/* Enlarged Video Viewer Bottom Controls Bar (ALWAYS VISIBLE whether playing or paused) */
+.gallery-modal-video-controls-bar {
+  position: absolute;
+  bottom: clamp(14px, 2.5vh, 24px);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(20, 12, 22, 0.72);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  border: 1.5px solid rgba(255, 228, 168, 0.65);
+  border-radius: 9999px;
+  padding: 6px 16px;
+  z-index: 25;
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.52);
+  user-select: none;
+  pointer-events: auto;
+}
+
+.gallery-modal-ctrl-btn {
+  background: transparent;
+  border: none;
+  color: #fff2c4;
+  cursor: pointer;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: transform 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+
+.gallery-modal-ctrl-btn:hover {
+  background: rgba(255, 255, 255, 0.20);
+  color: #ffffff;
+  transform: scale(1.12);
+}
+
+.gallery-modal-ctrl-btn:active {
+  transform: scale(0.92);
+}
+
+.gallery-modal-ctrl-divider {
+  width: 1px;
+  height: 18px;
+  background: rgba(255, 228, 168, 0.35);
+}
+
+.gallery-modal-volume-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.gallery-modal-volume-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 76px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.28);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.gallery-modal-volume-slider:hover {
+  background: rgba(255, 255, 255, 0.45);
+}
+
+.gallery-modal-volume-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: #fde047;
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  box-shadow: 0 0 8px rgba(253, 224, 71, 0.6);
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.gallery-modal-volume-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+}
+
+.gallery-modal-volume-slider::-moz-range-thumb {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: #fde047;
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  box-shadow: 0 0 8px rgba(253, 224, 71, 0.6);
+  cursor: pointer;
 }
 
 
@@ -5155,6 +5794,20 @@ button:focus-visible {
   pointer-events: auto;
 }
 
+/* PART 1 — HAPPY GALLERY: Music Bar Position Directly Below Media Card */
+/* Positioned relative to .happy-gallery-content-wrapper, perfectly aligning horizontal center with media card */
+.happy-gallery-content-wrapper .gallery-music-wrapper {
+  position: absolute;
+  bottom: clamp(12px, 2vh, 22px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: auto;
+}
+
 /* Compact Pill matching .music-player-pill with EXACT border-radius: 30px */
 .gallery-music-capsule {
   position: relative;
@@ -5995,18 +6648,30 @@ button:focus-visible {
    - Preserves original aspect ratio
    - Only 2 custom controls: Play/Pause and Volume
    ============================================================================== */
-.gallery-video-container {
+.gallery-video-wrapper {
   position: relative;
   width: 100%;
   height: 100%;
-  min-height: 240px;
-  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+/* 1. Video Viewport: Proportionate, centered, object-fit contain */
+.gallery-video-viewport {
+  position: relative;
+  width: 100%;
+  flex: 1 1 auto;
+  min-height: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  border-radius: 14px;
-  background: rgba(5, 5, 10, 0.6);
+  border-radius: clamp(10px, 1.4vw, 13px);
+  background: rgba(0, 0, 0, 0.40);
   cursor: pointer;
   user-select: none;
 }
@@ -6014,11 +6679,15 @@ button:focus-visible {
 .gallery-video-element {
   width: 100%;
   height: 100%;
+  max-width: 100%;
   max-height: 100%;
   object-fit: contain;
+  object-position: center center;
   display: block;
+  border-radius: inherit;
 }
 
+/* 2. Central Play Button Overlay & Symmetrical Themed Buttons */
 .gallery-video-center-overlay {
   position: absolute;
   inset: 0;
@@ -6026,88 +6695,112 @@ button:focus-visible {
   align-items: center;
   justify-content: center;
   pointer-events: none;
-  z-index: 5;
+  z-index: 10;
 }
 
 .gallery-video-center-play-btn {
   pointer-events: auto;
-  width: 64px;
-  height: 64px;
+  width: 58px;
+  height: 58px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1.5px solid rgba(255, 255, 255, 0.6);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
-  transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.2s ease;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   cursor: pointer;
+  padding: 0;
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.22s ease,
+              background-color 0.22s ease,
+              border-color 0.22s ease,
+              filter 0.22s ease;
 }
 
+/* A. Sad Gallery — Blue Play Button */
 .sad-video-theme .gallery-video-center-play-btn {
-  background: rgba(14, 30, 60, 0.82);
-  border-color: rgba(56, 189, 248, 0.85);
-  box-shadow: 0 0 24px rgba(56, 189, 248, 0.5), 0 8px 24px rgba(0, 0, 0, 0.7);
-  color: #38bdf8;
+  background: rgba(10, 25, 52, 0.78);
+  border: 1.5px solid rgba(56, 189, 248, 0.85);
+  box-shadow: 
+    0 0 18px rgba(56, 189, 248, 0.45),
+    0 8px 24px rgba(0, 0, 0, 0.65);
 }
 
-.happy-video-theme .gallery-video-center-play-btn {
-  background: rgba(48, 18, 38, 0.82);
-  border-color: rgba(251, 191, 36, 0.85);
-  box-shadow: 0 0 24px rgba(251, 191, 36, 0.5), 0 8px 24px rgba(0, 0, 0, 0.7);
-  color: #fbbf24;
-}
-
-.gallery-video-center-play-btn:hover {
+.sad-video-theme .gallery-video-center-play-btn:hover {
   transform: scale(1.08);
+  background: rgba(14, 34, 70, 0.88);
+  border-color: #38bdf8;
+  box-shadow: 
+    0 0 28px rgba(56, 189, 248, 0.72),
+    0 10px 28px rgba(0, 0, 0, 0.75);
+  filter: brightness(1.1);
 }
 
+/* B. Happy Gallery — Orange Play Button */
+.happy-video-theme .gallery-video-center-play-btn {
+  background: rgba(48, 20, 10, 0.78);
+  border: 1.5px solid rgba(251, 146, 60, 0.85);
+  box-shadow: 
+    0 0 18px rgba(245, 158, 11, 0.45),
+    0 8px 24px rgba(0, 0, 0, 0.65);
+}
+
+.happy-video-theme .gallery-video-center-play-btn:hover {
+  transform: scale(1.08);
+  background: rgba(66, 26, 12, 0.88);
+  border-color: #fbbf24;
+  box-shadow: 
+    0 0 28px rgba(245, 158, 11, 0.72),
+    0 10px 28px rgba(0, 0, 0, 0.75);
+  filter: brightness(1.1);
+}
+
+/* Perfect Optical Centering of the 22px Play Triangle */
 .gallery-video-play-icon {
-  margin-left: 4px;
+  width: 22px;
+  height: 22px;
+  display: block;
+  transform: translateX(1.5px);
 }
 
-/* Floating Custom Controls Bar (Only 2 Controls: Play/Pause and Volume) */
+/* 3. Custom Control Bar SEPARATELY BELOW the Video Viewport (Inside the Card) */
 .gallery-video-controls-bar {
-  position: absolute;
-  bottom: 12px;
-  left: 50%;
-  transform: translateX(-50%);
+  position: relative;
+  width: auto;
+  max-width: 100%;
+  margin-top: 8px;
+  padding: 5px 14px;
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 6px 16px;
-  border-radius: 30px;
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  justify-content: center;
+  gap: 10px;
+  border-radius: 9999px;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-sizing: border-box;
+  flex-shrink: 0;
   z-index: 10;
-  transition: opacity 0.3s ease, transform 0.3s ease;
-}
-
-.gallery-video-controls-bar.is-hidden {
-  opacity: 0;
-  pointer-events: none;
-  transform: translateX(-50%) translateY(8px);
-}
-
-.gallery-video-controls-bar.is-visible {
-  opacity: 1;
-  pointer-events: auto;
-  transform: translateX(-50%) translateY(0);
+  user-select: none;
 }
 
 .sad-video-theme .gallery-video-controls-bar {
-  background: linear-gradient(135deg, rgba(10, 24, 48, 0.88) 0%, rgba(6, 14, 30, 0.94) 100%);
-  border: 1px solid rgba(56, 189, 248, 0.65);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6), 0 0 16px rgba(56, 189, 248, 0.35);
+  background: rgba(10, 20, 38, 0.85);
+  border: 1px solid rgba(56, 189, 248, 0.55);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5), 0 0 12px rgba(56, 189, 248, 0.22);
   color: #e0f2fe;
 }
 
+.happy-video-theme.gallery-video-wrapper {
+  justify-content: center;
+}
+
+.happy-video-theme .gallery-video-viewport {
+  height: 100%;
+  width: 100%;
+}
+
 .happy-video-theme .gallery-video-controls-bar {
-  background: linear-gradient(135deg, rgba(48, 18, 38, 0.88) 0%, rgba(28, 10, 24, 0.94) 100%);
-  border: 1px solid rgba(251, 191, 36, 0.65);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6), 0 0 16px rgba(251, 191, 36, 0.35);
-  color: #fffaf0;
+  display: none !important;
 }
 
 .gallery-video-ctrl-btn {
@@ -6125,23 +6818,36 @@ button:focus-visible {
 
 .gallery-video-ctrl-btn:hover {
   transform: scale(1.12);
-  opacity: 0.9;
+  opacity: 0.92;
+}
+
+.gallery-video-ctrl-btn.enlarge-btn:hover {
+  color: #ffffff;
+}
+
+.gallery-video-time-display {
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.88;
+  white-space: nowrap;
 }
 
 .gallery-video-ctrl-divider {
   width: 1px;
-  height: 16px;
-  background: rgba(255, 255, 255, 0.25);
+  height: 14px;
+  background: rgba(255, 255, 255, 0.22);
 }
 
 .gallery-video-volume-group {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 }
 
 .gallery-video-volume-slider {
-  width: 65px;
+  width: 54px;
   height: 4px;
   cursor: pointer;
 }
@@ -6229,7 +6935,7 @@ button:focus-visible {
 
 /* Base Glass Card */
 .qna-glass-card {
-  background: linear-gradient(135deg, rgba(22, 30, 42, 0.62) 0%, rgba(14, 20, 30, 0.72) 100%);
+  background: linear-gradient(135deg, rgba(16, 22, 34, 0.72) 0%, rgba(10, 15, 24, 0.80) 100%);
   backdrop-filter: blur(24px) saturate(160%);
   -webkit-backdrop-filter: blur(24px) saturate(160%);
   border: 1px solid rgba(235, 200, 140, 0.48);
@@ -6860,33 +7566,36 @@ button:focus-visible {
 .qna-final-surprise-stage {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   width: 100%;
-  max-width: 1280px;
+  max-width: 1440px;
   margin: 0 auto;
-  gap: 16px;
-  padding: 40px 24px;
+  gap: clamp(12px, 1.8vh, 16px);
+  padding: clamp(24px, 3.5vh, 40px) clamp(24px, 4.5vw, 65px);
+  box-sizing: border-box;
 }
 
 .qna-final-top-bar {
-  width: 100%;
+  width: auto;
   display: flex;
   justify-content: flex-start;
   margin-bottom: 4px;
 }
 
 .qna-final-content-layout {
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  width: 100%;
-  gap: 32px;
+  display: grid;
+  grid-template-columns: minmax(360px, 670px) 330px;
+  justify-content: start;
+  align-items: start;
+  gap: 38px;
+  width: auto;
 }
 
 /* Left Column: Message Card (~65%) */
 .qna-final-left-column {
-  flex: 1 1 65%;
-  max-width: 780px;
+  min-width: 0;
+  width: 100%;
+  max-width: 670px;
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -6903,7 +7612,7 @@ button:focus-visible {
 }
 
 .qna-final-message-card {
-  padding: 34px 36px;
+  padding: 32px 34px;
   max-height: 520px;
   display: flex;
   flex-direction: column;
@@ -6950,10 +7659,12 @@ button:focus-visible {
 
 /* Right Column: Media Cards (~35%) */
 .qna-final-right-column {
-  flex: 0 0 340px;
+  min-width: 0;
+  width: 100%;
+  max-width: 330px;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 18px;
 }
 
 /* Image Card */
@@ -6992,7 +7703,17 @@ button:focus-visible {
   transition: transform 0.4s ease;
 }
 
-.qna-final-image-card:hover .qna-final-portrait-image {
+.qna-final-portrait-video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  display: block;
+  transition: transform 0.4s ease;
+}
+
+.qna-final-image-card:hover .qna-final-portrait-image,
+.qna-final-image-card:hover .qna-final-portrait-video {
   transform: scale(1.04);
 }
 
@@ -7132,17 +7853,6 @@ button:focus-visible {
     max-width: 750px;
     transform: none !important;
   }
-
-  .qna-final-content-layout {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .qna-final-left-column,
-  .qna-final-right-column {
-    width: 100%;
-    max-width: 750px;
-  }
 }
 
 @media (max-width: 768px) {
@@ -7150,9 +7860,25 @@ button:focus-visible {
     grid-template-columns: 1fr;
   }
 
+  .qna-final-surprise-stage {
+    align-items: center;
+    padding: 24px 16px;
+  }
+
+  .qna-final-content-layout {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    width: 100%;
+  }
+
+  .qna-final-left-column,
+  .qna-final-right-column {
+    max-width: 100%;
+  }
+
   .qna-question-card,
   .qna-final-message-card {
-    padding: 26px 18px;
+    padding: 24px 18px;
   }
 
   .qna-question-text {

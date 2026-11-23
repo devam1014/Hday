@@ -30,14 +30,52 @@ import { audioController } from '../utils/audioController';
  * 7. "See This View": Fullscreen background-only mode with Escape / click-to-exit.
  * 8. Silent background music: Zero player controls rendered; plays continuously from public/QNA-music/.
  */
-export default function QnASection({ onBackToHappyGallery }) {
+export default function QnASection({
+  onBackToHappyGallery,
+  onPreviousPage,
+  initialStep = 'question',
+  initialQuestionIndex = 0,
+  onProgressChange,
+}) {
+  const handlePreviousNavigation = onPreviousPage || onBackToHappyGallery;
   const qnaConfig = BIRTHDAY_CONFIG.qna || {};
   const questions = useMemo(() => (qnaConfig.questions || []).slice(0, 10), [qnaConfig.questions]);
   const finalMessage = qnaConfig.finalMessage || {};
 
+  // Configured media for Final Message
+  const firstCardMedia = finalMessage.imageCardMedia || finalMessage.image || '/last-msg/1.mp4';
+  const secondCardMedia = finalMessage.videoCardMedia || finalMessage.video || '/last-msg/2.mp4';
+  const isFirstCardVideo = /\.(mp4|webm|mov)(\?.*)?$/i.test(firstCardMedia);
+  const firstCardVideoRef = useRef(null);
+
   // 'question' | 'button' | 'final-message'
-  const [currentStep, setCurrentStep] = useState('question');
-  const [questionIndex, setQuestionIndex] = useState(0);
+  const [currentStep, setCurrentStep] = useState(initialStep);
+  const [questionIndex, setQuestionIndex] = useState(
+    typeof initialQuestionIndex === 'number' && initialQuestionIndex >= 0 && initialQuestionIndex < 10
+      ? initialQuestionIndex
+      : 0
+  );
+
+  // Synchronize with external initialStep / initialQuestionIndex changes (e.g. via Teleport)
+  useEffect(() => {
+    if (initialStep && initialStep !== currentStep) {
+      setCurrentStep(initialStep);
+    }
+  }, [initialStep]);
+
+  useEffect(() => {
+    if (typeof initialQuestionIndex === 'number' && initialQuestionIndex !== questionIndex) {
+      setQuestionIndex(initialQuestionIndex);
+    }
+  }, [initialQuestionIndex]);
+
+  // Notify parent of progress changes for TELEPORT_24H_NAV persistence
+  useEffect(() => {
+    onProgressChange?.({
+      step: currentStep,
+      questionIndex,
+    });
+  }, [currentStep, questionIndex, onProgressChange]);
 
   // Active selected option and open message card
   const [selectedOptionId, setSelectedOptionId] = useState(null);
@@ -128,18 +166,31 @@ export default function QnASection({ onBackToHappyGallery }) {
     }
   };
 
+  // Handle first card looping video modal play/pause and cleanup
+  useEffect(() => {
+    if (isImageModalOpen && isFirstCardVideo && firstCardVideoRef.current) {
+      firstCardVideoRef.current.currentTime = 0;
+      firstCardVideoRef.current.play().catch(() => {});
+    } else if (!isImageModalOpen && firstCardVideoRef.current) {
+      firstCardVideoRef.current.pause();
+    }
+  }, [isImageModalOpen, isFirstCardVideo]);
+
   // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (currentStep === 'question') {
+      if (e.key === 'Escape') {
+        if (isImageModalOpen) setIsImageModalOpen(false);
+        if (isVideoModalOpen) setIsVideoModalOpen(false);
+        handleCloseMessage();
+      } else if (currentStep === 'question') {
         if (e.key === 'ArrowRight') handleNext();
         else if (e.key === 'ArrowLeft' && questionIndex > 0) handlePrev();
-        else if (e.key === 'Escape') handleCloseMessage();
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [currentStep, questionIndex, questions.length]);
+  }, [currentStep, questionIndex, questions.length, isImageModalOpen, isVideoModalOpen]);
 
   return (
     <div className="qna-root" role="region" aria-label="Moments & Memories Q&A">
@@ -152,16 +203,16 @@ export default function QnASection({ onBackToHappyGallery }) {
         />
       </div>
 
-      {/* Top Left Corner Navigation Button: Back to Happy Gallery */}
+      {/* Top Left Corner Navigation Button: Previous Page */}
       <button
         type="button"
-        onClick={onBackToHappyGallery}
+        onClick={handlePreviousNavigation}
         className="corner-nav-btn corner-nav-prev"
-        aria-label="Back to Happy Gallery"
-        title="Return to Happy Memories Gallery"
+        aria-label="Previous Page: Return to Happy Gallery"
+        title="Return to Previous Page"
       >
         <ArrowLeft size={16} className="corner-nav-icon" />
-        <span className="corner-nav-text">Happy Gallery</span>
+        <span className="corner-nav-text">Previous Page</span>
       </button>
 
       {/* ==================================================================== */}
@@ -380,16 +431,16 @@ export default function QnASection({ onBackToHappyGallery }) {
               </article>
             </section>
 
-            {/* 2 & 3. RIGHT COLUMN: IMAGE CARD + VIDEO CARD */}
-            <aside className="qna-final-right-column" aria-label="Special Photo and Video Clip">
-              {/* Image Card: Click to open ImageMemoriesModal */}
+            {/* 2 & 3. RIGHT COLUMN: IMAGE CARD POSITION (1.mp4) + VIDEO CARD POSITION (2.mp4) */}
+            <aside className="qna-final-right-column" aria-label="Special Video Clips">
+              {/* Card 1: Looping control-free video (Image Card position) */}
               <div
                 className="qna-glass-card qna-final-image-card"
                 onClick={() => setIsImageModalOpen(true)}
                 role="button"
                 tabIndex={0}
-                aria-label="Click to enlarge memory photo"
-                title="Click to view full photo"
+                aria-label={isFirstCardVideo ? "Click to view video in full" : "Click to view photo in full"}
+                title={isFirstCardVideo ? "Click to view large video" : "Click to view large photo"}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
@@ -398,27 +449,38 @@ export default function QnASection({ onBackToHappyGallery }) {
                 }}
               >
                 <div className="qna-final-image-frame">
-                  {!imageError && finalMessage.image ? (
+                  {isFirstCardVideo ? (
+                    <video
+                      src={firstCardMedia}
+                      autoPlay
+                      loop
+                      muted
+                      playsInline
+                      controls={false}
+                      className="qna-final-portrait-video"
+                      onError={() => setImageError(true)}
+                    />
+                  ) : !imageError && firstCardMedia ? (
                     <img
-                      src={finalMessage.image}
+                      src={firstCardMedia}
                       alt="Special moment memory"
                       className="qna-final-portrait-image"
                       onError={() => setImageError(true)}
                     />
                   ) : (
                     <div className="qna-final-empty-media-box">
-                      <ImageIcon size={32} className="text-amber-300 mb-2 opacity-75" />
-                      <span className="qna-final-empty-tag">Memory Photo</span>
-                      <p className="qna-final-empty-note">"Place photo into public/last-msg/"</p>
+                      <Play size={32} className="text-amber-300 mb-2 opacity-75" />
+                      <span className="qna-final-empty-tag">Special Clip</span>
+                      <p className="qna-final-empty-note">"Place 1.mp4 into public/last-msg/"</p>
                     </div>
                   )}
                 </div>
                 <div className="qna-final-media-badge">
-                  <span>Click to view full photo</span>
+                  <span>{isFirstCardVideo ? 'Click to view full video' : 'Click to view full photo'}</span>
                 </div>
               </div>
 
-              {/* Video Card: Click to open VideoMemoriesModal */}
+              {/* Card 2: Normal controllable video (Video Card position) */}
               <div
                 className="qna-glass-card qna-final-video-card"
                 onClick={() => setIsVideoModalOpen(true)}
@@ -434,10 +496,10 @@ export default function QnASection({ onBackToHappyGallery }) {
                 }}
               >
                 <div className="qna-final-video-preview-wrapper">
-                  {!videoError && finalMessage.video ? (
+                  {!videoError && secondCardMedia ? (
                     <div className="qna-final-video-thumbnail">
                       <video
-                        src={finalMessage.video}
+                        src={secondCardMedia}
                         className="qna-final-video-thumb-elem"
                         muted
                         preload="metadata"
@@ -453,7 +515,7 @@ export default function QnASection({ onBackToHappyGallery }) {
                     <div className="qna-final-empty-media-box">
                       <Play size={32} className="text-amber-300 mb-2 opacity-75" />
                       <span className="qna-final-empty-tag">Video Clip</span>
-                      <p className="qna-final-empty-note">"Place video into public/last-msg/"</p>
+                      <p className="qna-final-empty-note">"Place 2.mp4 into public/last-msg/"</p>
                     </div>
                   )}
                 </div>
@@ -465,21 +527,60 @@ export default function QnASection({ onBackToHappyGallery }) {
             </aside>
           </div>
 
-          {/* Reusable Image Modal */}
-          <ImageMemoriesModal
-            isOpen={isImageModalOpen}
-            onClose={() => setIsImageModalOpen(false)}
-            imageSrc={finalMessage.image || '/last-msg/1.jpg'}
-            alt="Final birthday memory photo"
-          />
+          {/* First Card Modal: Looping, control-free video (or image modal if image) */}
+          {isFirstCardVideo ? (
+            isImageModalOpen && (
+              <div
+                className="image-modal-backdrop is-open"
+                onClick={() => setIsImageModalOpen(false)}
+                role="dialog"
+                aria-modal="true"
+                aria-label="Enlarged Special Video"
+              >
+                <div
+                  className="image-modal-card is-open gallery-media-modal-card"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <button
+                    type="button"
+                    onClick={() => setIsImageModalOpen(false)}
+                    className="image-modal-close-btn"
+                    aria-label="Close video viewer"
+                    title="Close (Esc)"
+                  >
+                    <X className="image-close-icon" />
+                  </button>
+                  <div className="gallery-modal-video-stage">
+                    <video
+                      ref={firstCardVideoRef}
+                      src={firstCardMedia}
+                      autoPlay
+                      loop
+                      muted
+                      playsInline
+                      controls={false}
+                      className="gallery-modal-video-element"
+                    />
+                  </div>
+                </div>
+              </div>
+            )
+          ) : (
+            <ImageMemoriesModal
+              isOpen={isImageModalOpen}
+              onClose={() => setIsImageModalOpen(false)}
+              imageSrc={firstCardMedia}
+              alt="Final birthday memory photo"
+            />
+          )}
 
-          {/* Reusable Video Modal */}
+          {/* Second Card Modal: Normal controllable video with Play/Pause & Volume */}
           <VideoMemoriesModal
             isOpen={isVideoModalOpen}
             onClose={() => setIsVideoModalOpen(false)}
-            videoSrc={finalMessage.video || '/last-msg/1.mp4'}
+            videoSrc={secondCardMedia}
             sectionNumber={10}
-            sectionTitle="Special Moment"
+            sectionTitle="Message for You"
           />
         </div>
       )}
