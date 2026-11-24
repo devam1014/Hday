@@ -65,6 +65,7 @@ export default function VideoMemoriesModal({
   const videoRef = useRef(null);
   const playerContainerRef = useRef(null);
   const scrubberTrackRef = useRef(null);
+  const isClosingRef = useRef(false);
 
   // Reset playback and error state whenever the video source changes or modal opens
   useEffect(() => {
@@ -86,12 +87,14 @@ export default function VideoMemoriesModal({
   // ---------------------------------------------------------------------------
   useEffect(() => {
     if (!isOpen) {
-      if (videoRef.current) {
-        videoRef.current.pause();
-      }
-      audioController.resumeAfterVideo();
+      isClosingRef.current = false;
+      setIsClosing(false);
       return;
     }
+
+    // Immediately pause background music when enlarged video viewer opens
+    audioController.pauseForVideo();
+
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
 
@@ -107,14 +110,21 @@ export default function VideoMemoriesModal({
   // ---------------------------------------------------------------------------
   // 2. DISMISSAL HANDLERS (CLOSE, ESCAPE, BACKDROP)
   // ---------------------------------------------------------------------------
-  const handleDismiss = useCallback(() => {
+  const handleDismiss = useCallback((e) => {
+    if (e) {
+      e.stopPropagation?.();
+      e.preventDefault?.();
+    }
+    if (isClosingRef.current) return;
+    isClosingRef.current = true;
+    setIsClosing(true);
+
     // 1. Immediately pause video and stop its audio
     if (videoRef.current) {
       videoRef.current.pause();
       videoRef.current.currentTime = 0;
     }
     setIsPlaying(false);
-    setIsClosing(true);
 
     // 2. Resume background music from exact paused position (only if playing before video)
     window.dispatchEvent(
@@ -123,10 +133,17 @@ export default function VideoMemoriesModal({
     audioController.resumeAfterVideo();
 
     setTimeout(() => {
+      isClosingRef.current = false;
       setIsClosing(false);
       onClose?.();
     }, 240);
   }, [onClose]);
+
+  const handleBackdropClick = (e) => {
+    if (e.target === e.currentTarget) {
+      handleDismiss(e);
+    }
+  };
 
   useEffect(() => {
     if (!isOpen) return;
@@ -199,10 +216,7 @@ export default function VideoMemoriesModal({
     } else {
       video.pause();
       setIsPlaying(false);
-      window.dispatchEvent(
-        new CustomEvent('gallery-video-state-change', { detail: { isPlaying: false } })
-      );
-      audioController.resumeAfterVideo();
+      // Background music remains paused while enlarged viewer is open
     }
   };
 
@@ -381,10 +395,7 @@ export default function VideoMemoriesModal({
       videoRef.current.currentTime = 0;
       setCurrentTime(0);
     }
-    window.dispatchEvent(
-      new CustomEvent('gallery-video-state-change', { detail: { isPlaying: false } })
-    );
-    audioController.resumeAfterVideo();
+    // Background music remains paused while enlarged viewer is open
   };
 
   const handleVideoError = () => {
@@ -399,7 +410,7 @@ export default function VideoMemoriesModal({
   return (
     <div
       className={`video-modal-backdrop ${isClosing ? 'is-closing' : 'is-open'}`}
-      onClick={handleDismiss}
+      onClick={handleBackdropClick}
       role="dialog"
       aria-modal="true"
       aria-label={alt || 'Video Player'}

@@ -45,6 +45,12 @@ export class AudioController {
     this.welcomeFinishedForSession = false;
     this.isWelcomePlaying = false;
 
+    // Web Audio AudioContext & user gesture retry management
+    this.audioCtx = null;
+    this.pendingAutoplayTheme = null;
+    this.pendingWelcomeSong = false;
+    this.hasSetupRetryListener = false;
+
     // Initialize the independent section players
     this.players = {
       main: this.initPlayer('main'),
@@ -55,6 +61,8 @@ export class AudioController {
 
     // Listen to video state changes from gallery video players
     if (typeof window !== 'undefined') {
+      this.setupUserGestureRetryListener();
+
       window.__allActiveAudioElements = window.__allActiveAudioElements || new Set();
 
       window.addEventListener('gallery-video-state-change', (e) => {
@@ -404,6 +412,9 @@ export class AudioController {
           player.isPlayPending = false;
           if (err.name === 'AbortError') return;
           if (token !== this.playbackTokens[theme]) return;
+          if (err.name === 'NotAllowedError') {
+            this.pendingAutoplayTheme = theme;
+          }
           console.warn(`Autoplay blocked on resume in ${theme}:`, err);
           player.isPlaying = false;
           this.notifyPlayer(theme);
@@ -469,6 +480,9 @@ export class AudioController {
             player.isPlayPending = false;
             if (err.name === 'AbortError') return;
             if (token !== this.playbackTokens[theme]) return;
+            if (err.name === 'NotAllowedError') {
+              this.pendingAutoplayTheme = theme;
+            }
             console.warn(`Playback error in ${theme}:`, err);
             player.isPlaying = false;
             this.notifyPlayer(theme);
@@ -513,7 +527,7 @@ export class AudioController {
     if (!player || !player.audio) return;
 
     if (!this.videoSnapshot) {
-      const wasPlaying = player.isPlaying && !player.audio.paused;
+      const wasPlaying = (player.isPlaying || !player.audio.paused) && !player.userExplicitlyPaused;
       const currentTime = player.audio.currentTime || player.currentTime || 0;
       this.videoSnapshot = {
         theme: targetTheme,
@@ -608,7 +622,12 @@ export class AudioController {
           player.isPlayPending = false;
           if (err.name === 'AbortError') return;
           if (token !== this.playbackTokens[theme]) return;
+          if (err.name === 'NotAllowedError') {
+            this.pendingAutoplayTheme = theme;
+          }
           console.warn(`Playback play() blocked in ${theme}:`, err);
+          player.isPlaying = false;
+          this.notifyPlayer(theme);
         });
     } else {
       player.isPlayPending = false;
@@ -836,6 +855,9 @@ export class AudioController {
         })
         .catch((err) => {
           this.isWelcomePlaying = false;
+          if (err.name === 'NotAllowedError') {
+            this.pendingWelcomeSong = true;
+          }
           console.warn('Welcome song autoplay blocked by browser policy:', err);
           return false;
         });
@@ -883,6 +905,119 @@ export class AudioController {
         this.welcomeAudio.load();
       } catch (_) {}
       this.welcomeAudio = null;
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Web Audio Context & User Interaction Gesture Unlocking
+  // ---------------------------------------------------------------------------
+  unlockAudioContext() {
+    try {
+      if (typeof window === 'undefined') return;
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (AudioCtx) {
+        if (!this.audioCtx) {
+          this.audioCtx = new AudioCtx();
+        }
+        if (this.audioCtx.state === 'suspended') {
+          this.audioCtx.resume().catch(() => {});
+        }
+      }
+    } catch (_) {}
+  }
+
+  handleUserInteraction() {
+    this.unlockAudioContext();
+
+    if (this.pendingWelcomeSong && !this.welcomeFinishedForSession) {
+      this.pendingWelcomeSong = false;
+      this.playWelcomeSong().catch(() => {});
+    }
+
+    if (this.pendingAutoplayTheme) {
+      const theme = this.pendingAutoplayTheme;
+      this.pendingAutoplayTheme = null;
+      if (this.currentActiveSection === theme) {
+        this.play(theme);
+      }
+    }
+  }
+
+  setupUserGestureRetryListener() {
+    if (typeof window === 'undefined' || this.hasSetupRetryListener) return;
+    this.hasSetupRetryListener = true;
+
+    const onGesture = () => {
+      this.handleUserInteraction();
+    };
+
+    ['click', 'pointerdown', 'keydown', 'touchstart'].forEach((evt) => {
+      window.addEventListener(evt, onGesture, { passive: true });
+    });
+  }
+
+  primeWelcomeAudioInGesture() {
+    this.unlockAudioContext();
+    if (this.welcomeFinishedForSession || this.isDestroyed) return;
+
+    const audioSrc = BIRTHDAY_CONFIG?.fireworksAudio || '/audio/welcome.mp3';
+
+    if (!this.welcomeAudio && typeof Audio !== 'undefined') {
+      this.welcomeAudio = new Audio();
+      this.welcomeAudio.preload = 'auto';
+      this.welcomeAudio.loop = true;
+
+      if (typeof window !== 'undefined') {
+        window.__allActiveAudioElements = window.__allActiveAudioElements || new Set();
+        window.__allActiveAudioElements.add(this.welcomeAudio);
+      }
+
+      this.welcomeAudio.addEventListener('play', () => {
+        this.isWelcomePlaying = true;
+      });
+      this.welcomeAudio.addEventListener('pause', () => {
+        this.isWelcomePlaying = false;
+      });
+      this.welcomeAudio.addEventListener('ended', () => {
+        if (this.currentActiveSection === 'fireworks' && !this.welcomeFinishedForSession && this.welcomeAudio && !this.isDestroyed) {
+          this.welcomeAudio.currentTime = 0;
+          this.welcomeAudio.play().catch(() => {});
+        } else {
+          this.isWelcomePlaying = false;
+        }
+      });
+      this.welcomeAudio.addEventListener('error', (err) => {
+        if (this.isDestroyed) return;
+        console.warn('Welcome audio error:', err);
+        this.isWelcomePlaying = false;
+      });
+    }
+
+    if (!this.welcomeAudio) return;
+
+    if (
+      !this.welcomeAudio.src ||
+      (!this.welcomeAudio.src.endsWith(audioSrc) && this.welcomeAudio.src !== window.location.origin + audioSrc)
+    ) {
+      this.welcomeAudio.src = audioSrc;
+    }
+
+    const defaultVol = BIRTHDAY_CONFIG?.musicPlayer?.defaultTrackVolume ?? 0.60;
+    this.welcomeAudio.volume = defaultVol;
+
+    const playPromise = this.welcomeAudio.play();
+    if (playPromise !== undefined) {
+      playPromise
+        .then(() => {
+          this.isWelcomePlaying = true;
+          this.pendingWelcomeSong = false;
+        })
+        .catch((err) => {
+          this.isWelcomePlaying = false;
+          if (err.name === 'NotAllowedError') {
+            this.pendingWelcomeSong = true;
+          }
+        });
     }
   }
 
@@ -1034,6 +1169,12 @@ export class AudioController {
       } catch (_) {}
       this.welcomeAudio = null;
       this.isWelcomePlaying = false;
+    }
+    if (this.audioCtx) {
+      try {
+        this.audioCtx.close();
+      } catch (_) {}
+      this.audioCtx = null;
     }
   }
 

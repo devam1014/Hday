@@ -35,6 +35,8 @@ export default function QnASection({
   onPreviousPage,
   initialStep = 'question',
   initialQuestionIndex = 0,
+  initialSelectedOptionId = null,
+  initialOpenMessage = null,
   onProgressChange,
 }) {
   const handlePreviousNavigation = onPreviousPage || onBackToHappyGallery;
@@ -56,7 +58,7 @@ export default function QnASection({
       : 0
   );
 
-  // Synchronize with external initialStep / initialQuestionIndex changes (e.g. via Teleport)
+  // Synchronize with external initialStep / initialQuestionIndex changes
   useEffect(() => {
     if (initialStep && initialStep !== currentStep) {
       setCurrentStep(initialStep);
@@ -69,17 +71,19 @@ export default function QnASection({
     }
   }, [initialQuestionIndex]);
 
-  // Notify parent of progress changes for TELEPORT_24H_NAV persistence
+  // Active selected option and open message card
+  const [selectedOptionId, setSelectedOptionId] = useState(initialSelectedOptionId || null);
+  const [openMessage, setOpenMessage] = useState(initialOpenMessage || null);
+
+  // Notify parent of progress changes for temporary in-memory navigation restoration
   useEffect(() => {
     onProgressChange?.({
       step: currentStep,
       questionIndex,
+      selectedOptionId,
+      openMessage,
     });
-  }, [currentStep, questionIndex, onProgressChange]);
-
-  // Active selected option and open message card
-  const [selectedOptionId, setSelectedOptionId] = useState(null);
-  const [openMessage, setOpenMessage] = useState(null);
+  }, [currentStep, questionIndex, selectedOptionId, openMessage, onProgressChange]);
 
   // Modal states for Final Message media
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);

@@ -57,6 +57,7 @@ export default function GalleryMediaModal({
 
   // Modal animation state
   const [isClosing, setIsClosing] = useState(false);
+  const isClosingRef = useRef(false);
 
   // Image zoom & pan states
   const [zoom, setZoom] = useState(1);
@@ -106,7 +107,14 @@ export default function GalleryMediaModal({
   }, [isOpen]);
 
   // Handle dismissal with animation and full audio cleanup
-  const handleDismiss = useCallback(() => {
+  const handleDismiss = useCallback((e) => {
+    if (e) {
+      e.stopPropagation?.();
+      e.preventDefault?.();
+    }
+    if (isClosingRef.current) return;
+    isClosingRef.current = true;
+
     // 1. Immediately pause video and clean up sound
     if (videoRef.current) {
       videoRef.current.pause();
@@ -123,6 +131,7 @@ export default function GalleryMediaModal({
     // 3. Trigger exit transition then invoke onClose
     setIsClosing(true);
     setTimeout(() => {
+      isClosingRef.current = false;
       setIsClosing(false);
       onClose?.();
     }, 240);
@@ -361,7 +370,7 @@ export default function GalleryMediaModal({
     return (
       <VideoMemoriesModal
         isOpen={isOpen}
-        onClose={handleDismiss}
+        onClose={onClose}
         videoSrc={effectiveSrc}
         theme={theme}
         alt={effectiveAlt}
@@ -372,7 +381,11 @@ export default function GalleryMediaModal({
   const modalContent = (
     <div
       className={`image-modal-backdrop ${isClosing ? 'is-closing' : 'is-open'}`}
-      onClick={handleDismiss}
+      onClick={(e) => {
+        if (e.target === e.currentTarget) {
+          handleDismiss(e);
+        }
+      }}
       role="dialog"
       aria-modal="true"
       aria-label={isVideo ? 'Enlarged Video Viewer' : 'Enlarged Photo Viewer'}

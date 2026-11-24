@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { X } from 'lucide-react';
 import countdownBg from '../../final-countdown.png?v=1';
 import { BIRTHDAY_CONFIG, parseISTTarget } from '../config';
+import { audioController } from '../utils/audioController';
 
 /**
  * BirthdayCountdownPage Component
@@ -137,6 +138,10 @@ export default function BirthdayCountdownPage({
     if (expectedPassword && clean === expectedPassword) {
       setErrorMessage('');
       setHasPasswordError(false);
+      try {
+        audioController.handleUserInteraction();
+        audioController.primeWelcomeAudioInGesture();
+      } catch (_) {}
       onCountdownComplete?.();
     } else {
       setHasPasswordError(true);
@@ -311,8 +316,8 @@ export default function BirthdayCountdownPage({
         )}
 
         {/* ----------------------------------------------------------------------
-            OVERLAY 4: MESSAGE FOR YOU BUTTON
-            Opens the dark translucent Message modal card
+            OVERLAY 4: INSTRUCTION BUTTON
+            Opens the dark translucent Instruction modal card
            ---------------------------------------------------------------------- */}
         <button
           type="button"
@@ -322,10 +327,10 @@ export default function BirthdayCountdownPage({
             setShowMessageModal(true);
           }}
           className="overlay-message-button"
-          aria-label="Open Birthday Message"
-          title="Message For You"
+          aria-label="Open Instructions"
+          title="Instruction"
         >
-          <span className="overlay-message-btn-text">Message For You</span>
+          <span className="overlay-message-btn-text">Instruction</span>
         </button>
       </div>
 

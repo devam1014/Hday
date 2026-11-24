@@ -35,16 +35,36 @@ import SeeThisView from './SeeThisView';
  * - Cover Back -> returns to Birthday Main Page
  * - Strictly NO sad effects (no thunder, lightning, storm, rain, fog, ghosts)
  */
-export default function HappyMemoriesGallery({ onBack, onPreviousPage, onNextPage }) {
+export default function HappyMemoriesGallery({
+  onBack,
+  onPreviousPage,
+  onNextPage,
+  initialView = 'cover',
+  initialPhotoIndex = 0,
+  onStateChange,
+}) {
   // 'cover' | 'img'
-  const [view, setView] = useState('cover');
-  const [photoIndex, setPhotoIndex] = useState(0);
+  const [view, setView] = useState(initialView);
+  const [photoIndex, setPhotoIndex] = useState(initialPhotoIndex);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [transitionPhase, setTransitionPhase] = useState('idle'); // 'idle' | 'out' | 'in'
   const [transitionDir, setTransitionDir] = useState('forward'); // 'forward' | 'backward'
   const [photoFading, setPhotoFading] = useState(false);
   const [imageErrors, setImageErrors] = useState({});
   const [isMediaModalOpen, setIsMediaModalOpen] = useState(false);
+
+  // Synchronize state changes with parent
+  useEffect(() => {
+    if (onStateChange) {
+      onStateChange({ view, photoIndex });
+    }
+  }, [view, photoIndex, onStateChange]);
+
+  // Support direct prop updates if re-opened
+  useEffect(() => {
+    if (initialView) setView(initialView);
+    if (typeof initialPhotoIndex === 'number') setPhotoIndex(initialPhotoIndex);
+  }, [initialView, initialPhotoIndex]);
 
   // ---------------------------------------------------------------------------
   // FULLSCREEN DETECTION (Supports browser F11 and Fullscreen API)
@@ -422,8 +442,8 @@ export default function HappyMemoriesGallery({ onBack, onPreviousPage, onNextPag
       <GalleryMusicPlayer theme="happy" config={BIRTHDAY_CONFIG.happyMusicPlayer} />
     </div>
 
-    {/* Bottom-Right: Next Page Button (Visible ONLY on the last image of Happy Gallery, navigating to Q&A Section) */}
-    {view === 'img' && photoIndex === photos.length - 1 && onNextPage && (
+    {/* Bottom-Right: Next Page Button (Visible immediately from the beginning, navigating to Q&A Section) */}
+    {Boolean(onNextPage) && (
       <button
         type="button"
         onClick={onNextPage}

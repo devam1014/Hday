@@ -189,8 +189,8 @@ export const BIRTHDAY_CONFIG = {
   firecrackerTargetDate: null,
 
   secondCountdown: {
-    targetDate: "2026-11-23", // e.g. "2026-11-20"
-    targetTime: "01:46:00", // in IST (UTC+05:30)
+    targetDate: "2026-11-24", // e.g. "2026-11-20"
+    targetTime: "00:00:00", // in IST (UTC+05:30)
   },
 
   // ============================================================================
@@ -275,7 +275,7 @@ export const BIRTHDAY_CONFIG = {
         title: "Happiest Birthday, Miioo!",
         salutation: "Dearest Miioo,",
         paragraphs: [
-          "[Your personal birthday message for Section 1 will appear here. Edit src/config.js to replace with your words.]"
+          "[Your personal birthday message for Section 1 will appear here. Edit src/config.js to replace with your words.Your personal birthday message for Section 1 will appear here. Edit src/config.js to replace with your words.Your personal birthday message for Section 1 will appear here. Edit src/config.js to replace with your words.Your personal birthday message for Section 1 will appear here. Edit src/config.js to replace with your words.]"
         ],
         closing: "With love and fondest wishes,",
         sender: "Forever & Always ❤️",
@@ -962,12 +962,9 @@ export const BIRTHDAY_CONFIG = {
   },
 
   // ============================================================================
-  // 12. GENERAL WEBSITE & DEVELOPER SETTINGS
+  // 12. GENERAL WEBSITE SETTINGS
   // ============================================================================
-  dev: {
-    showDevControls: true, // Restored temporarily for testing (toggle to false before final deployment)
-    testCountdownDurationSeconds: 5, // Triggers a 5s countdown when tested
-  }
+  dev: {}
 };
 
 // Standalone editable shortcuts for Countdown Page modals

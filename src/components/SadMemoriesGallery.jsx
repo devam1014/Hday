@@ -320,8 +320,8 @@ export default function SadMemoriesGallery({
         </button>
       </main>
 
-      {/* Bottom-Right: Next Page Button (Visible ONLY on the last image of Sad Gallery, navigating to Happy Gallery) */}
-      {view === 'img' && photoIndex === photos.length - 1 && onNextPage && (
+      {/* Bottom-Right: Next Page Button (Visible immediately from the beginning, navigating to Happy Gallery) */}
+      {Boolean(onNextPage) && (
         <button
           type="button"
           onClick={onNextPage}

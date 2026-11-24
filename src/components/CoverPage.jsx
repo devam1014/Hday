@@ -20,6 +20,7 @@ export default function CoverPage({
   targetDate,
   onProceedToMain,
   celebrationSignal = 0,
+  onSecondCountdownComplete,
 }) {
   const containerRef = useRef(null);
   // Crackers / fireworks active state: starts true if celebrationSignal > 0 (Case C / fireworks active)
@@ -52,16 +53,19 @@ export default function CoverPage({
   // When Timer 2 on the rooftop wall hits 00:00:00:00:
   // Launch colorful crackers/fireworks in open sky and start welcome song
   const handleTimer2WallComplete = useCallback(() => {
+    try { audioController.handleUserInteraction(); } catch (_) {}
     setCrackersActive(true);
     setCelebrationStage('idle');
     audioController.playWelcomeSong();
-  }, []);
+    onSecondCountdownComplete?.();
+  }, [onSecondCountdownComplete]);
 
   // Heart button clicks:
   // - First click: stop firecracker animation and display HAPPY BIRTHDAY particle formation
   //   (must NOT stop or restart the welcome song)
   // - Second click: permanently stops welcome song and smoothly transitions to main birthday page
   const handleHeartClick = useCallback(() => {
+    try { audioController.handleUserInteraction(); } catch (_) {}
     if (celebrationStage === 'idle') {
       // First click: stop firecracker animation and start "HAPPY BIRTHDAY" letter animation
       setCelebrationStage('forming');

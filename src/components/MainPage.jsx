@@ -127,9 +127,8 @@ export default function MainPage({
   const rawLinkLabel = currentSection.linkLabel || defaultWatchButton?.label || "Clip for You";
   const cleanButtonText = rawLinkLabel.replace(/[\s↗»>]+$/, '') || "Clip for You";
 
-  // End-of-page navigation: Next Page button appears ONLY on Section 13 (final section) when message card is scrolled to bottom
-  const isLastSection = displayedSectionIndex === sections.length - 1;
-  const showNextPageBtn = isLastSection && isAtSectionBottom && transitionPhase === 'idle';
+  // Next Page button navigation to Sad Gallery: visible immediately from the beginning
+  const showNextPageBtn = Boolean(onOpenMemories);
 
   // Modals state
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
@@ -289,20 +288,22 @@ export default function MainPage({
     }, 220);
   }, [currentSectionIndex, sections.length, updateScrollProgress]);
 
-  // Restore section position (e.g. when returning to Section 13 from Sad Gallery)
+  // Restore section position (e.g. when returning to Main Birthday from Sad Gallery)
   useEffect(() => {
     if (typeof initialSectionIndex === 'number' && initialSectionIndex >= 0 && initialSectionIndex < sections.length) {
       setCurrentSectionIndex(initialSectionIndex);
       setDisplayedSectionIndex(initialSectionIndex);
-      if (initialSectionIndex === sections.length - 1) {
-        const timer = setTimeout(() => {
-          if (scrollViewRef.current) {
+      const timer = setTimeout(() => {
+        if (scrollViewRef.current) {
+          if (initialSectionIndex === sections.length - 1) {
             scrollViewRef.current.scrollTop = scrollViewRef.current.scrollHeight;
-            updateScrollProgress();
+          } else {
+            scrollViewRef.current.scrollTop = 0;
           }
-        }, 90);
-        return () => clearTimeout(timer);
-      }
+          updateScrollProgress();
+        }
+      }, 90);
+      return () => clearTimeout(timer);
     }
   }, [initialSectionIndex, sections.length, updateScrollProgress]);
 
@@ -331,13 +332,14 @@ export default function MainPage({
       // User is scrolling DOWN
       if (messageCanScroll && !isAtBottom) {
         if (!isOverMessage) {
+          e.preventDefault();
           el.scrollTop += delta;
           updateScrollProgress();
         }
         return;
       }
 
-      // Reached bottom of message card: allow advancing to next section if not already on Section 12
+      // Reached bottom of message card: allow advancing to next section if not already on Section 13
       if (isAtBottom && currentSectionIndex < sections.length - 1) {
         e.preventDefault();
         wheelAccumulatorRef.current += delta;
@@ -351,11 +353,15 @@ export default function MainPage({
           wheelAccumulatorRef.current = 0;
           goToSection(currentSectionIndex + 1, 'down');
         }
+      } else if (isAtBottom) {
+        // Prevent default window wheel when already at the bottom of the final section
+        e.preventDefault();
       }
     } else if (delta < 0) {
       // User is scrolling UP
       if (messageCanScroll && !isAtTop) {
         if (!isOverMessage) {
+          e.preventDefault();
           el.scrollTop += delta;
           updateScrollProgress();
         }
@@ -376,6 +382,9 @@ export default function MainPage({
           wheelAccumulatorRef.current = 0;
           goToSection(currentSectionIndex - 1, 'up');
         }
+      } else if (isAtTop) {
+        // Prevent default window wheel when already at the top of Section 1
+        e.preventDefault();
       }
     }
   }, [

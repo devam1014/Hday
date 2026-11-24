@@ -7,24 +7,15 @@ import SadMemoriesGallery from './components/SadMemoriesGallery';
 import HappyMemoriesGallery from './components/HappyMemoriesGallery';
 import QnASection from './components/QnASection';
 import MobileInfoScreen from './components/MobileInfoScreen';
-import DevControls from './components/DevControls';
 import SeeThisView from './components/SeeThisView';
-// TELEPORT_24H_NAV: Dynamic 24-hour visitor navigation system with midnight IST reset
-import TeleportDropdown from './components/TeleportDropdown';
-import {
-  loadTeleport24hNavState,
-  saveTeleport24hNavState,
-  clearTeleport24hNavState,
-  isTeleportNavEnabled,
-  checkAndPurgeIfExpired,
-} from './utils/teleport24hNav';
+import ErrorBoundary from './components/ErrorBoundary';
 import { BIRTHDAY_CONFIG, parseISTTarget } from './config';
 import { isMobileOrTabletDevice } from './utils/deviceDetector';
 import { audioController } from './utils/audioController';
 
 /**
  * Main Application Orchestrator
- * Strictly maintains the 3-stage flow with two completely independent timers:
+ * Strictly maintains the original website flow with two completely independent timers:
  * 
  * STAGE 1 — COVER PAGE (BirthdayCountdownPage)
  * - Timer 1 belongs only to the cover countdown page (`coverTargetDate`).
@@ -45,7 +36,7 @@ import { audioController } from './utils/audioController';
  * 
  * STAGE 4 — SECOND HEART CLICK
  * - Smoothly navigates to Main Birthday Page (`MainPage`).
- * - Main page and Sad Memories gallery flow proceed seamlessly.
+ * - Main page, Sad Memories gallery, Happy Gallery, and Q&A flow proceed in intended order.
  */
 export default function App() {
   // Mobile & tablet device detection state (survives reload, refresh, navigation)
@@ -84,6 +75,17 @@ export default function App() {
 
   // Compute initial stage & celebration signal based on actual current IST time vs. config.js countdowns
   const computeInitialExperienceState = () => {
+    // Purge any residual Teleport-specific storage keys
+    if (typeof window !== 'undefined' && window.localStorage) {
+      try {
+        localStorage.removeItem('TELEPORT_24H_NAV_state');
+        localStorage.removeItem('TELEPORT_24H_NAV_enabled');
+        localStorage.removeItem('birthday_teleport_enabled');
+      } catch (e) {
+        // ignore
+      }
+    }
+
     // 1. Allow explicit dev preview stage query parameter if present (e.g. ?stage=main or ?stage=sad-memories)
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
@@ -93,19 +95,6 @@ export default function App() {
           stage: stageParam,
           celebrationSignal: stageParam === 'fireworks' ? 1 : 0,
         };
-      }
-    }
-
-    // 2. TELEPORT_24H_NAV: Restore last active stage from 24-hour visitor state if second countdown completed
-    if (typeof window !== 'undefined') {
-      const savedState = loadTeleport24hNavState();
-      if (savedState && savedState.secondCountdownCompleted && savedState.lastActiveSection) {
-        if (['main', 'sad-memories', 'happy-gallery', 'qna'].includes(savedState.lastActiveSection)) {
-          return {
-            stage: savedState.lastActiveSection,
-            celebrationSignal: 0,
-          };
-        }
       }
     }
 
@@ -138,15 +127,21 @@ export default function App() {
     // CASE B – First countdown HAS expired, but second countdown has NOT expired
     // If current IST time is equal to or later than the first target, but earlier than the second target:
     // - Skip the Cover Page completely.
-    // - Open the SECOND countdown / Fireworks page immediately.
-    // - Display the second countdown with its correct remaining time.
-    // - Never show the expired first countdown at 00:00:00:00.
+    // - Show the Firecracker Page directly.
+    // - Display the running second countdown.
+    // - Do not launch fireworks until the second countdown genuinely expires.
     return { stage: 'fireworks', celebrationSignal: 0 };
   };
 
   const initialExperienceState = computeInitialExperienceState();
 
-  // Stage state: 'countdown' | 'fireworks' | 'main' | 'sad-memories' | 'happy-gallery' | 'qna'
+  // Primary navigation stage:
+  // 'countdown'     -> Blurred countdown with password card (Timer 1)
+  // 'fireworks'     -> Open-sky rooftop firecracker countdown & celebration (Timer 2)
+  // 'main'          -> Main Birthday Page (Memories, cake, wishes, letters)
+  // 'sad-memories'  -> Dedicated Sad Memories album gallery
+  // 'happy-gallery' -> Dedicated Happy Memories sunset album gallery
+  // 'qna'           -> Interactive Q&A Moments & Memories
   const [stage, setStage] = useState(initialExperienceState.stage);
 
   // Signal to trigger fireworks celebration on Firecracker page (0 = idle, >0 = celebrate)
@@ -158,72 +153,17 @@ export default function App() {
   // Timer 2: Firecracker / Rooftop Page Target Date (IST)
   const [firecrackerTargetDate, setFirecrackerTargetDate] = useState(getInitialFirecrackerTarget);
 
-  // ============================================================================
-  // TELEPORT_24H_NAV: STATE, PERSISTENCE & MIDNIGHT RESET
-  // ============================================================================
-  const [teleportNavEnabledState, setTeleportNavEnabledState] = useState(() => isTeleportNavEnabled());
-  const [savedNavState] = useState(() => (typeof window !== 'undefined' ? loadTeleport24hNavState() : null));
-
-  // Tracks whether the second countdown has genuinely completed
+  // Track whether the second countdown has genuinely completed and fireworks are unlocked
   const [secondCountdownCompleted, setSecondCountdownCompleted] = useState(() => {
-    if (savedNavState?.secondCountdownCompleted) return true;
+    if (initialExperienceState.celebrationSignal > 0) return true;
     const now = Date.now();
     const sc = BIRTHDAY_CONFIG.secondCountdown;
     const target2 = parseISTTarget(sc?.targetDate, sc?.targetTime) || (BIRTHDAY_CONFIG.firecrackerTargetDate ? parseISTTarget(BIRTHDAY_CONFIG.firecrackerTargetDate) : null);
     return Boolean(target2 && now >= target2);
   });
 
-  // Tracks whether Teleport dropdown is unlocked (unlocked once Sad Gallery is visited)
-  const [teleportUnlocked, setTeleportUnlocked] = useState(() => Boolean(savedNavState?.teleportUnlocked));
-
-  // Tracks all visited sections
-  const [visitedSections, setVisitedSections] = useState(() => savedNavState?.visitedSections || []);
-
-  // Q&A progress states for restoration
-  const [qnaInitialStep, setQnaInitialStep] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const p = new URLSearchParams(window.location.search);
-      const s = p.get('step') || p.get('qnaStep');
-      if (s) return s;
-    }
-    return savedNavState?.navigationProgress?.qnaStep || 'question';
-  });
-  const [qnaInitialQuestionIndex, setQnaInitialQuestionIndex] = useState(() => savedNavState?.navigationProgress?.qnaQuestionIndex || 0);
-  const [qnaCurrentStep, setQnaCurrentStep] = useState(() => savedNavState?.navigationProgress?.qnaStep || 'question');
-
-  // TELEPORT_24H_NAV: Listen for developer toggle & midnight expiration
-  useEffect(() => {
-    const handleToggleEvent = (e) => {
-      setTeleportNavEnabledState(Boolean(e.detail?.enabled));
-    };
-
-    const handleResetEvent = () => {
-      setTeleportUnlocked(false);
-      setVisitedSections([]);
-    };
-
-    const checkExpiration = () => {
-      if (checkAndPurgeIfExpired()) {
-        setTeleportUnlocked(false);
-        setVisitedSections([]);
-      }
-    };
-
-    window.addEventListener('teleport-toggle-changed', handleToggleEvent);
-    window.addEventListener('teleport-midnight-reset', handleResetEvent);
-    window.addEventListener('visibilitychange', checkExpiration);
-    window.addEventListener('focus', checkExpiration);
-
-    // Periodic check for open tabs across 12:00 AM IST
-    const intervalId = setInterval(checkExpiration, 15000);
-
-    return () => {
-      window.removeEventListener('teleport-toggle-changed', handleToggleEvent);
-      window.removeEventListener('teleport-midnight-reset', handleResetEvent);
-      window.removeEventListener('visibilitychange', checkExpiration);
-      window.removeEventListener('focus', checkExpiration);
-      clearInterval(intervalId);
-    };
+  const handleSecondCountdownComplete = useCallback(() => {
+    setSecondCountdownCompleted(true);
   }, []);
 
   // Synchronize background music section ownership whenever the active stage changes
@@ -244,11 +184,12 @@ export default function App() {
   }, [stage]);
 
   // ---------------------------------------------------------------------------
-  // 1. STRICTLY SEPARATED HANDLERS
+  // ORIGINAL WEBSITE FLOW HANDLERS
   // ---------------------------------------------------------------------------
 
   // Handler 1: Cover Timer Complete -> ONLY navigates to Firecracker page
   const handleCoverTimerComplete = useCallback(() => {
+    try { audioController.handleUserInteraction(); } catch (_) {}
     const now = Date.now();
     const sc = BIRTHDAY_CONFIG.secondCountdown;
     const target2 = parseISTTarget(sc?.targetDate, sc?.targetTime) || (BIRTHDAY_CONFIG.firecrackerTargetDate ? parseISTTarget(BIRTHDAY_CONFIG.firecrackerTargetDate) : null);
@@ -256,12 +197,9 @@ export default function App() {
     if (target2 && now >= target2) {
       setCelebrationSignal(1);
       setSecondCountdownCompleted(true);
-      saveTeleport24hNavState({
-        secondCountdownCompleted: true,
-        fireworksUnlocked: true,
-      });
     } else {
       setCelebrationSignal(0);
+      setSecondCountdownCompleted(false);
     }
     setStage('fireworks');
     setFirecrackerTargetDate((prev) => {
@@ -275,319 +213,143 @@ export default function App() {
 
   // Handler 2: Firecracker Timer Complete -> ONLY starts fireworks celebration
   const handleFirecrackerTimerComplete = useCallback(() => {
-    setSecondCountdownCompleted(true);
+    try { audioController.handleUserInteraction(); } catch (_) {}
     setStage('fireworks');
     setCelebrationSignal((prev) => prev + 1);
-    saveTeleport24hNavState({
-      secondCountdownCompleted: true,
-      fireworksUnlocked: true,
-    });
+    setSecondCountdownCompleted(true);
   }, []);
 
   // Handler 3: Heart Button Click -> ONLY navigates to Main Birthday Page after celebration
   const handleHeartButtonClick = useCallback(() => {
+    try { audioController.handleUserInteraction(); } catch (_) {}
     setStage('main');
-    saveTeleport24hNavState({
-      lastActiveSection: 'main',
-    });
   }, []);
 
-  // Sad Gallery state preservation (tracks view & photoIndex so returning from Happy Gallery restores state)
-  const [sadGalleryState, setSadGalleryState] = useState(() => (
-    savedNavState?.navigationProgress?.sadGalleryState || {
-      view: 'cover',
-      photoIndex: 0,
-    }
-  ));
-
-  const handleSadGalleryStateChange = useCallback((nextState) => {
-    setSadGalleryState(nextState);
-    saveTeleport24hNavState({
-      navigationProgress: { sadGalleryState: nextState },
-    });
-  }, []);
-
-  // Open Sad Memories Gallery from Main Page
-  const handleOpenSadMemories = useCallback(() => {
-    setSadGalleryState({ view: 'cover', photoIndex: 0 });
-    setStage('sad-memories');
-  }, []);
-
-  // Track initial section index for Main Birthday page (0 by default, 12 when returning to Section 13)
-  const [mainPageSectionIndex, setMainPageSectionIndex] = useState(() => (
-    savedNavState?.navigationProgress?.mainSectionIndex || 0
-  ));
+  // Track initial section index for Main Birthday page (0 by default)
+  const [mainPageSectionIndex, setMainPageSectionIndex] = useState(0);
 
   const handleMainSectionChange = useCallback((index) => {
     setMainPageSectionIndex(index);
-    saveTeleport24hNavState({
-      navigationProgress: { mainSectionIndex: index },
-    });
   }, []);
 
-  // Return from Sad Memories Gallery to Main Birthday Section 13
+  // Sad Gallery state preservation (tracks view & photoIndex so returning restores state)
+  const [sadGalleryState, setSadGalleryState] = useState({
+    view: 'cover',
+    photoIndex: 0,
+  });
+
+  const handleSadGalleryStateChange = useCallback((nextState) => {
+    setSadGalleryState(nextState);
+  }, []);
+
+  // Open Sad Memories Gallery from Main Page (preserves active sad gallery position)
+  const handleOpenSadMemories = useCallback(() => {
+    try { audioController.handleUserInteraction(); } catch (_) {}
+    setStage('sad-memories');
+  }, []);
+
+  // Return from Sad Memories Gallery to Main Birthday Page (preserves active section)
   const handleBackToMainLastSection = useCallback(() => {
-    setMainPageSectionIndex(12); // Section 13 (0-indexed: 12)
+    try { audioController.handleUserInteraction(); } catch (_) {}
     setStage('main');
   }, []);
 
   // Return from Sad Memories Gallery to Main Page
   const handleBackFromSadMemories = useCallback(() => {
+    try { audioController.handleUserInteraction(); } catch (_) {}
     setStage('main');
+  }, []);
+
+  // Happy Gallery state preservation (tracks view & photoIndex so returning restores state)
+  const [happyGalleryState, setHappyGalleryState] = useState({
+    view: 'cover',
+    photoIndex: 0,
+  });
+
+  const handleHappyGalleryStateChange = useCallback((nextState) => {
+    setHappyGalleryState(nextState);
   }, []);
 
   // Open Happy Memories Gallery
   const handleOpenHappyGallery = useCallback(() => {
+    try { audioController.handleUserInteraction(); } catch (_) {}
     setStage('happy-gallery');
   }, []);
 
   // Return from Happy Memories Gallery to Sad Gallery (restores previous state)
   const handleBackToSadGallery = useCallback(() => {
+    try { audioController.handleUserInteraction(); } catch (_) {}
     setStage('sad-memories');
   }, []);
 
   // Return from Happy Memories Gallery to Main Page
   const handleBackFromHappyGallery = useCallback(() => {
+    try { audioController.handleUserInteraction(); } catch (_) {}
     setStage('main');
+  }, []);
+
+  // Q&A state preservation (tracks step, questionIndex, selectedOptionId, openMessage so returning restores state)
+  const [qnaState, setQnaState] = useState({
+    step: 'question',
+    questionIndex: 0,
+    selectedOptionId: null,
+    openMessage: null,
+  });
+
+  const handleQnaProgressChange = useCallback((nextProgress) => {
+    setQnaState((prev) => ({
+      ...prev,
+      ...nextProgress,
+    }));
   }, []);
 
   // Open Q&A Section from Happy Gallery
   const handleOpenQnA = useCallback(() => {
+    try { audioController.handleUserInteraction(); } catch (_) {}
     audioController.startQnaPlayback();
     setStage('qna');
   }, []);
 
   // Return from Q&A Section to Happy Gallery
   const handleBackFromQnAToHappyGallery = useCallback(() => {
+    try { audioController.handleUserInteraction(); } catch (_) {}
     audioController.setActiveSection('happy');
     setStage('happy-gallery');
   }, []);
 
-  // Handle Q&A Progress Change
-  const handleQnAProgressChange = useCallback(({ step, questionIndex }) => {
-    setQnaCurrentStep(step);
-    if (step === 'final-message') {
-      setVisitedSections((prev) => Array.from(new Set([...prev, 'qna-final'])));
-      saveTeleport24hNavState({
-        visitedSections: ['qna', 'qna-final'],
-        navigationProgress: { qnaStep: step, qnaQuestionIndex: questionIndex },
-      });
-    } else {
-      saveTeleport24hNavState({
-        navigationProgress: { qnaStep: step, qnaQuestionIndex: questionIndex },
-      });
-    }
-  }, []);
-
-  // ============================================================================
-  // TELEPORT_24H_NAV: VISITATION TRACKING & AUDIO/STAGE COORDINATION
-  // ============================================================================
-  useEffect(() => {
-    if (stage === 'main') {
-      setVisitedSections((prev) => Array.from(new Set([...prev, 'main'])));
-      saveTeleport24hNavState({
-        visitedSections: ['main'],
-        lastActiveSection: 'main',
-        secondCountdownCompleted: true,
-      });
-    } else if (stage === 'sad-memories') {
-      // Visiting Sad Gallery unlocks Teleport permanently!
-      setTeleportUnlocked(true);
-      setVisitedSections((prev) => Array.from(new Set([...prev, 'main', 'sad-memories'])));
-      saveTeleport24hNavState({
-        teleportUnlocked: true,
-        visitedSections: ['main', 'sad-memories'],
-        lastActiveSection: 'sad-memories',
-        secondCountdownCompleted: true,
-        navigationProgress: { sadGalleryState },
-      });
-    } else if (stage === 'happy-gallery') {
-      setVisitedSections((prev) => Array.from(new Set([...prev, 'happy-gallery'])));
-      saveTeleport24hNavState({
-        visitedSections: ['happy-gallery'],
-        lastActiveSection: 'happy-gallery',
-      });
-    } else if (stage === 'qna') {
-      const isFinal = qnaCurrentStep === 'final-message';
-      const toAdd = isFinal ? ['qna', 'qna-final'] : ['qna'];
-      setVisitedSections((prev) => Array.from(new Set([...prev, ...toAdd])));
-      saveTeleport24hNavState({
-        visitedSections: toAdd,
-        lastActiveSection: 'qna',
-        navigationProgress: { qnaStep: qnaCurrentStep },
-      });
-    } else if (stage === 'fireworks') {
-      saveTeleport24hNavState({
-        lastActiveSection: 'fireworks',
-        fireworksUnlocked: true,
-        secondCountdownCompleted: true,
-      });
-    }
-  }, [stage, qnaCurrentStep, sadGalleryState]);
-
-  // TELEPORT_24H_NAV: Direct Teleport navigation handler
-  const handleTeleportToSection = useCallback((sectionId) => {
-    if (sectionId === 'fireworks-replay') {
-      handleClickAndSee();
-      return;
-    }
-
-    if (sectionId === 'main') {
-      if (stage !== 'main') setStage('main');
-    } else if (sectionId === 'sad-memories') {
-      if (stage !== 'sad-memories') setStage('sad-memories');
-    } else if (sectionId === 'happy-gallery') {
-      if (stage !== 'happy-gallery') setStage('happy-gallery');
-    } else if (sectionId === 'qna') {
-      setQnaInitialStep('question');
-      if (stage !== 'qna') {
-        audioController.startQnaPlayback();
-        setStage('qna');
-      }
-    } else if (sectionId === 'qna-final') {
-      setQnaInitialStep('final-message');
-      if (stage !== 'qna') {
-        audioController.startQnaPlayback();
-        setStage('qna');
-      }
-    }
-  }, [stage]);
-
-  // Current active section id for Teleport indicator
-  const currentNavSectionId = (() => {
-    if (stage === 'main') return 'main';
-    if (stage === 'sad-memories') return 'sad-memories';
-    if (stage === 'happy-gallery') return 'happy-gallery';
-    if (stage === 'qna') {
-      return qnaCurrentStep === 'final-message' ? 'qna-final' : 'qna';
-    }
-    if (stage === 'fireworks') return 'fireworks-replay';
-    return 'countdown';
-  })();
-
-  // TELEPORT_24H_NAV: Controls visibility in top-right cluster
-  // When TELEPORT_24H_NAV is OFF:
-  // - Teleport is hidden everywhere.
-  // - Original Click & See Magic rules are restored (Fireworks page, and Main Birthday after countdown).
-  // When TELEPORT_24H_NAV is ON:
-  // - Stage A: Before second countdown completes -> Neither Click & See nor Teleport
-  // - Stage B: Fireworks page -> Standalone Click & See Magic
-  // - Stage C: Main Birthday before Teleport unlock -> Standalone Click & See Magic
-  // - Stages D, E, F, G & re-entering Main Birthday -> Teleport dropdown (Click & See is option 1 inside)
-  const showClickAndSeeStandalone = !teleportNavEnabledState
-    ? (stage === 'fireworks' || (stage === 'main' && (secondCountdownCompleted || celebrationSignal > 0)))
-    : (stage === 'fireworks' ||
-       (stage === 'main' && !teleportUnlocked && (secondCountdownCompleted || celebrationSignal > 0)));
-
-  const showTeleportDropdown =
-    teleportNavEnabledState && teleportUnlocked && stage !== 'countdown' && stage !== 'fireworks';
-
-  // Replay from start
+  // Replay from start (resets in-memory session positions back to starting defaults)
   const handleReplay = useCallback(() => {
+    try { audioController.handleUserInteraction(); } catch (_) {}
     setCelebrationSignal(0);
+    setMainPageSectionIndex(0);
+    setSadGalleryState({ view: 'cover', photoIndex: 0 });
+    setHappyGalleryState({ view: 'cover', photoIndex: 0 });
+    setQnaState({
+      step: 'question',
+      questionIndex: 0,
+      selectedOptionId: null,
+      openMessage: null,
+    });
     setStage('countdown');
   }, []);
-
-  // ---------------------------------------------------------------------------
-  // 2. DEV TEST HELPER ACTIONS (STRICTLY ISOLATED)
-  // ---------------------------------------------------------------------------
 
   // "Click & See" Action:
   // Starts a 10-second countdown on the rooftop leading into the full fireworks + welcome song celebration
   // without modifying or corrupting real configured countdown targets in config.js
   const handleClickAndSee = useCallback(() => {
+    try { audioController.handleUserInteraction(); } catch (_) {}
     audioController.resetWelcomeSongSession();
     setCelebrationSignal(0);
     const future = new Date(Date.now() + 10 * 1000);
     setFirecrackerTargetDate(future.toISOString());
-    setSecondCountdownCompleted(true);
     setStage('fireworks');
-    saveTeleport24hNavState({
-      lastActiveSection: 'fireworks',
-      secondCountdownCompleted: true,
-      fireworksUnlocked: true,
-    });
-  }, []);
-
-  // Test Option A: Cover Timer Test (Simulates Timer 1 reaching zero)
-  // Action: Cover -> Firecracker page. Timer 2 visible in normal state; zero fireworks.
-  const handleTestCoverTimer = useCallback(() => {
-    handleCoverTimerComplete();
-  }, [handleCoverTimerComplete]);
-
-  // Test Option B: Firecracker Timer Test (Simulates Timer 2 reaching zero)
-  // Action: Launches colorful crackers/fireworks in open sky, heart button active, waits for 1st click (Happy Birthday) and 2nd click (Main page)
-  const handleTestFirecrackerTimer = useCallback(() => {
-    audioController.resetWelcomeSongSession();
-    handleFirecrackerTimerComplete();
-  }, [handleFirecrackerTimerComplete]);
-
-  // Direct section previews
-  const handleJumpToCountdown = useCallback(() => {
-    setCelebrationSignal(0);
-    setStage('countdown');
-  }, []);
-
-  const handleJumpToFireworksPage = useCallback(() => {
-    audioController.resetWelcomeSongSession();
-    setCelebrationSignal(0);
-    setFirecrackerTargetDate(BIRTHDAY_CONFIG.firecrackerTargetDate || BIRTHDAY_CONFIG.targetDate || null);
-    setStage('fireworks');
-  }, []);
-
-  const handleJumpToMainPage = useCallback(() => {
-    setStage('main');
-  }, []);
-
-  const handleJumpToSadMemories = useCallback(() => {
-    setStage('sad-memories');
-  }, []);
-
-  const handleJumpToHappyGallery = useCallback(() => {
-    setStage('happy-gallery');
-  }, []);
-
-  // Live 5s Countdown Tests
-  const handleTriggerCover5sCountdown = useCallback(() => {
-    setCelebrationSignal(0);
-    setStage('countdown');
-    const testSeconds = BIRTHDAY_CONFIG.dev.testCountdownDurationSeconds || 5;
-    const futureCover = new Date(Date.now() + testSeconds * 1000);
-    const futureFirecracker = new Date(Date.now() + testSeconds * 2 * 1000);
-    setCoverTargetDate(futureCover.toISOString());
-    setFirecrackerTargetDate(futureFirecracker.toISOString());
-  }, []);
-
-  const handleTriggerFirecracker5sCountdown = useCallback(() => {
-    audioController.resetWelcomeSongSession();
-    setStage('fireworks');
-    setCelebrationSignal(0);
-    const future = new Date(Date.now() + (BIRTHDAY_CONFIG.dev.testCountdownDurationSeconds || 5) * 1000);
-    setFirecrackerTargetDate(future.toISOString());
-  }, []);
-
-  // Reset to Clean Config
-  const handleResetToDefaultConfig = useCallback(() => {
-    clearTeleport24hNavState();
-    setTeleportUnlocked(false);
-    setVisitedSections([]);
-    setSecondCountdownCompleted(false);
-    audioController.resetWelcomeSongSession();
-    const state = computeInitialExperienceState();
-    setCoverTargetDate(getInitialCoverTarget());
-    setFirecrackerTargetDate(getInitialFirecrackerTarget());
-    setCelebrationSignal(state.celebrationSignal);
-    setStage(state.stage);
   }, []);
 
   // Get active stage background information for the "See This View" fullscreen background viewer
   const getActiveStageBackground = () => {
     switch (stage) {
       case 'countdown':
-        return {
-          src: BIRTHDAY_CONFIG.countdownPage?.background || '/final-countdown.png',
-          alt: 'Birthday countdown background',
-        };
+        return null;
       case 'fireworks':
         return {
           src: BIRTHDAY_CONFIG.cover?.backgroundImage || BIRTHDAY_CONFIG.images?.fireworksRooftopBg || '/cover.png',
@@ -627,22 +389,21 @@ export default function App() {
 
   return (
     <div className="surprise-app-container">
-      {/* Top-Right Utility Cluster: Shared flex container for See This View, Click & See Magic, Teleport, and DevControls (dev-only) */}
+      {/* Top-Right Utility Cluster: Shared flex container for See This View and Click & See Magic */}
       <div className="top-right-controls-cluster">
-        {activeStageBg && (
+        {stage !== 'countdown' && activeStageBg && (
           <SeeThisView
             backgroundImage={activeStageBg.src}
             alt={activeStageBg.alt}
           />
         )}
 
-        {/* TELEPORT_24H_NAV: Standalone Click & See Magic button */}
-        {/* Visible ONLY on Fireworks page, OR on Main Birthday before Teleport is unlocked */}
-        {showClickAndSeeStandalone && (
+        {/* Click & See Magic: Standalone button visible ONLY after second countdown has completed */}
+        {stage !== 'countdown' && secondCountdownCompleted && (
           <button
             type="button"
             onClick={handleClickAndSee}
-            className="dev-panel-toggle-btn dev-click-see-btn"
+            className="click-see-magic-btn"
             aria-label="Click & See Magic"
             title="Preview 10s countdown to full fireworks celebration"
           >
@@ -650,93 +411,84 @@ export default function App() {
             <span>Click &amp; See Magic</span>
           </button>
         )}
-
-        {/* TELEPORT_24H_NAV: Persistent Teleport Dropdown */}
-        {/* Visible once Sad Gallery has been visited, across all subsequent sections */}
-        {showTeleportDropdown && (
-          <TeleportDropdown
-            visitedSections={visitedSections}
-            currentSection={currentNavSectionId}
-            onSelectSection={handleTeleportToSection}
-            onReplayFireworks={handleClickAndSee}
-          />
-        )}
-
-        <DevControls
-          currentStage={stage}
-          onTestCoverTimer={handleTestCoverTimer}
-          onTestFirecrackerTimer={handleTestFirecrackerTimer}
-          onJumpToCountdown={handleJumpToCountdown}
-          onJumpToFireworksPage={handleJumpToFireworksPage}
-          onJumpToMainPage={handleJumpToMainPage}
-          onJumpToSadMemories={handleJumpToSadMemories}
-          onJumpToHappyGallery={handleJumpToHappyGallery}
-          onJumpToQnA={handleOpenQnA}
-          onTriggerCover5sCountdown={handleTriggerCover5sCountdown}
-          onTriggerFirecracker5sCountdown={handleTriggerFirecracker5sCountdown}
-          onResetToDefaultConfig={handleResetToDefaultConfig}
-          onToggleTeleportNav={(enabled) => setTeleportNavEnabledState(enabled)}
-        />
       </div>
 
       {/* STAGE 1: Blurred Countdown / Cover Page (Timer 1) */}
       {stage === 'countdown' && (
-        <BirthdayCountdownPage
-          targetDate={coverTargetDate}
-          onCountdownComplete={handleCoverTimerComplete}
-        />
+        <ErrorBoundary>
+          <BirthdayCountdownPage
+            targetDate={coverTargetDate}
+            onCountdownComplete={handleCoverTimerComplete}
+          />
+        </ErrorBoundary>
       )}
 
       {/* STAGE 2: Firecracker & Rooftop Fireworks Page (Timer 2) */}
       {stage === 'fireworks' && (
-        <CoverPage
-          targetDate={firecrackerTargetDate}
-          celebrationSignal={celebrationSignal}
-          onProceedToMain={handleHeartButtonClick}
-        />
+        <ErrorBoundary>
+          <CoverPage
+            targetDate={firecrackerTargetDate}
+            celebrationSignal={celebrationSignal}
+            onProceedToMain={handleHeartButtonClick}
+            onSecondCountdownComplete={handleSecondCountdownComplete}
+          />
+        </ErrorBoundary>
       )}
 
       {/* STAGE 3: Main Birthday Page */}
       {stage === 'main' && (
-        <MainPage
-          onReplay={handleReplay}
-          onOpenMemories={handleOpenSadMemories}
-          onOpenHappyGallery={handleOpenHappyGallery}
-          initialSectionIndex={mainPageSectionIndex}
-          onSectionChange={handleMainSectionChange}
-        />
+        <ErrorBoundary>
+          <MainPage
+            onReplay={handleReplay}
+            onOpenMemories={handleOpenSadMemories}
+            onOpenHappyGallery={handleOpenHappyGallery}
+            initialSectionIndex={mainPageSectionIndex}
+            onSectionChange={handleMainSectionChange}
+          />
+        </ErrorBoundary>
       )}
 
       {/* STAGE 4: Sad Image Gallery */}
       {stage === 'sad-memories' && (
-        <SadMemoriesGallery
-          onBack={handleBackToMainLastSection}
-          onPreviousSection={handleBackToMainLastSection}
-          onNextPage={handleOpenHappyGallery}
-          initialView={sadGalleryState.view}
-          initialPhotoIndex={sadGalleryState.photoIndex}
-          onStateChange={handleSadGalleryStateChange}
-        />
+        <ErrorBoundary>
+          <SadMemoriesGallery
+            onBack={handleBackToMainLastSection}
+            onPreviousSection={handleBackToMainLastSection}
+            onNextPage={handleOpenHappyGallery}
+            initialView={sadGalleryState.view}
+            initialPhotoIndex={sadGalleryState.photoIndex}
+            onStateChange={handleSadGalleryStateChange}
+          />
+        </ErrorBoundary>
       )}
 
       {/* STAGE 5: Happy Memories Gallery */}
       {stage === 'happy-gallery' && (
-        <HappyMemoriesGallery
-          onBack={handleBackToSadGallery}
-          onPreviousPage={handleBackToSadGallery}
-          onNextPage={handleOpenQnA}
-        />
+        <ErrorBoundary>
+          <HappyMemoriesGallery
+            onBack={handleBackToSadGallery}
+            onPreviousPage={handleBackToSadGallery}
+            onNextPage={handleOpenQnA}
+            initialView={happyGalleryState.view}
+            initialPhotoIndex={happyGalleryState.photoIndex}
+            onStateChange={handleHappyGalleryStateChange}
+          />
+        </ErrorBoundary>
       )}
 
       {/* STAGE 6: Q&A Section */}
       {stage === 'qna' && (
-        <QnASection
-          onPreviousPage={handleBackFromQnAToHappyGallery}
-          onBackToHappyGallery={handleBackFromQnAToHappyGallery}
-          initialStep={qnaInitialStep}
-          initialQuestionIndex={qnaInitialQuestionIndex}
-          onProgressChange={handleQnAProgressChange}
-        />
+        <ErrorBoundary>
+          <QnASection
+            onPreviousPage={handleBackFromQnAToHappyGallery}
+            onBackToHappyGallery={handleBackFromQnAToHappyGallery}
+            initialStep={qnaState.step}
+            initialQuestionIndex={qnaState.questionIndex}
+            initialSelectedOptionId={qnaState.selectedOptionId}
+            initialOpenMessage={qnaState.openMessage}
+            onProgressChange={handleQnaProgressChange}
+          />
+        </ErrorBoundary>
       )}
     </div>
   );

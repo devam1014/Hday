@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Eye } from 'lucide-react';
-import { BIRTHDAY_CONFIG } from '../config';
 
 /**
  * SeeThisView Component
@@ -43,19 +42,9 @@ export default function SeeThisView({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isActive, handleClose]);
 
-  const isDevUrl = typeof window !== 'undefined' && (
-    new URLSearchParams(window.location.search).get('dev') === 'true' ||
-    new URLSearchParams(window.location.search).get('test') === 'true' ||
-    window.location.hash === '#dev' ||
-    window.location.hash === '#test'
-  );
-  const showDevControls = (isDevUrl || Boolean(BIRTHDAY_CONFIG?.dev?.showDevControls));
-
   return (
     <>
-      <div
-        className={`see-this-view-container ${showDevControls ? 'has-dev-controls' : 'no-dev-controls'}`}
-      >
+      <div className="see-this-view-container">
         <button
           type="button"
           onClick={handleOpen}
