@@ -398,8 +398,8 @@ export default function App() {
           />
         )}
 
-        {/* Click & See Magic: Standalone button visible ONLY after second countdown has completed */}
-        {stage !== 'countdown' && secondCountdownCompleted && (
+        {/* Click & See Magic: Standalone button visible ONLY on fireworks/reveal page after second countdown completed */}
+        {stage === 'fireworks' && secondCountdownCompleted && (
           <button
             type="button"
             onClick={handleClickAndSee}

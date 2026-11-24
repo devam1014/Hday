@@ -140,7 +140,6 @@ export default function BirthdayCountdownPage({
       setHasPasswordError(false);
       try {
         audioController.handleUserInteraction();
-        audioController.primeWelcomeAudioInGesture();
       } catch (_) {}
       onCountdownComplete?.();
     } else {

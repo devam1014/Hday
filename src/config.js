@@ -170,8 +170,8 @@ export const BIRTHDAY_CONFIG = {
   coverTargetDate: null,
 
   openingCountdown: {
-    targetDate: "2026-11-23", // e.g. "2026-11-20"
-    targetTime: "01:45:00", // in IST (UTC+05:30)
+    targetDate: "2026-11-24", // e.g. "2026-11-20"
+    targetTime: "19:47:00", // in IST (UTC+05:30)
   },
 
   // Fallback target date if referencing generic property
@@ -190,7 +190,7 @@ export const BIRTHDAY_CONFIG = {
 
   secondCountdown: {
     targetDate: "2026-11-24", // e.g. "2026-11-20"
-    targetTime: "00:00:00", // in IST (UTC+05:30)
+    targetTime: "19:48:20", // in IST (UTC+05:30)
   },
 
   // ============================================================================
@@ -446,6 +446,7 @@ export const BIRTHDAY_CONFIG = {
     background: sadBg,
     messages: [
       "hyyyy",
+      "hueiry",
       "Not every beautiful moment was meant to last forever... ♡",
       "We didn't say goodbye, but the silence said everything... ♡",
       "I still look for you in the songs we used to love... ♡",

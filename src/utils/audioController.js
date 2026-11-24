@@ -929,7 +929,7 @@ export class AudioController {
   handleUserInteraction() {
     this.unlockAudioContext();
 
-    if (this.pendingWelcomeSong && !this.welcomeFinishedForSession) {
+    if (this.pendingWelcomeSong && !this.welcomeFinishedForSession && this.currentActiveSection === 'fireworks') {
       this.pendingWelcomeSong = false;
       this.playWelcomeSong().catch(() => {});
     }
@@ -957,68 +957,8 @@ export class AudioController {
   }
 
   primeWelcomeAudioInGesture() {
+    // Safely unlocks Web Audio context during user interaction without prematurely playing audio
     this.unlockAudioContext();
-    if (this.welcomeFinishedForSession || this.isDestroyed) return;
-
-    const audioSrc = BIRTHDAY_CONFIG?.fireworksAudio || '/audio/welcome.mp3';
-
-    if (!this.welcomeAudio && typeof Audio !== 'undefined') {
-      this.welcomeAudio = new Audio();
-      this.welcomeAudio.preload = 'auto';
-      this.welcomeAudio.loop = true;
-
-      if (typeof window !== 'undefined') {
-        window.__allActiveAudioElements = window.__allActiveAudioElements || new Set();
-        window.__allActiveAudioElements.add(this.welcomeAudio);
-      }
-
-      this.welcomeAudio.addEventListener('play', () => {
-        this.isWelcomePlaying = true;
-      });
-      this.welcomeAudio.addEventListener('pause', () => {
-        this.isWelcomePlaying = false;
-      });
-      this.welcomeAudio.addEventListener('ended', () => {
-        if (this.currentActiveSection === 'fireworks' && !this.welcomeFinishedForSession && this.welcomeAudio && !this.isDestroyed) {
-          this.welcomeAudio.currentTime = 0;
-          this.welcomeAudio.play().catch(() => {});
-        } else {
-          this.isWelcomePlaying = false;
-        }
-      });
-      this.welcomeAudio.addEventListener('error', (err) => {
-        if (this.isDestroyed) return;
-        console.warn('Welcome audio error:', err);
-        this.isWelcomePlaying = false;
-      });
-    }
-
-    if (!this.welcomeAudio) return;
-
-    if (
-      !this.welcomeAudio.src ||
-      (!this.welcomeAudio.src.endsWith(audioSrc) && this.welcomeAudio.src !== window.location.origin + audioSrc)
-    ) {
-      this.welcomeAudio.src = audioSrc;
-    }
-
-    const defaultVol = BIRTHDAY_CONFIG?.musicPlayer?.defaultTrackVolume ?? 0.60;
-    this.welcomeAudio.volume = defaultVol;
-
-    const playPromise = this.welcomeAudio.play();
-    if (playPromise !== undefined) {
-      playPromise
-        .then(() => {
-          this.isWelcomePlaying = true;
-          this.pendingWelcomeSong = false;
-        })
-        .catch((err) => {
-          this.isWelcomePlaying = false;
-          if (err.name === 'NotAllowedError') {
-            this.pendingWelcomeSong = true;
-          }
-        });
-    }
   }
 
   primeOnSecondHeartClick() {

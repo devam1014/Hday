@@ -6782,7 +6782,7 @@ button:focus-visible {
 }
 
 /* -----------------------------------------------------------------------------
-   SCREEN 2: QUESTION SCREEN (STAGE + DOCKS)
+   SCREEN 2: QUESTION SCREEN (STAGE & FLOATING PERSONAL MESSAGE CARD)
    ----------------------------------------------------------------------------- */
 .qna-question-stage {
   display: flex;
@@ -6790,102 +6790,96 @@ button:focus-visible {
   justify-content: center;
   position: relative;
   width: 100%;
-  max-width: 1420px;
-  gap: 24px;
+  max-width: 1200px;
   padding: 40px 16px;
 }
 
-/* Side Message Docks */
-.qna-message-dock {
-  width: 320px;
-  flex-shrink: 0;
-  transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-  pointer-events: none;
-  opacity: 0;
-}
-
-.qna-message-dock-left {
-  transform: translateX(-35px);
-}
-
-.qna-message-dock-right {
-  transform: translateX(35px);
-}
-
-.qna-message-dock.is-open {
-  opacity: 1;
-  transform: translateX(0);
-  pointer-events: auto;
-}
-
-/* Message Card Styling */
-.qna-message-card {
-  padding: 24px 22px;
-  width: 100%;
-  border: 1px solid rgba(240, 215, 150, 0.65);
-  box-shadow: 0 16px 42px rgba(0, 0, 0, 0.42), 0 0 28px rgba(235, 195, 130, 0.3);
-  animation: qnaFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-.qna-message-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-bottom: 1px solid rgba(235, 200, 140, 0.28);
-  padding-bottom: 12px;
-  margin-bottom: 14px;
-}
-
-.qna-message-badge {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-family: var(--font-serif-display);
-  font-size: 0.95rem;
-  color: #ffe6b3;
-  letter-spacing: 0.03em;
-}
-
-.qna-message-close-btn {
-  background: transparent;
-  border: none;
-  color: #e2d4be;
-  cursor: pointer;
-  padding: 4px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s;
-}
-
-.qna-message-close-btn:hover {
-  color: #fff;
-  background: rgba(255, 255, 255, 0.16);
-  transform: scale(1.1);
-}
-
-.qna-message-body {
-  padding: 4px 2px;
-}
-
-.qna-message-text {
-  font-family: var(--font-serif-card);
-  font-size: 1.18rem;
-  line-height: 1.62;
-  color: #fffdf5;
-  font-style: italic;
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
-}
-
-/* Center Question Card */
+/* Center Question Card — STRICTLY FIXED POSITION AND DIMENSIONS */
 .qna-question-card {
+  position: relative;
   max-width: 750px;
   width: 100%;
   padding: 36px 36px;
   display: flex;
   flex-direction: column;
   gap: 22px;
+}
+
+/* -----------------------------------------------------------------------------
+   SEPARATE COMPACT PERSONAL MESSAGE CARD (OUTSIDE MAIN Q&A CARD)
+   ----------------------------------------------------------------------------- */
+.qna-floating-message-card {
+  position: absolute;
+  width: 235px;
+  max-width: 250px;
+  padding: 22px 20px;
+  box-sizing: border-box;
+  background: rgba(14, 20, 32, 0.86);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border: 1.5px solid rgba(255, 215, 120, 0.9);
+  border-radius: 20px;
+  box-shadow:
+    0 12px 36px rgba(0, 0, 0, 0.5),
+    0 0 24px rgba(255, 200, 80, 0.42),
+    inset 0 0 12px rgba(255, 215, 120, 0.15);
+  z-index: 40;
+  pointer-events: auto;
+  transform: translateY(-50%);
+  transition: top 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: qnaMessagePop 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes qnaMessagePop {
+  from {
+    opacity: 0;
+    transform: translateY(-50%) scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(-50%) scale(1);
+  }
+}
+
+.qna-floating-message-card.pos-left {
+  right: calc(100% + 28px);
+}
+
+.qna-floating-message-card.pos-right {
+  left: calc(100% + 28px);
+}
+
+/* Subtle Golden Connector Line linking card to option */
+.qna-floating-connector {
+  position: absolute;
+  top: 50%;
+  height: 1.5px;
+  pointer-events: none;
+  background: linear-gradient(to right, rgba(255, 215, 120, 0.95), rgba(255, 200, 80, 0.65));
+  box-shadow: 0 0 6px rgba(255, 200, 80, 0.6);
+}
+
+.qna-floating-message-card.pos-left .qna-floating-connector {
+  right: -64px;
+  width: 64px;
+}
+
+.qna-floating-message-card.pos-right .qna-floating-connector {
+  left: -64px;
+  width: 64px;
+}
+
+/* Text Content: ONLY the message text */
+.qna-floating-message-text {
+  font-family: var(--font-serif-card, 'Cinzel', serif);
+  font-size: 1.05rem;
+  line-height: 1.58;
+  color: #fffdf5;
+  font-style: italic;
+  text-align: center;
+  margin: 0;
+  padding: 0;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
 }
 
 .qna-question-header {
@@ -7631,16 +7625,20 @@ button:focus-visible {
 }
 
 /* Responsive adjustments */
-@media (max-width: 1280px) {
-  .qna-question-stage {
-    flex-direction: column;
-    align-items: center;
+@media (max-width: 1220px) {
+  .qna-floating-message-card.pos-left,
+  .qna-floating-message-card.pos-right {
+    position: absolute;
+    top: calc(100% + 18px) !important;
+    left: 50% !important;
+    right: auto !important;
+    transform: translateX(-50%) !important;
+    width: 90% !important;
+    max-width: 440px !important;
   }
 
-  .qna-message-dock {
-    width: 100%;
-    max-width: 750px;
-    transform: none !important;
+  .qna-floating-connector {
+    display: none !important;
   }
 }
 

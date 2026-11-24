@@ -119,6 +119,31 @@ export default function QnASection({
     };
   }, []);
 
+  // DOM references for measuring vertical alignment without altering main Q&A card layout
+  const cardRef = useRef(null);
+  const optionRefs = useRef([]);
+  const [optionYPositions, setOptionYPositions] = useState({});
+
+  const updateOptionPositions = useCallback(() => {
+    if (!cardRef.current) return;
+    const cardRect = cardRef.current.getBoundingClientRect();
+    const positions = {};
+    optionRefs.current.forEach((el, idx) => {
+      if (el) {
+        const rect = el.getBoundingClientRect();
+        // Distance from top of the main Q&A card to the exact vertical center of the option
+        positions[idx] = (rect.top + rect.height / 2) - cardRect.top;
+      }
+    });
+    setOptionYPositions(positions);
+  }, []);
+
+  useEffect(() => {
+    updateOptionPositions();
+    window.addEventListener('resize', updateOptionPositions);
+    return () => window.removeEventListener('resize', updateOptionPositions);
+  }, [updateOptionPositions, questionIndex, currentStep]);
+
   // Reset selected option and message card whenever question changes
   const handleQuestionChange = useCallback((newIndex) => {
     setSelectedOptionId(null);
@@ -129,6 +154,7 @@ export default function QnASection({
   // Handle Option Click (Option 1 & 3 -> Left, Option 2 & 4 -> Right)
   const handleOptionClick = (option, index) => {
     const side = index % 2 === 0 ? 'left' : 'right';
+    const row = index < 2 ? 'top' : 'bottom';
 
     // If already active and open, clicking again closes/toggles it
     if (selectedOptionId === option.id && openMessage) {
@@ -141,9 +167,15 @@ export default function QnASection({
     setSelectedOptionId(option.id);
     setOpenMessage({
       side,
+      row,
+      optionIndex: index,
       optionId: option.id,
       emoji: option.emoji || '💬',
       text: option.message || option.text || 'A sweet thought just for you. ♡',
+    });
+
+    requestAnimationFrame(() => {
+      updateOptionPositions();
     });
   };
 
@@ -224,38 +256,11 @@ export default function QnASection({
       {/* ==================================================================== */}
       {currentStep === 'question' && currentQuestion && (
         <div className="qna-screen-container qna-question-stage">
-          {/* LEFT MESSAGE CARD (Opened by Option 1 or Option 3) */}
+          {/* CENTER QUESTION CARD (STRICTLY FIXED POSITION & DIMENSIONS) */}
           <div
-            className={`qna-message-dock qna-message-dock-left ${
-              openMessage && openMessage.side === 'left' ? 'is-open' : ''
-            }`}
-            aria-hidden={!openMessage || openMessage.side !== 'left'}
+            ref={cardRef}
+            className="qna-glass-card qna-question-card qna-fade-in"
           >
-            {openMessage && openMessage.side === 'left' && (
-              <div className="qna-glass-card qna-message-card">
-                <div className="qna-message-header">
-                  <span className="qna-message-badge">
-                    <span className="qna-message-emoji">{openMessage.emoji}</span>
-                    <span className="qna-message-label">Personal Message</span>
-                  </span>
-                  <button
-                    type="button"
-                    onClick={handleCloseMessage}
-                    className="qna-message-close-btn"
-                    aria-label="Close message"
-                  >
-                    <X size={16} />
-                  </button>
-                </div>
-                <div className="qna-message-body">
-                  <p className="qna-message-text">{openMessage.text}</p>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* CENTER QUESTION CARD */}
-          <div className="qna-glass-card qna-question-card qna-fade-in">
             {/* Top Meta Header: Heading + Question Number */}
             <div className="qna-question-header">
               <span className="qna-heading-label">
@@ -281,6 +286,7 @@ export default function QnASection({
                 return (
                   <button
                     key={opt.id || idx}
+                    ref={(el) => (optionRefs.current[idx] = el)}
                     type="button"
                     onClick={() => handleOptionClick(opt, idx)}
                     className={`qna-option-btn option-${idx + 1} ${
@@ -322,39 +328,30 @@ export default function QnASection({
                   questionIndex === questions.length - 1 ? 'Go to Message for You' : 'Next Question'
                 }
               >
-                <span>{questionIndex === questions.length - 1 ? 'Next' : 'Next'}</span>
+                <span>Next</span>
                 <ChevronRight size={18} />
               </button>
             </div>
-          </div>
 
-          {/* RIGHT MESSAGE CARD (Opened by Option 2 or Option 4) */}
-          <div
-            className={`qna-message-dock qna-message-dock-right ${
-              openMessage && openMessage.side === 'right' ? 'is-open' : ''
-            }`}
-            aria-hidden={!openMessage || openMessage.side !== 'right'}
-          >
-            {openMessage && openMessage.side === 'right' && (
-              <div className="qna-glass-card qna-message-card">
-                <div className="qna-message-header">
-                  <span className="qna-message-badge">
-                    <span className="qna-message-emoji">{openMessage.emoji}</span>
-                    <span className="qna-message-label">Personal Message</span>
-                  </span>
-                  <button
-                    type="button"
-                    onClick={handleCloseMessage}
-                    className="qna-message-close-btn"
-                    aria-label="Close message"
-                  >
-                    <X size={16} />
-                  </button>
-                </div>
-                <div className="qna-message-body">
-                  <p className="qna-message-text">{openMessage.text}</p>
-                </div>
-              </div>
+            {/* SEPARATE COMPACT PERSONAL MESSAGE CARD (OUTSIDE MAIN Q&A CARD, BESIDE SELECTED ANSWER) */}
+            {openMessage && (
+              <aside
+                className={`qna-floating-message-card pos-${openMessage.side} ${
+                  openMessage.row ? `row-${openMessage.row}` : ''
+                }`}
+                style={{
+                  top: optionYPositions[openMessage.optionIndex] != null
+                    ? `${optionYPositions[openMessage.optionIndex]}px`
+                    : openMessage.optionIndex < 2
+                    ? '46%'
+                    : '68%',
+                }}
+                role="region"
+                aria-label="Personal thought"
+              >
+                <div className="qna-floating-connector" aria-hidden="true" />
+                <p className="qna-floating-message-text">{openMessage.text}</p>
+              </aside>
             )}
           </div>
         </div>
