@@ -159,7 +159,7 @@ export const BIRTHDAY_CONFIG = {
   },
 
   // Recipient Name (used in titles, greetings, and cards)
-  recipientName: "Miioo",
+  recipientName: "betu",
 
   // ============================================================================
   // 2. FIRST COUNTDOWN (TIMER 1 — OPENING / COVER PAGE)
@@ -171,7 +171,7 @@ export const BIRTHDAY_CONFIG = {
 
   openingCountdown: {
     targetDate: "2026-11-24", // e.g. "2026-11-20"
-    targetTime: "19:47:00", // in IST (UTC+05:30)
+    targetTime: "23:04:50", // in IST (UTC+05:30)
   },
 
   // Fallback target date if referencing generic property
@@ -190,7 +190,7 @@ export const BIRTHDAY_CONFIG = {
 
   secondCountdown: {
     targetDate: "2026-11-24", // e.g. "2026-11-20"
-    targetTime: "19:48:20", // in IST (UTC+05:30)
+    targetTime: "23:05:00", // in IST (UTC+05:30)
   },
 
   // ============================================================================
